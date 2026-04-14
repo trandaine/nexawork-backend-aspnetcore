@@ -1,0 +1,19 @@
+# Quá trình trưởng thành dự án NexaWork
+
+## Bước 1: Setup hệ thống Identity:
+- Đã thiết lập hệ thống Identity tùy chỉnh với `NexaWorkUser` kế thừa từ `IdentityUser`, cho phép mở rộng các thuộc tính người dùng trong tương lai.
+- Cấu hình `ApplicationDbContext` để sử dụng `NexaWorkUser` và `NexaWorkRole`, đảm bảo tích hợp liền mạch với hệ thống Identity của ASP.NET Core.
+- Cấu hình các dịch vụ Identity trong `Program.cs`, bao gồm việc sử dụng Entity Framework Core với SQL Server và thiết lập các tùy chọn bảo mật như khóa tài khoản và yêu cầu mật khẩu mạnh.
+- Cập nhật `_LoginPartial.cshtml` để sử dụng `NexaWorkUser` thay vì `IdentityUser`, đảm bảo rằng các chức năng đăng nhập và đăng xuất hoạt động chínhxác với hệ thống Identity tùy chỉnh.
+- Thêm các liên kết đăng nhập và đăng ký vào thanh điều hướng trong `_Layout.cshtml`, cho phép người dùng dễ dàng truy cập các chức năng xác thực. Inject từ `_LoginPartial.cshtml` vào thanh navbar sử dụng `<partial name="_LoginPartial" />` để hiển thị trạng thái đăng nhập của người dùng trên toàn bộ ứng dụng.
+- Ngày 18/03/2026: Hoàn thành các hàm Register, Login, Logout trong `AuthenticationsController`, đảm bảo rằng người dùng có thể đăng ký tài khoản mới, đăng nhập và đăng xuất một cách an toàn.
+
+- Ngày 21/03/2026: Thêm chức năng đăng ký f2a vào `SettingsController` và đang làm dang dở. Khuyến nghị lên dừng lại ưu tiên vào các chức năng khác. KẾ HOẠCH TIẾP THEO: Xây dựng trang `SettingController` để ngừoi dùng có thể quản lý tài khoản của mình, bao gồm việc thay đổi mật khẩu, cập nhật thông tin cá nhân và thiết lập xác thực hai yếu tố (2FA). Điều này sẽ giúp tăng cường bảo mật cho người dùng và cải thiện trải nghiệm người dùng trên nền tảng NexaWork. Ngoài ra đã thêm thành công layout custom cho toàn bộ dự án MVC.
+
+- Ngày 22/03/2026: Lên ý tưởng tách hệ thống Identity trong dự án ra thành một dự án riêng biệt để sử dụng các công nghệ bảo mật mới nhất như F2A, JWT, Passkey. Dự án này sẽ có tên là `NexaWork.Authentication` và sẽ được xây dựng dưới dạng một API riêng biệt, cho phép các ứng dụng khác trong hệ sinh thái NexaWork có thể sử dụng chung hệ thống xác thực mà không cần phải tích hợp trực tiếp vào từng ứng dụng. Điều này sẽ giúp tăng tính linh hoạt và khả năng mở rộng của hệ thống xác thực, đồng thời cho phép chúng ta dễ dàng cập nhật và bảo trì hệ thống này mà không ảnh hưởng đến các ứng dụng khác.
+
+- Ngày 28/03/2026: Sau khi thấy được sự phức tạp của dự án API Authentication trong việc phải phát triển các API để hỗ trợ các chức năng Authentication. Tôi đã quyết định thay đổi cấu trúc dự án bằng cách đổi tên dự án `Nexawork.Authentication` thành `NexaWork.Client` và sẽ phát triển các chức năng Authentication trực tiếp trong dự án này. Điều này sẽ giúp giảm thiểu sự phức tạp và tăng tốc độ phát triển, đồng thời vẫn đảm bảo rằng chúng ta có thể tích hợp các chức năng xác thực một cách hiệu quả vào ứng dụng NexaWork mà không cần phải xây dựng một API riêng biệt. Tôi sẽ tiếp tục phát triển các chức năng xác thực như đăng ký, đăng nhập, đăng xuất và quản lý tài khoản người dùng trực tiếp trong `NexaWork.Client`, đồng thời đảm bảo rằng chúng ta vẫn có thể mở rộng và bảo trì hệ thống này một cách dễ dàng trong tương lai.
+
+- Ngày 2/4/2026: Hoàn thành chức năng đăng ký tài khoản mới, đăng nhập trong `AuthenticationController` của dự án `NexaWork.Client`, bao gồm việc kiểm tra tính hợp lệ của email và tên đăng nhập, tạo tài khoản người dùng mới và trả về phản hồi phù hợp cho frontend. đồng thời cung cấp thông tin chi tiết về lỗi nếu quá trình đăng ký thất bại (ví dụ: mật khẩu quá yếu hoặc email đã tồn tại). Tôi sẽ tiếp tục phát triển các chức năng khác như đăng xuất, reset password và quản lý tài khoản người dùng trong thời gian tới.
+
+- Ngày 6/4/2026: Update lại các entities với 'virtual' và 'ICollection', 'Collection'. Backup là cần thiết.

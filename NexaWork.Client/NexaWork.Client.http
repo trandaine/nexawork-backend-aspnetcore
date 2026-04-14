@@ -1,0 +1,6 @@
+@NexaWork.Authentication_HostAddress = http://localhost:5278
+
+GET {{NexaWork.Authentication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
