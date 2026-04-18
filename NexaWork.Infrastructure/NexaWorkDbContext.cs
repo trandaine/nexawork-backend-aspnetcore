@@ -1,12 +1,12 @@
-using System;
 using Microsoft.EntityFrameworkCore;
+using NexaWork.Application.Interfaces;
 using NexaWork.Domain.Constants;
 using NexaWork.Domain.Entities;
 using NexaWork.Infrastructure.Configurations;
 
 namespace NexaWork.Infrastructure;
 
-public class NexaWorkDbContext : DbContext
+public class NexaWorkDbContext : DbContext, INexaWorkDbContext
 {
     public NexaWorkDbContext()
     {

@@ -8,17 +8,37 @@ using NexaWork.Infrastructure.Data.Seedings.Authentications;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using NexaWork.Application.Interfaces;
+using NexaWork.Client.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
+
 builder.Services.AddDbContext<NexaWorkDbContext>();
+
+builder.Services.AddScoped<INexaWorkDbContext>(provider =>
+    provider.GetRequiredService<NexaWorkDbContext>());
+
+
+
+
+// Register Isender for MediatR
+// builder.Services.AddMediatR(cfg =>
+//     cfg.RegisterServicesFromAssembly(typeof(CreateOrganizationCommand).Assembly));
+
+
+// Register application services
+builder.Services.AddApplicationServices();
+
+
 
 builder.Services.AddDbContext<NexaWorkDbIdentityContext>(options =>
 {
@@ -28,6 +48,10 @@ builder.Services.AddDbContext<NexaWorkDbIdentityContext>(options =>
     // Register the entity sets needed by OpenIddict.
     options.UseOpenIddict();
 });
+
+
+
+#region Identity Services
 
 
 builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options =>
@@ -128,6 +152,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+#endregion
 
 
 
@@ -135,6 +160,13 @@ builder.Services.AddAuthentication(options =>
 
 
 var app = builder.Build();
+
+
+
+
+
+
+
 
 
 
@@ -158,7 +190,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Đã xảy ra lỗi trong quá trình Seeding dữ liệu Identity.");
     }
 }
-
 
 
 
