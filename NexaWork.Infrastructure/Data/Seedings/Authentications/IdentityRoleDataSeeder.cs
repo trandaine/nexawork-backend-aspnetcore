@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NexaWork.Domain.IdentityEntites;

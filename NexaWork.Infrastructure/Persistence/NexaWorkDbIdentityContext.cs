@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Constants;
 using NexaWork.Domain.IdentityEntites;
 
-namespace NexaWork.Infrastructure;
+namespace NexaWork.Infrastructure.Persistence;
 
 public class NexaWorkDbIdentityContext : IdentityDbContext
 {

@@ -19,5 +19,10 @@ public class CreateOrganizationValidator : AbstractValidator<CreateOrganizationC
         RuleFor(v => v.WebsiteUrl)
             .Must(uri => string.IsNullOrEmpty(uri) || Uri.TryCreate(uri, UriKind.Absolute, out _))
             .WithMessage("Website URL must be a valid format.");
+
+        RuleFor(v => v.FoundedDate)
+            .LessThanOrEqualTo(DateTime.UtcNow)
+            .When(v => v.FoundedDate.HasValue)
+            .WithMessage("Founded date cannot be in the future.");
     }
 }

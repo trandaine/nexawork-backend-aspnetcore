@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Entities;
 
-namespace NexaWork.Application.Interfaces;
+namespace NexaWork.Application.Common.Interfaces;
 
 public interface INexaWorkDbContext
 {
-    DbSet<Customer> Customers { get; set; }
-    DbSet<Organization> Organizations { get; set; }
+    DbSet<Customer> Customers { get;  }
+    DbSet<Organization> Organizations { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
 }

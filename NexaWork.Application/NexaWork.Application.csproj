@@ -5,10 +5,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common/" />
     <Folder Include="Common/Behaviors/" />
     <Folder Include="Common/Exceptions/" />
-    <Folder Include="Common/Interfaces/" />
+    <Folder Include="Common/Interfaces/Repositories/" />
     <Folder Include="Features/" />
     <Folder Include="Features/Client/Customers/Commands/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
@@ -23,7 +22,6 @@
     <Folder Include="Features/Client/Organization/Commands/Delete/" />
     <Folder Include="Features/Client/Organization/Commands/Update/" />
     <Folder Include="Features/Client/Organization/Queries/" />
-    <Folder Include="Interfaces/" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NexaWork.Domain.Entities;
 
-namespace NexaWork.Infrastructure.Configurations;
+namespace NexaWork.Infrastructure.Persistence.Configurations;
 
 public class ConnectionConfiguration : IEntityTypeConfiguration<Connection>
 {

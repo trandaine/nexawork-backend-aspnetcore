@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Entities;
 
-namespace NexaWork.Infrastructure.Configurations;
+namespace NexaWork.Infrastructure.Persistence.Configurations;
 
 public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {

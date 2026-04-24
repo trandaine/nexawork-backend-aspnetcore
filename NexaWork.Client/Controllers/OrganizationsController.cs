@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
-using NexaWork.Application.Interfaces;
-using NexaWork.Domain.Entities;
-using NexaWork.Infrastructure;
 
 namespace NexaWork.Client.Controllers
 {
@@ -82,7 +74,6 @@ namespace NexaWork.Client.Controllers
         // }
 
         // POST: api/Organizations
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         // public async Task<ActionResult<Organization>> PostOrganization(Organization organization)
         // {

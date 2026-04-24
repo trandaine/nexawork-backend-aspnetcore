@@ -2,14 +2,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Constants;
 using NexaWork.Domain.IdentityEntites;
-using NexaWork.Infrastructure;
 using NexaWork.Infrastructure.Data.Seedings;
 using NexaWork.Infrastructure.Data.Seedings.Authentications;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using NexaWork.Application.Interfaces;
+using NexaWork.Infrastructure;
 using NexaWork.Client.Extensions;
+using NexaWork.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +22,7 @@ builder.Services.AddSwaggerGen();
 
 
 
-builder.Services.AddDbContext<NexaWorkDbContext>();
-
-builder.Services.AddScoped<INexaWorkDbContext>(provider =>
-    provider.GetRequiredService<NexaWorkDbContext>());
-
+builder.Services.AddInfrastructureServices();
 
 
 

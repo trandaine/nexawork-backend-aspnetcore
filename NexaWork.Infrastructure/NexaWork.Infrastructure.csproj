@@ -2,11 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NexaWork.Application\NexaWork.Application.csproj" />
-    <ProjectReference Include="..\NexaWork.Domain\NexaWork.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configurations/" />
   </ItemGroup>
 
   <ItemGroup>

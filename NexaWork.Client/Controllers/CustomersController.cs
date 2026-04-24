@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NexaWork.Infrastructure;
+using NexaWork.Infrastructure.Persistence;
 
 namespace NexaWork.Client.Controllers
 {

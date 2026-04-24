@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NexaWork.Domain.Entities;
 
-namespace NexaWork.Infrastructure.Configurations;
+namespace NexaWork.Infrastructure.Persistence.Configurations;
 
 public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 {
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
+        builder.ToTable("Organizations");
         builder.HasKey(o => o.OrganizationId);
 
         builder.Property(o => o.Name).IsRequired().HasMaxLength(150);
@@ -17,5 +18,12 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.Property(o => o.Description).HasMaxLength(2000);
         builder.Property(o => o.WebsiteUrl).HasMaxLength(255);
         builder.Property(o => o.OrganizationLogoUrl).HasMaxLength(255);
+
+
+         // Relationship: Organization → JobListings (1 - many)
+        builder.HasMany(x => x.JobListings)
+            .WithOne(j => j.Organization)
+            .HasForeignKey(j => j.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

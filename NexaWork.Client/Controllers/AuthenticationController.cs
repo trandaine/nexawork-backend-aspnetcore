@@ -10,7 +10,7 @@ using NexaWork.Application.DTOs.Authentication;
 using NexaWork.Domain.Constants;
 using NexaWork.Domain.Entities;
 using NexaWork.Domain.IdentityEntites;
-using NexaWork.Infrastructure;
+using NexaWork.Infrastructure.Persistence;
 
 namespace NexaWork.Client.Controllers
 {

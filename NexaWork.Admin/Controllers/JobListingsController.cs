@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Entities;
-using NexaWork.Infrastructure;
 using NexaWork.Admin.Models;
 using Serilog;
+using NexaWork.Infrastructure.Persistence;
 
 namespace NexaWork.Admin.Controllers
 {

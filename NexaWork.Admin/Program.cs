@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using NexaWork.Domain.IdentityEntites;
 using NexaWork.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using NexaWork.Infrastructure.Data.Seedings;
+using NexaWork.Infrastructure.Persistence;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<NexaWorkDbContext>();
+// builder.Services.AddDbContext<NexaWorkDbContext>();
 
 // builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NexaWorkDbIdentityContext>();
-builder.Services.AddDbContext<NexaWorkDbIdentityContext>();
+// builder.Services.AddDbContext<NexaWorkDbIdentityContext>();
+
+builder.Services.AddInfrastructureServices();
 
 
 
