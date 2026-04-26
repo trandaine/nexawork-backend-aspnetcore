@@ -2,6 +2,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
+using NexaWork.Application.Features.Client.Organization.Queries;
+using NexaWork.Application.Features.Client.Organization.Queries.GetAll;
+using NexaWork.Application.Features.Client.Organization.Queries.GetById;
 
 namespace NexaWork.Client.Controllers
 {
@@ -22,25 +25,26 @@ namespace NexaWork.Client.Controllers
         }
 
         // GET: api/Organizations
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<Organization>>> GetOrganizations()
-        // {
-        //     return await _context.Organizations.ToListAsync();
-        // }
+        [HttpGet]
+        public async Task<ActionResult<List<OrganizationQueryDto>>> GetAll()
+        {
+            var result = await _mediator.Send(new GetAllOrganizationsQuery());
+            return Ok(result);
+        }
+
 
         // GET: api/Organizations/5
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<Organization>> GetOrganization(Guid id)
-        // {
-        //     var organization = await _context.Organizations.FindAsync(id);
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<OrganizationQueryDto>> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetOrganizationByIdQuery(id));
 
-        //     if (organization == null)
-        //     {
-        //         return NotFound();
-        //     }
+            if (result == null)
+                return NotFound();
 
-        //     return organization;
-        // }
+            return Ok(result);
+        }
+
 
         // PUT: api/Organizations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -75,13 +79,6 @@ namespace NexaWork.Client.Controllers
 
         // POST: api/Organizations
         [HttpPost]
-        // public async Task<ActionResult<Organization>> PostOrganization(Organization organization)
-        // {
-        //     _context.Organizations.Add(organization);
-        //     await _context.SaveChangesAsync();
-
-        //     return CreatedAtAction("GetOrganization", new { id = organization.OrganizationId }, organization);
-        // }
         public async Task<ActionResult<Guid>> Create(CreateOrganizationCommand command)
         {
             var organizationId = await _mediator.Send(command);
