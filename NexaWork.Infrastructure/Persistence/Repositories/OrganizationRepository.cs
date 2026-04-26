@@ -25,7 +25,17 @@ internal class OrganizationRepository : IOrganizationRepository
         return await _context.Organizations
             // We use AsNoTracking() here because this method is currently 
             // designed for the Read (Query) side of CQRS.
+            // Note: The implementation should use .AsNoTracking() since this is for read-only operations.
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.OrganizationId == id, cancellationToken);
     }
+
+    public async Task<List<Organization>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Organizations
+        .AsNoTracking()
+        // .OrderByDescending(o => o.FoundedDate)
+        .ToListAsync(cancellationToken);
+    }
+
 }

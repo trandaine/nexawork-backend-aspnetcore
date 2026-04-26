@@ -1,6 +1,3 @@
-using System;
-using FluentValidation;
-using NexaWork.Application.Features.Client.Organization.Commands.Create;
 using NexaWork.Client.Extensions.Services;
 
 namespace NexaWork.Client.Extensions;

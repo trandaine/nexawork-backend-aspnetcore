@@ -1,15 +1,12 @@
+using System;
+using Microsoft.Extensions.DependencyInjection;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
 
-namespace NexaWork.Client.Extensions.Services;
+namespace NexaWork.Application;
 
-public static class MediatRRegistration
+public static class DependencyInjection
 {
-    /// <summary>
-    /// Registers MediatR services by scanning the assembly for handlers, requests, and notifications. 
-    /// </summary>
-    /// <param name="services"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddMediatRServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddMediatR(cfg =>
         {
@@ -18,8 +15,9 @@ public static class MediatRRegistration
 
             // cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
-
+        
+        
+        
         return services;
     }
-
 }

@@ -1,4 +1,3 @@
-using System;
 using NexaWork.Domain.Entities;
 
 namespace NexaWork.Application.Common.Interfaces.Repositories;
@@ -16,10 +15,18 @@ public interface IOrganizationRepository
 
     /// <summary>
     /// Retrieves an Organization by its unique ID.
-    /// Note: The implementation should use .AsNoTracking() since this is for read-only operations.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Organization?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+
+    /// <summary>
+    /// Retrieves all Organizations.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<Organization>> GetAllAsync(CancellationToken cancellationToken);
+
 }

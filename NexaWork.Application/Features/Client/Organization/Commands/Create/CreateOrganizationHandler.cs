@@ -57,15 +57,15 @@ public class CreateOrganizationHandler : IRequestHandler<CreateOrganizationComma
         //     request.FoundedDate
         // );
 
-        var organization = new NexaWork.Domain.Entities.Organization(request.Name);
-        
-        organization.UpdateDetails(
+        var organization = NexaWork.Domain.Entities.Organization.Create(
+            request.Name,
             request.Industry,
             request.Location,
             request.Description,
             request.WebsiteUrl,
             request.OrganizationLogoUrl,
-            request.FoundedDate);
+            request.FoundedDate
+        );
 
         // 2. Track in memory
         _repository.Add(organization);

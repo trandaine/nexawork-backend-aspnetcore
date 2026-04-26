@@ -8,7 +8,6 @@
     <Folder Include="Common/Behaviors/" />
     <Folder Include="Common/Exceptions/" />
     <Folder Include="Common/Interfaces/Repositories/" />
-    <Folder Include="Features/" />
     <Folder Include="Features/Client/Customers/Commands/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
     <Folder Include="Features/Client/Customers/Commands/Delete/" />
@@ -16,12 +15,11 @@
     <Folder Include="Features/Client/Customers/Queries/" />
     <Folder Include="Features/Client/Customers/Queries/Get/" />
     <Folder Include="Features/Client/Customers/Queries/GetById/" />
-    <Folder Include="Features/Client/Organization/" />
     <Folder Include="Features/Client/Organization/Commands/" />
     <Folder Include="Features/Client/Organization/Commands/Create/" />
     <Folder Include="Features/Client/Organization/Commands/Delete/" />
     <Folder Include="Features/Client/Organization/Commands/Update/" />
-    <Folder Include="Features/Client/Organization/Queries/" />
+    <Folder Include="Features/Client/Organization/Queries/GetById/" />
   </ItemGroup>
 
   <ItemGroup>

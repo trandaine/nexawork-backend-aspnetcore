@@ -34,33 +34,25 @@ public class Organization
     private Organization() { }
 
     // Business constructor
-    public Organization(string name)
+    public static Organization Create(
+        string name, string? industry, string? location, 
+        string? description, string? websiteUrl, 
+        string? logoUrl, DateTime? foundedDate)
     {
-        OrganizationId = Guid.NewGuid();
-        SetName(name);
-    }
-
-    public void SetName(string name)
-    {
+        // Example of domain logic/validation
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Organization name is required");
+            throw new ArgumentException("Organization name cannot be empty.");
 
-        Name = name;
-    }
-
-    public void UpdateDetails(
-        string? industry,
-        string? location,
-        string? description,
-        string? websiteUrl,
-        string? logoUrl,
-        DateTime? foundedDate)
-    {
-        Industry = industry;
-        Location = location;
-        Description = description;
-        WebsiteUrl = websiteUrl;
-        OrganizationLogoUrl = logoUrl;
-        FoundedDate = foundedDate;
+        return new Organization
+        {
+            OrganizationId = Guid.NewGuid(),
+            Name = name,
+            Industry = industry,
+            Location = location,
+            Description = description,
+            WebsiteUrl = websiteUrl,
+            OrganizationLogoUrl = logoUrl,
+            FoundedDate = foundedDate
+        };
     }
 }
