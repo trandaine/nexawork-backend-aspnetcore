@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NexaWork.Infrastructure;
-using NexaWork.Client.Extensions;
 using NexaWork.Infrastructure.Persistence;
+using NexaWork.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,99 +21,15 @@ builder.Services.AddSwaggerGen();
 
 
 
-
-builder.Services.AddInfrastructureServices();
-
-
-
-// Register Isender for MediatR
-// builder.Services.AddMediatR(cfg =>
-//     cfg.RegisterServicesFromAssembly(typeof(CreateOrganizationCommand).Assembly));
-
+// Register infrastructure services
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Register application services
 builder.Services.AddApplicationServices();
 
 
+#region Client API Services
 
-builder.Services.AddDbContext<NexaWorkDbIdentityContext>(options =>
-{
-    // Configure Entity Framework Core to use SQL Server.
-    // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-    // Register the entity sets needed by OpenIddict.
-    options.UseOpenIddict();
-});
-
-
-
-#region Identity Services
-
-
-builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options =>
-{
-    // Sign-in settings
-    options.SignIn.RequireConfirmedAccount = false; // Cho phép đăng nhập mà không cần xác nhận email
-    // Password settings
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    // Lockout settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-    // User settings
-    options.User.RequireUniqueEmail = true;
-    // Sign-in settings
-    options.SignIn.RequireConfirmedEmail = false;  // Sign in không cần confirm email
-    options.SignIn.RequireConfirmedPhoneNumber = false;
-})
-    .AddEntityFrameworkStores<NexaWorkDbIdentityContext>()
-    .AddDefaultTokenProviders();
-
-
-
-// Cấu hình OpenIddict
-builder.Services.AddOpenIddict()
-    // Register the OpenIddict core components.
-    .AddCore(options =>
-    {
-        // Configure OpenIddict to use the Entity Framework Core stores and models.
-        options.UseEntityFrameworkCore()
-               .UseDbContext<NexaWorkDbIdentityContext>();
-    })
-    // Register the OpenIddict server components.
-    .AddServer(options =>
-    {
-        // Enable the authorization and token endpoints.
-        options.SetAuthorizationEndpointUris("connect/authorize")
-               .SetTokenEndpointUris("connect/token");
-
-        // Enable the Authorization Code Flow with PKCE (The most secure standard)
-        options.AllowAuthorizationCodeFlow();
-
-        // 
-        options.AllowPasswordFlow();
-
-        // Register the signing and encryption credentials.
-        // NOTE: For development, we use ephemeral keys. For production, you need a real certificate.
-        options.AddDevelopmentEncryptionCertificate()
-               .AddDevelopmentSigningCertificate();
-
-        // Register the ASP.NET Core host and configure the options.
-        options.UseAspNetCore()
-               .EnableAuthorizationEndpointPassthrough()
-               .EnableTokenEndpointPassthrough();
-    })
-    // Register the OpenIddict validation components.
-    .AddValidation(options =>
-    {
-        // Import the configuration from the local OpenIddict server instance.
-        options.UseLocalServer();
-        options.UseAspNetCore();
-    });
 
 builder.Services.AddCors(options =>
 {
@@ -126,8 +42,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials(); // Crucial for accepting the authentication cookie
     });
 });
-
-
 
 
 builder.Services.AddAuthentication(options =>
@@ -151,18 +65,7 @@ builder.Services.AddAuthentication(options =>
 #endregion
 
 
-
-
-
-
 var app = builder.Build();
-
-
-
-
-
-
-
 
 
 
