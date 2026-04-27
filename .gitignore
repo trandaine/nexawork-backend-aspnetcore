@@ -29,7 +29,6 @@ publish/
 wwwroot/dist/
 
 # Entity Framework
-Migrations/
 
 # App settings (sensitive)
 appsettings.Development.json
