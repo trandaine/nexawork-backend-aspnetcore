@@ -137,6 +137,8 @@ obj/
 *.suo
 *.log
 *.db
+**/bin/
+
 
 # ===== REACT =====
 build/
