@@ -17,3 +17,4 @@ public record UpdateOrganizationCommand(
     string? WebsiteUrl,
     string? LogoUrl,
     DateTime? FoundedDate) : IRequest;
+

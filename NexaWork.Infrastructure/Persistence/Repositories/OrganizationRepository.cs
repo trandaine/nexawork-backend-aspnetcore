@@ -51,4 +51,9 @@ internal class OrganizationRepository : IOrganizationRepository
     {
         _context.Organizations.Update(organization);
     }
+
+    public void Remove(Organization organization)
+    {
+        _context.Organizations.Remove(organization);
+    }
 }

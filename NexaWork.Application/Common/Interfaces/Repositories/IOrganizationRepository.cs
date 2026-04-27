@@ -19,6 +19,13 @@ public interface IOrganizationRepository
     /// <param name="organization"></param>
     void Update(Organization organization);
 
+
+    /// <summary>
+    /// Removes an Organization from the repository.
+    /// </summary>
+    /// <param name="organization"></param>
+    void Remove(Organization organization);
+
     /// <summary>
     /// Retrieves an Organization by its unique ID for update purposes.
     /// </summary>

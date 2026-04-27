@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
+using NexaWork.Application.Features.Client.Organization.Commands.Delete;
 using NexaWork.Application.Features.Client.Organization.Commands.Update;
 using NexaWork.Application.Features.Client.Organization.Queries;
 using NexaWork.Application.Features.Client.Organization.Queries.GetAll;
@@ -13,15 +13,12 @@ namespace NexaWork.Client.Controllers
     [ApiController]
     public class OrganizationsController : ControllerBase
     {
-        private readonly INexaWorkDbContext _context;
         private readonly ISender _mediator;
 
         public OrganizationsController(
-            ISender mediator,
-            INexaWorkDbContext context
+            ISender mediator
             )
         {
-            _context = context;
             _mediator = mediator;
         }
 
@@ -72,24 +69,14 @@ namespace NexaWork.Client.Controllers
         }
 
         // DELETE: api/Organizations/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteOrganization(Guid id)
-        // {
-        //     var organization = await _context.Organizations.FindAsync(id);
-        //     if (organization == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     _context.Organizations.Remove(organization);
-        //     await _context.SaveChangesAsync();
-
-        //     return NoContent();
-        // }
-
-        private bool OrganizationExists(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return _context.Organizations.Any(e => e.OrganizationId == id);
+            var command = new DeleteOrganizationCommand(id);
+            await _mediator.Send(command);
+
+            return NoContent();
         }
+
     }
 }

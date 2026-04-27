@@ -1,14 +1,10 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.Constants;
-using NexaWork.Domain.IdentityEntites;
 using NexaWork.Infrastructure.Data.Seedings;
 using NexaWork.Infrastructure.Data.Seedings.Authentications;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NexaWork.Infrastructure;
-using NexaWork.Infrastructure.Persistence;
 using NexaWork.Application;
 
 var builder = WebApplication.CreateBuilder(args);
