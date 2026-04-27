@@ -4,7 +4,7 @@ namespace NexaWork.Domain.Entities;
 
 public class Organization
 {
-    
+
     // public Guid OrganizationId { get; set; }
     // public string Name { get; set; } = string.Empty;
     // public string? Industry { get; set; }
@@ -35,8 +35,8 @@ public class Organization
 
     // Business constructor
     public static Organization Create(
-        string name, string? industry, string? location, 
-        string? description, string? websiteUrl, 
+        string name, string? industry, string? location,
+        string? description, string? websiteUrl,
         string? logoUrl, DateTime? foundedDate)
     {
         // Example of domain logic/validation
@@ -54,5 +54,24 @@ public class Organization
             OrganizationLogoUrl = logoUrl,
             FoundedDate = foundedDate
         };
+    }
+
+
+    public void Update(
+    string name,
+    string? industry,
+    string? location,
+    string? description,
+    string? websiteUrl,
+    string? logoUrl,
+    DateTime? foundedDate)
+    {
+        Name = name;
+        Industry = industry;
+        Location = location;
+        Description = description;
+        WebsiteUrl = websiteUrl;
+        OrganizationLogoUrl = logoUrl;
+        FoundedDate = foundedDate;
     }
 }

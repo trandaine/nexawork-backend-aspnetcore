@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
+using NexaWork.Application.Features.Client.Organization.Commands.Update;
 using NexaWork.Application.Features.Client.Organization.Queries;
 using NexaWork.Application.Features.Client.Organization.Queries.GetAll;
 using NexaWork.Application.Features.Client.Organization.Queries.GetById;
@@ -48,34 +49,19 @@ namespace NexaWork.Client.Controllers
 
         // PUT: api/Organizations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutOrganization(Guid id, Organization organization)
-        // {
-        //     if (id != organization.OrganizationId)
-        //     {
-        //         return BadRequest();
-        //     }
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrganizationCommand command)
+        {
+            if (id != command.OrganizationId)
+            {
+                return BadRequest("ID in URL does not match ID in request body");
+            }
 
-        //     _context.Entry(organization).State = EntityState.Modified;
+            await _mediator.Send(command);
+            return NoContent(); // Return 204 No Content to indicate successful update without returning data
 
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!OrganizationExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
+        }
 
-        //     return NoContent();
-        // }
 
         // POST: api/Organizations
         [HttpPost]
