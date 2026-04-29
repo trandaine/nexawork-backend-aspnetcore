@@ -24,8 +24,11 @@ public class DeleteOrganizationHandler : IRequestHandler<DeleteOrganizationComma
         {
             throw new Exception($"Organization with ID {request.OrganizationId} not found");
         }
+        // Soft delete
+        organization.MarkAsDeleted();
 
-        _repository.Remove(organization);
+        // _repository.Remove(organization);
+        _repository.Update(organization);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     }

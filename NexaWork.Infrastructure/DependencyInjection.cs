@@ -37,7 +37,7 @@ public static class DependencyInjection
         {
             // Sign-in settings
             options.SignIn.RequireConfirmedAccount = false; // Cho phép đăng nhập mà không cần xác nhận email
-                                                            // Password settings
+            // Password settings
             options.Password.RequireDigit = true;
             options.Password.RequiredLength = 8;
             options.Password.RequireNonAlphanumeric = false;

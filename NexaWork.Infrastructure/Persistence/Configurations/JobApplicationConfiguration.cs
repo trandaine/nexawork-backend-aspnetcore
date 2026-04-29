@@ -13,12 +13,12 @@ public class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplicati
 
         builder.Property(ja => ja.ResumeUrl).IsRequired().HasMaxLength(255);
         builder.Property(ja => ja.CoverLetter).HasMaxLength(2000);
-
+        builder.HasQueryFilter(ja => !ja.IsDeleted);
         builder.HasOne(ja => ja.JobListing)
-               .WithMany(jl => jl.Applications)
+               .WithMany(jl => jl.JobApplications)
                .HasForeignKey(ja => ja.JobListingId)
                .OnDelete(DeleteBehavior.Cascade);
-
+        builder.HasQueryFilter(ja => !ja.IsDeleted);
         builder.HasOne(ja => ja.Customer)
                .WithMany(c => c.JobApplications)
                .HasForeignKey(ja => ja.CustomerId)

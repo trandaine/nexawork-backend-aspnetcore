@@ -108,6 +108,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => "NexaWork Identity Provider is running.");
+// app.MapGet("/swagger/index.html", () => "Redirecting to Swagger UI...").ExcludeFromDescription();
 
 app.MapControllers();
 
