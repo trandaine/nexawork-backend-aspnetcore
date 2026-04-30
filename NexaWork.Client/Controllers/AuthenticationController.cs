@@ -100,28 +100,29 @@ namespace NexaWork.Client.Controllers
         /// </summary>
         /// <param name="userId">ID của người dùng Identity</param>
         /// <returns>True nếu tạo thành công, ngược lại là False</returns>
-        private async Task<bool> CreateNewCustomer(string userId)
-        {
-            bool isOk = false;
-            try
-            {
-                // Tạo một Customer mới với UserId vừa tạo
-                var newCustomer = new Customer
-                {
-                    CustomerId = Guid.NewGuid(),
-                    IdentityUserId = userId
-                };
-                await _nexaWorkDbContext.AddAsync(newCustomer);
-                await _nexaWorkDbContext.SaveChangesAsync();
-                isOk = true;
-            }
-            catch (System.Exception)
-            {
+        /// Note: Quay trở lại làm hàm Create customer sau khi test xong phần tạo bài Post.
+        // private async Task<bool> CreateNewCustomer(string userId)
+        // {
+        //     bool isOk = false;
+        //     try
+        //     {
+        //         // Tạo một Customer mới với UserId vừa tạo
+        //         var newCustomer = new Customer
+        //         {
+        //             CustomerId = Guid.NewGuid(),
+        //             IdentityUserId = userId
+        //         };
+        //         await _nexaWorkDbContext.AddAsync(newCustomer);
+        //         await _nexaWorkDbContext.SaveChangesAsync();
+        //         isOk = true;
+        //     }
+        //     catch (System.Exception)
+        //     {
 
-            }
+        //     }
 
-            return isOk;
-        }
+        //     return isOk;
+        // }
 
 
 
@@ -152,23 +153,25 @@ namespace NexaWork.Client.Controllers
             // vì hàm này chỉ kiểm tra tính hợp lệ mà không tạo Cookie đăng nhập (rất phù hợp cho API dùng JWT)
             // Tham số lockoutOnFailure: true sẽ tự động đếm số lần sai và khóa tài khoản nếu vượt quá giới hạn
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, lockoutOnFailure: true);
-            
+
 
             // Sau khi đăng nhập thành công, kiểm tra xem đã có Customer nào liên kết với IdentityUser này chưa
             var customer = await _nexaWorkDbContext.Customers.FirstOrDefaultAsync(c => c.IdentityUserId.Equals(user.Id));
-            if (customer == null){
-                // Nếu chưa tồn tại Customer nào liên kết với IdentityUser này, tạo mới một Customer
-                var createCustomerResult = await CreateNewCustomer(user.Id);
-                if (!createCustomerResult)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO
-                    {
-                        Success = false,
-                        Message = "Đăng nhập thất bại do lỗi hệ thống. Vui lòng thử lại."
-                    });
-                }
-            }
-            
+
+            // Note: Phần này tạm thời chưa tạo Customer mới nếu chưa tồn tại, vì còn phụ thuộc vào phần tạo bài Post. Sau khi test xong phần tạo bài Post, sẽ quay lại hoàn thiện phần này.
+            // if (customer == null){
+            //     // Nếu chưa tồn tại Customer nào liên kết với IdentityUser này, tạo mới một Customer
+            //     var createCustomerResult = await CreateNewCustomer(user.Id);
+            //     if (!createCustomerResult)
+            //     {
+            //         return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO
+            //         {
+            //             Success = false,
+            //             Message = "Đăng nhập thất bại do lỗi hệ thống. Vui lòng thử lại."
+            //         });
+            //     }
+            // }
+
 
 
             if (result.Succeeded)

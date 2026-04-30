@@ -54,46 +54,46 @@ namespace NexaWork.Admin.Controllers
         // POST: JobListings/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(JobListingViewModel jobListingViewModel)
-        {
-            if (ModelState.IsValid)
-            {
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create(JobListingViewModel jobListingViewModel)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
 
-                try
-                {
-                    var jobListing = new JobListing
-                    {
-                        JobListingId = jobListingViewModel.JobListingId,
-                        OrganizationId = jobListingViewModel.OrganizationId,
-                        Title = jobListingViewModel.Title,
-                        Description = jobListingViewModel.Description,
-                        Requirements = jobListingViewModel.Requirements,
-                        Location = jobListingViewModel.Location,
-                        EmploymentType = jobListingViewModel.EmploymentType,
-                        SalaryRange = jobListingViewModel.SalaryRange,
-                        ContactEmail = jobListingViewModel.ContactEmail,
-                        CreatedAt = jobListingViewModel.CreatedAt,
-                        UpdatedAt = jobListingViewModel.UpdatedAt,
-                        IsActive = jobListingViewModel.IsActive
-                    };
-                    jobListing.JobListingId = Guid.NewGuid();
-                    _context.Add(jobListing);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (System.Exception ex)
-                {
+        //         try
+        //         {
+        //             var jobListing = new JobListing
+        //             {
+        //                 JobListingId = jobListingViewModel.JobListingId,
+        //                 OrganizationId = jobListingViewModel.OrganizationId,
+        //                 Title = jobListingViewModel.Title,
+        //                 Description = jobListingViewModel.Description,
+        //                 Requirements = jobListingViewModel.Requirements,
+        //                 Location = jobListingViewModel.Location,
+        //                 EmploymentType = jobListingViewModel.EmploymentType,
+        //                 SalaryRange = jobListingViewModel.SalaryRange,
+        //                 ContactEmail = jobListingViewModel.ContactEmail,
+        //                 CreatedAt = jobListingViewModel.CreatedAt,
+        //                 UpdatedAt = jobListingViewModel.UpdatedAt,
+        //                 IsActive = jobListingViewModel.IsActive
+        //             };
+        //             jobListing.JobListingId = Guid.NewGuid();
+        //             _context.Add(jobListing);
+        //             await _context.SaveChangesAsync();
+        //             return RedirectToAction(nameof(Index));
+        //         }
+        //         catch (System.Exception ex)
+        //         {
 
-                    Log.Information("CREATE error in JobListingsController: {Message}", ex.Message);
-                }
+        //             Log.Information("CREATE error in JobListingsController: {Message}", ex.Message);
+        //         }
 
 
-            }
-            ViewData["OrganizationId"] = new SelectList(_context.Organizations, "OrganizationId", "Name", jobListingViewModel.OrganizationId);
-            return View(jobListingViewModel);
-        }
+        //     }
+        //     ViewData["OrganizationId"] = new SelectList(_context.Organizations, "OrganizationId", "Name", jobListingViewModel.OrganizationId);
+        //     return View(jobListingViewModel);
+        // }
 
         // GET: JobListings/Edit/5
         public async Task<IActionResult> Edit(Guid? id)

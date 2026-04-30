@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NexaWork.Infrastructure;
 using NexaWork.Application;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,41 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
+
+
+// builder.Services.AddAuthentication().AddJwtBearer();
+// builder.Services.AddAuthorization();
+
+
+
+
+
+
+
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "NexaWork API", Version = "v1" });
+
+    // 1. Modern OpenAPI 3.0 definition
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste your raw JWT Token here. Swagger will automatically add 'Bearer ' to the request."
+    });
+
+    // 2. Global Security Requirement
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        // Notice how we pass the "document" parameter here now
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+    });
+});
 
 
 
@@ -100,6 +136,25 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+var sharedStoragePath = Path.GetFullPath(builder.Configuration.GetValue<string>("Storage:SharedFolderPath") ?? "../SharedStorage");
+
+// Ensure it exists when the API starts up
+if (!Directory.Exists(sharedStoragePath))
+{
+    Directory.CreateDirectory(sharedStoragePath);
+}
+
+// 2. ⚡ CRITICAL: Map the physical folder to a web URL
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(sharedStoragePath),
+    RequestPath = "/uploads" // This matches the string returned in our Service!
+});
+
+
+
 
 
 app.UseCors();

@@ -7,6 +7,8 @@ using NexaWork.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using NexaWork.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
+using NexaWork.Application.Common.Interfaces.Services;
+using NexaWork.Infrastructure.Services;
 
 namespace NexaWork.Infrastructure;
 
@@ -114,6 +116,11 @@ public static class DependencyInjection
         // 3. Register your Repositories
         // We use AddScoped so a new instance is created once per HTTP request.
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+        // 4. Register your Services
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         return services;
     }
