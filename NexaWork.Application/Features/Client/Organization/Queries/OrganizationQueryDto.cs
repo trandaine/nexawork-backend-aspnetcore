@@ -2,7 +2,7 @@ using System;
 
 namespace NexaWork.Application.Features.Client.Organization.Queries;
 
-public record OrganizationQueryDto
+public record OrganizationQueryDTO
 (
     Guid OrganizationId,
     string Name,

@@ -35,4 +35,29 @@ public class Customer
     public virtual ICollection<JobApplication> JobApplications { get; private set; } = new Collection<JobApplication>();
 
     #endregion
+
+    private Customer() { }
+
+    public static Customer Create(
+        string identityUserId
+        )
+    {
+        return new Customer
+        {
+            CustomerId = Guid.NewGuid(),
+            IdentityUserId = identityUserId,
+
+        };
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

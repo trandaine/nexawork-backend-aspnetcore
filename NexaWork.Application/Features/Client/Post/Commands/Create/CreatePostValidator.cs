@@ -5,6 +5,8 @@ namespace NexaWork.Application.Features.Client.Post.Commands.Create;
 
 public class CreatePostValidator : AbstractValidator<CreatePostCommand>
 {
+    private readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".mp4" };
+
     public CreatePostValidator()
     {
         RuleFor(p => p.CustomerId)
@@ -12,12 +14,6 @@ public class CreatePostValidator : AbstractValidator<CreatePostCommand>
 
         RuleFor(p => p.Content)
             .MaximumLength(3000).WithMessage("Post content cannot exceed 3000 characters.");
-
-        // RuleFor(p => p.MediaFile)
-        //     .Must(file => file == null || Uri.TryCreate(file.FileName, UriKind.Absolute, out _))
-        //     .WithMessage("Media file must be a valid format.");
-
-
 
         RuleFor(p => p.Visibility)
             .IsInEnum().WithMessage("Invalid visibility level.");

@@ -47,19 +47,19 @@ namespace NexaWork.Admin.Controllers
         // POST: Customers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,IdentityUserId,FirstName,LastName,Headline,Summary,Location,ProfilePictureUrl,BackgroundPictureUrl")] Customer customer)
-        {
-            if (ModelState.IsValid)
-            {
-                customer.CustomerId = Guid.NewGuid();
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(customer);
-        }
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create([Bind("CustomerId,IdentityUserId,FirstName,LastName,Headline,Summary,Location,ProfilePictureUrl,BackgroundPictureUrl")] Customer customer)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         customer.CustomerId = Guid.NewGuid();
+        //         _context.Add(customer);
+        //         await _context.SaveChangesAsync();
+        //         return RedirectToAction(nameof(Index));
+        //     }
+        //     return View(customer);
+        // }
 
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(Guid? id)

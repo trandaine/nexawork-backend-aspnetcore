@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
 using NexaWork.Application.Features.Client.Organization.Commands.Delete;
@@ -11,6 +12,7 @@ namespace NexaWork.Client.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrganizationsController : ControllerBase
     {
         private readonly ISender _mediator;
@@ -24,7 +26,7 @@ namespace NexaWork.Client.Controllers
 
         // GET: api/Organizations
         [HttpGet]
-        public async Task<ActionResult<List<OrganizationQueryDto>>> GetAll()
+        public async Task<ActionResult<List<OrganizationQueryDTO>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllOrganizationsQuery());
             return Ok(result);
@@ -33,7 +35,7 @@ namespace NexaWork.Client.Controllers
 
         // GET: api/Organizations/5
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<OrganizationQueryDto>> GetById(Guid id)
+        public async Task<ActionResult<OrganizationQueryDTO>> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetOrganizationByIdQuery(id));
 

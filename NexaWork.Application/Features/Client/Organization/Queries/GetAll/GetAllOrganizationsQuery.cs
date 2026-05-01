@@ -8,4 +8,4 @@ namespace NexaWork.Application.Features.Client.Organization.Queries.GetAll;
 
 // }
 
-public record GetAllOrganizationsQuery() : IRequest<List<OrganizationQueryDto>>;
+public record GetAllOrganizationsQuery() : IRequest<List<OrganizationQueryDTO>>;

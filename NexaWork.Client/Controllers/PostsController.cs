@@ -53,14 +53,12 @@ namespace NexaWork.Client.Controllers
 
             // Send the command to the application layer
             var command = new CreatePostCommand(
-                userIdClaim, // Pass the IdentityUserId (string) instead of
+                userIdClaim, // Pass the IdentityUserId (string)
                 customerId,
                 request.Content,
                 fileDto,
                 request.Visibility
             );
-
-
 
             var postId = await _mediator.Send(command);
             return Ok(postId);
