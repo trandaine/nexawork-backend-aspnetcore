@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using NexaWork.Application.DTOs.Authentication;
 using NexaWork.Domain.Constants;
-using NexaWork.Domain.Entities;
 using NexaWork.Domain.IdentityEntites;
 using NexaWork.Infrastructure.Persistence;
 using MediatR;
