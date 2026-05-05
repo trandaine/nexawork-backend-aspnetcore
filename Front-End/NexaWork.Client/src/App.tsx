@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
+// import SignIn from "./pages/AuthPages/SignIn";
+// import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -18,63 +18,107 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import ProtectedRoute from "./components/layout/ProtectedRoute";
-import ForgotPassword from "./pages/AuthPages/ForgotPassword";
-import ResetPassword from "./pages/AuthPages/ResetPassword";
+// import ForgotPassword from "./pages/AuthPages/ForgotPassword";
+// import ResetPassword from "./pages/AuthPages/ResetPassword";
+import { AuthProvider, useAuth } from "react-oidc-context";
+import ProtectedRoute from "./routes/ProtectedRoute";
+
+
+const oidcConfig = {
+  authority: "https://localhost:7036", // Your Auth Server URL
+  client_id: "nexawork_react_web",
+  redirect_uri: "http://localhost:5173/callback/login",
+  response_type: "code",
+  scope: "openid profile api",
+  post_logout_redirect_uri: "http://localhost:5173/callback/logout",
+};
+
+function LoginCallback() {
+  const auth = useAuth();
+
+  if (auth.isLoading) {
+    return <div>Processing login...</div>;
+  }
+  if (auth.error) {
+    return <div>Oops... {auth.error.message}</div>;
+  }
+  if (auth.isAuthenticated) {
+    // Successfully logged in! Redirect them to the dashboard or home
+    window.location.replace("/dashboard");
+  }
+
+  return <div>Redirecting...</div>;
+}
+
+/**
+ * Handle the logout callback. This is where the user will be redirected after they log out from the Auth Server.
+ * @returns 
+ */
+function LogoutCallback() {
+  // Clear any leftover manual state if you have any, then redirect to home
+  window.location.replace("/");
+  return <div>Logging you out completely...</div>;
+}
 
 export default function App() {
   return (
     <>
-      <Router>
-        <ScrollToTop />
-        <Routes>
-          {/* Dashboard Layout */}
+      <AuthProvider {...oidcConfig}>
+
+        <Router>
+          <ScrollToTop />
+          <Routes>
+
+            <Route path="/callback/login" element={<LoginCallback />} />
+            <Route path="/callback/logout" element={<LogoutCallback />} />
+            {/* Dashboard Layout */}
+            {/* Auth Layout */}
+            {/* <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} /> */}
 
 
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route index path="/dashboard" element={<Home />} />
+                <Route index path="/" element={<Home />} />
 
+                {/* Others Page */}
+                <Route path="/profile" element={<UserProfiles />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/blank" element={<Blank />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route index path="/dashboard" element={<Home />} />
-              <Route index path="/" element={<Home />} />
+                {/* Forms */}
+                <Route path="/form-elements" element={<FormElements />} />
 
-              {/* Others Page */}
-              <Route path="/profile" element={<UserProfiles />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/blank" element={<Blank />} />
+                {/* Tables */}
+                <Route path="/basic-tables" element={<BasicTables />} />
 
-              {/* Forms */}
-              <Route path="/form-elements" element={<FormElements />} />
+                {/* Ui Elements */}
+                <Route path="/alerts" element={<Alerts />} />
+                <Route path="/avatars" element={<Avatars />} />
+                <Route path="/badge" element={<Badges />} />
+                <Route path="/buttons" element={<Buttons />} />
+                <Route path="/images" element={<Images />} />
+                <Route path="/videos" element={<Videos />} />
 
-              {/* Tables */}
-              <Route path="/basic-tables" element={<BasicTables />} />
-
-              {/* Ui Elements */}
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-
-              {/* Charts */}
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
+                {/* Charts */}
+                <Route path="/line-chart" element={<LineChart />} />
+                <Route path="/bar-chart" element={<BarChart />} />
+              </Route>
             </Route>
-          </Route>
 
 
 
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-          <Route path="/blank" element={<Blank />} />
-        </Routes>
-      </Router>
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
+            <Route path="/blank" element={<Blank />} />
+
+          </Routes>
+        </Router>
+      </AuthProvider>
+
     </>
   );
 }

@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="NexaWork.Application/NexaWork.Application.csproj" />
+  <Project Path="NexaWork.AuthServer/NexaWork.AuthServer.csproj" />
   <Project Path="NexaWork.Client/NexaWork.Client.csproj" />
   <Project Path="NexaWork.Domain/NexaWork.Domain.csproj" />
   <Project Path="NexaWork.Infrastructure/NexaWork.Infrastructure.csproj" />

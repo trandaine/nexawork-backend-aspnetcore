@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { forgotPasswordApi, loginUserApi, registerUserApi, resetPasswordApi } from './api';
 import { LoginCredentials, RegisterCredentials, ResetPasswordCredentials } from './types';
+import { useAuth } from 'react-oidc-context';
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ export const useLogin = () => {
       if (response.success && response.accessToken) {
         // 1. Lưu token
         localStorage.setItem('userToken', response.accessToken);
-        
+
         // 2. Chuyển hướng an toàn
         navigate('/dashboard');
       } else {
@@ -47,7 +48,7 @@ export const useRegister = () => {
   const register = async (credentials: RegisterCredentials) => {
     setIsLoading(true);
     setError(null);
-    setSuccessMsg(null); 
+    setSuccessMsg(null);
 
     try {
       const response = await registerUserApi(credentials);
@@ -77,18 +78,27 @@ export const useRegister = () => {
 
 
 export const useLogout = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+
+  const auth = useAuth();
 
   const logout = () => {
     // 1. Xóa token khỏi bộ nhớ trình duyệt
-    localStorage.removeItem('userToken');
-    
+    // localStorage.removeItem('userToken');
+
+    auth.signoutRedirect({
+      extraQueryParams: {
+        // Explicitly tell OpenIddict who is asking for the redirect
+        client_id: "nexawork_react_web"
+      }
+    }); // Kích hoạt quá trình đăng xuất của OIDC, sẽ tự động chuyển hướng về trang đăng nhập sau khi logout thành công
+
     // Nếu bạn có lưu thông tin user (như tên, email, role) vào localStorage, 
     // hãy xóa luôn ở đây. VD: localStorage.removeItem('userInfo');
 
     // 2. Điều hướng người dùng về trang đăng nhập
     // Dùng replace: true để họ không thể bấm nút Back trên trình duyệt quay lại trang cũ
-    navigate('/signin', { replace: true });
+    // navigate('/signin', { replace: true });
   };
 
   return { logout };
