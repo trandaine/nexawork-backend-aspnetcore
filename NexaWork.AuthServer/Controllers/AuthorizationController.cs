@@ -51,17 +51,15 @@ namespace NexaWork.AuthServer.Controllers
             // Create a new ClaimsPrincipal to hand over to OpenIddict
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
 
-            // Tell OpenIddict what scopes/permissions the token will have
-            // principal.SetScopes(request.GetScopes());
-            // principal.SetResources("nexawork_api"); // The audience name for your backend API
 
             // Explicitly set the core OpenIddict claims
             principal.SetClaim(OpenIddictConstants.Claims.Subject, await _userManager.GetUserIdAsync(user));
             principal.SetClaim(OpenIddictConstants.Claims.Email, await _userManager.GetEmailAsync(user));
             principal.SetClaim(OpenIddictConstants.Claims.Name, await _userManager.GetUserNameAsync(user));
+            // Tell OpenIddict what scopes/permissions the token will have
             principal.SetScopes(request.GetScopes());
 
-            principal.SetResources("nexawork_api");
+            principal.SetResources("nexawork_client_api"); // The audience name for your backend API which is used to access the resources.
 
             // Attach destinations to every claim so OpenIddict knows where to put them
             foreach (var claim in principal.Claims)

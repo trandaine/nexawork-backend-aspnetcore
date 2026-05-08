@@ -66,7 +66,8 @@ builder.Services.AddOpenIddict()
 
         // Define your OAuth2 endpoints
         options.SetAuthorizationEndpointUris("connect/authorize")
-               .SetTokenEndpointUris("connect/token");
+               .SetTokenEndpointUris("connect/token")
+               .SetIntrospectionEndpointUris("connect/introspect");
 
         // Enable the Authorization Code Flow with PKCE (Crucial for React/React Native)
         options.AllowAuthorizationCodeFlow()
@@ -87,6 +88,12 @@ builder.Services.AddOpenIddict()
                // Add signing certificate for JWT tokens (also for development)
                .AddDevelopmentSigningCertificate();
 
+
+        // Disable access token encryption (makes it easier to debug with tools like jwt.ms or jwt.io)
+        // OpenIddict to issue standard, readable JWTs instead of encrypted opaque tokens
+        // options.DisableAccessTokenEncryption();
+
+
         // Integrate with ASP.NET Core
         options.UseAspNetCore()
                .EnableTokenEndpointPassthrough()
@@ -102,9 +109,12 @@ builder.Services.AddOpenIddict()
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy("AllowAppsAccess", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Your exact React URL
+        policy.WithOrigins(
+            "http://localhost:5173", // React app
+            "https://localhost:7172" // Client API
+            )
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -120,7 +130,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.UseCors("AllowReactApp");
+app.UseCors("AllowAppsAccess");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -134,6 +144,8 @@ using (var scope = app.Services.CreateScope())
         await IdentityRoleDataSeeder.SeedRoleAsync(services);
         await IdentityUserDataSeeder.SeedAdminAsync(services);
         await OpenIddictDataSeeder.SeedClientAsync(services);
+        await OpenIddictDataSeeder.SeedSwaggerAPIClientAsync(services);
+        await OpenIddictDataSeeder.SeedClientAPIIntrospectionAsync(services);
     }
     catch (Exception ex)
     {
