@@ -14,7 +14,7 @@ builder.Services.AddControllersWithViews();
 // builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NexaWorkDbIdentityContext>();
 // builder.Services.AddDbContext<NexaWorkDbIdentityContext>();
 
-builder.Services.AddInfrastructureServices();
+//builder.Services.AddInfrastructureServices();
 
 
 

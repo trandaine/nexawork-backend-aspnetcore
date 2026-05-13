@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexaWork.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using NexaWork.Infrastructure.Persistence;
 namespace NexaWork.Infrastructure.Data.IdentityMigrations
 {
     [DbContext(typeof(NexaWorkDbIdentityContext))]
-    partial class NexaWorkDbIdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20260427055138_update_identity_database_changes")]
+    partial class update_identity_database_changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

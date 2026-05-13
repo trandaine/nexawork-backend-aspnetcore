@@ -6,7 +6,7 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="NexaWork SignIn"
+        title="NexaWork daikupe"
         description="Sign in to your NexaWork account to access your dashboard and manage your projects."
       />
       <AuthLayout>
