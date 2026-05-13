@@ -15,10 +15,12 @@ public class JobListingConfiguration : IEntityTypeConfiguration<JobListing>
         builder.Property(j => j.Location).HasMaxLength(150);
         builder.Property(j => j.SalaryRange).HasMaxLength(50);
         builder.Property(j => j.ContactEmail).HasMaxLength(100);
-        
+
         // No MaxLength defaults to nvarchar(max) for long text
-        builder.Property(j => j.Description).IsRequired(); 
+        builder.Property(j => j.Description).IsRequired();
         builder.Property(j => j.Requirements).IsRequired();
+
+        builder.HasQueryFilter(j => !j.IsDeleted);
 
         builder.HasOne(j => j.Organization)
                .WithMany(o => o.JobListings)

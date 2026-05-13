@@ -54,7 +54,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Connection", b =>
@@ -81,7 +81,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Connections", (string)null);
+                    b.ToTable("Connections");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Customer", b =>
@@ -128,7 +128,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.HasIndex("IdentityUserId")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.CustomerSkill", b =>
@@ -152,7 +152,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("CustomerSkills", (string)null);
+                    b.ToTable("CustomerSkills");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Education", b =>
@@ -191,7 +191,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Educations", (string)null);
+                    b.ToTable("Educations");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Experience", b =>
@@ -238,7 +238,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Experiences", (string)null);
+                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.JobApplication", b =>
@@ -257,6 +257,12 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("JobListingId")
                         .HasColumnType("uniqueidentifier");
 
@@ -274,7 +280,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("JobListingId");
 
-                    b.ToTable("JobApplications", (string)null);
+                    b.ToTable("JobApplications");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.JobListing", b =>
@@ -290,6 +296,9 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -298,6 +307,9 @@ namespace NexaWork.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Location")
@@ -327,7 +339,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("JobListings", (string)null);
+                    b.ToTable("JobListings");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Organization", b =>
@@ -335,6 +347,9 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.Property<Guid>("OrganizationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
@@ -346,6 +361,12 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.Property<string>("Industry")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsValidated")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Location")
                         .HasMaxLength(150)
@@ -359,6 +380,9 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.Property<string>("OrganizationLogoUrl")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("ValidatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("WebsiteUrl")
                         .HasMaxLength(255)
@@ -408,7 +432,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Reaction", b =>
@@ -440,7 +464,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Reactions", (string)null);
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Skill", b =>
@@ -460,7 +484,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasKey("SkillId");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Comment", b =>
@@ -558,7 +582,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("NexaWork.Domain.Entities.JobListing", "JobListing")
-                        .WithMany("Applications")
+                        .WithMany("JobApplications")
                         .HasForeignKey("JobListingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -643,7 +667,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaWork.Domain.Entities.JobListing", b =>
                 {
-                    b.Navigation("Applications");
+                    b.Navigation("JobApplications");
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Organization", b =>

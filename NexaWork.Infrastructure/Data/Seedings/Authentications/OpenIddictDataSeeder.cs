@@ -22,11 +22,11 @@ public class OpenIddictDataSeeder
                 // Không dùng Client Secret vì SPA (React) chạy trên trình duyệt, không bảo mật được secret
                 ConsentType = ConsentTypes.Implicit,
                 DisplayName = "NexaWork React Frontend",
-                
+
                 // Cấu hình URL mà OpenIddict sẽ trả JWT về sau khi login thành công
                 RedirectUris = { new Uri("http://localhost:5173/callback") },
                 PostLogoutRedirectUris = { new Uri("http://localhost:5173/") },
-                
+
                 // Cấp quyền sử dụng Authorization Code Flow với PKCE (Chuẩn bảo mật cao nhất hiện nay)
                 Permissions =
                 {

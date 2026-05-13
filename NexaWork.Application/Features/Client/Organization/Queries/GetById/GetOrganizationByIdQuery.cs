@@ -7,4 +7,5 @@ namespace NexaWork.Application.Features.Client.Organization.Queries.GetById;
 // {
 
 // }
-public record GetOrganizationByIdQuery(Guid Id) : IRequest<OrganizationQueryDto?>;
+public record GetOrganizationByIdQuery(Guid Id) : IRequest<OrganizationQueryDTO?>;
+

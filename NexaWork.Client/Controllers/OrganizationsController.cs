@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Features.Client.Organization.Commands.Create;
+using NexaWork.Application.Features.Client.Organization.Commands.Delete;
+using NexaWork.Application.Features.Client.Organization.Commands.Update;
 using NexaWork.Application.Features.Client.Organization.Queries;
 using NexaWork.Application.Features.Client.Organization.Queries.GetAll;
 using NexaWork.Application.Features.Client.Organization.Queries.GetById;
@@ -10,23 +12,21 @@ namespace NexaWork.Client.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrganizationsController : ControllerBase
     {
-        private readonly INexaWorkDbContext _context;
         private readonly ISender _mediator;
 
         public OrganizationsController(
-            ISender mediator,
-            INexaWorkDbContext context
+            ISender mediator
             )
         {
-            _context = context;
             _mediator = mediator;
         }
 
         // GET: api/Organizations
         [HttpGet]
-        public async Task<ActionResult<List<OrganizationQueryDto>>> GetAll()
+        public async Task<ActionResult<List<OrganizationQueryDTO>>> GetAll()
         {
             var result = await _mediator.Send(new GetAllOrganizationsQuery());
             return Ok(result);
@@ -35,7 +35,7 @@ namespace NexaWork.Client.Controllers
 
         // GET: api/Organizations/5
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<OrganizationQueryDto>> GetById(Guid id)
+        public async Task<ActionResult<OrganizationQueryDTO>> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetOrganizationByIdQuery(id));
 
@@ -48,34 +48,19 @@ namespace NexaWork.Client.Controllers
 
         // PUT: api/Organizations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutOrganization(Guid id, Organization organization)
-        // {
-        //     if (id != organization.OrganizationId)
-        //     {
-        //         return BadRequest();
-        //     }
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrganizationCommand command)
+        {
+            if (id != command.OrganizationId)
+            {
+                return BadRequest("ID in URL does not match ID in request body");
+            }
 
-        //     _context.Entry(organization).State = EntityState.Modified;
+            await _mediator.Send(command);
+            return NoContent(); // Return 204 No Content to indicate successful update without returning data
 
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!OrganizationExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
+        }
 
-        //     return NoContent();
-        // }
 
         // POST: api/Organizations
         [HttpPost]
@@ -86,24 +71,14 @@ namespace NexaWork.Client.Controllers
         }
 
         // DELETE: api/Organizations/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteOrganization(Guid id)
-        // {
-        //     var organization = await _context.Organizations.FindAsync(id);
-        //     if (organization == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     _context.Organizations.Remove(organization);
-        //     await _context.SaveChangesAsync();
-
-        //     return NoContent();
-        // }
-
-        private bool OrganizationExists(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return _context.Organizations.Any(e => e.OrganizationId == id);
+            var command = new DeleteOrganizationCommand(id);
+            await _mediator.Send(command);
+
+            return NoContent();
         }
+
     }
 }

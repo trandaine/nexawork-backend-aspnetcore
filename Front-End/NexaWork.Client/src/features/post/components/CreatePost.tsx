@@ -1,54 +1,103 @@
-export default function PostCard() {
+import React, { useState } from 'react';
+import { useCreatePost } from '../hook';
+import { PostVisibility } from '../types';
+
+export const CreatePostForm = () => {
+  // 1. Manage form input states
+  const [content, setContent] = useState('');
+  const [visibility, setVisibility] = useState<PostVisibility>(PostVisibility.Public);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+
+  // 2. Call the custom hook
+  const { handleCreatePost, isLoading, error, isSuccess } = useCreatePost();
+
+  // 3. Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setMediaFile(e.target.files[0]);
+    }
+  };
+
+  // 4. Handle form submission
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+
+    if (!content.trim()) {
+      alert('Please enter your post content!');
+      return;
+    }
+
+    const result = await handleCreatePost({
+      content,
+      visibility,
+      mediaFile,
+    });
+
+    if (result) {
+      // Reset form on success
+      setContent('');
+      setMediaFile(null);
+      setVisibility(PostVisibility.Public);
+      alert('Post created successfully!');
+    }
+  };
+
   return (
-    <div className="max-w-xl mx-auto bg-white border rounded-xl shadow-sm p-4">
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+      <form onSubmit={onSubmit}>
+        {/* Content Input */}
+        <textarea
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          rows={3}
+          placeholder="What do you want to talk about?"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          disabled={isLoading}
+        />
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="avatar"
-            className="w-10 h-10 rounded-full"
-          />
+        {/* Media attachment and Visibility settings */}
+        <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-4">
+            {/* File upload */}
+            <label className="cursor-pointer text-gray-500 hover:text-blue-600 flex items-center gap-1 text-sm">
+              <span>📷 Attach file</span>
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isLoading}
+              />
+            </label>
+            {mediaFile && <span className="text-xs text-green-600 truncate max-w-[100px]">{mediaFile.name}</span>}
 
-          <div>
-            <h2 className="font-semibold text-sm">Ooi Ming Ian</h2>
-            <p className="text-xs text-gray-500">
-              Graduate Student | University of Malaya
-            </p>
+            {/* Visibility Select */}
+            <select
+              className="text-sm border-gray-300 rounded-md focus:ring-blue-500 p-1"
+              value={visibility}
+              onChange={(e) => setVisibility(Number(e.target.value))}
+              disabled={isLoading}
+            >
+              <option value={PostVisibility.Public}>Anyone</option>
+              <option value={PostVisibility.Connections}>Connections only</option>
+              <option value={PostVisibility.Private}>Only me</option>
+            </select>
           </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isLoading || !content.trim()}
+            className={`px-4 py-2 rounded-lg text-white font-medium text-sm transition-colors ${
+              isLoading || !content.trim() ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {isLoading ? 'Posting...' : 'Post'}
+          </button>
         </div>
 
-        <button className="text-blue-600 font-medium text-sm hover:underline">
-          + Follow
-        </button>
-      </div>
-
-      {/* Time */}
-      <p className="text-xs text-gray-400 mt-2">8h • 🌐</p>
-
-      {/* Content */}
-      <p className="mt-3 text-sm text-gray-700">
-        We like to believe we’re rational, but much of our decision-making is
-        shaped by invisible psychological forces.
-      </p>
-
-      {/* Image */}
-      <div className="mt-3 border rounded-lg overflow-hidden">
-        <img
-          src="https://m.media-amazon.com/images/I/71Z4+F2lQ5L.jpg"
-          alt="book"
-          className="w-full object-cover"
-        />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-between text-gray-500 text-sm mt-3 pt-3 border-t">
-        <button className="hover:text-blue-600">👍 Like</button>
-        <button className="hover:text-blue-600">💬 Comment</button>
-        <button className="hover:text-blue-600">🔁 Repost</button>
-        <button className="hover:text-blue-600">📤 Send</button>
-      </div>
+        {/* Error Message */}
+        {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+      </form>
     </div>
   );
-}
+};

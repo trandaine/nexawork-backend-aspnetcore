@@ -28,6 +28,8 @@ packages/
 publish/
 wwwroot/dist/
 
+SharedStorage/
+
 # Entity Framework
 
 # App settings (sensitive)
