@@ -30,7 +30,8 @@ public class CustomerRepository : ICustomerRepository
     {
         return await _context.Customers
         .AsNoTracking()
-        .FirstOrDefaultAsync(c => c.IdentityUserId == identityUserId, cancellationToken);
+        // .FirstOrDefaultAsync(c => c.IdentityUserId == identityUserId, cancellationToken);
+        .FirstOrDefaultAsync(c => c.IdentityUserId.Equals(identityUserId), cancellationToken);
     }
 
     public async Task<List<Customer>> GetAllCustomerAsync(CancellationToken cancellationToken)

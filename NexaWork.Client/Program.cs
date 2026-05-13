@@ -4,6 +4,8 @@ using NexaWork.Application;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using OpenIddict.Validation.AspNetCore;
+using MassTransit;
+using NexaWork.Client.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,33 @@ builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.Authen
 builder.Services.AddAuthorization();
 
 
+// MassTransit with RabbitMQ (The Consumer)
+var rabbitMqSettings = builder.Configuration
+    .GetSection("RabbitMQ");
+builder.Services.AddMassTransit(x =>
+{
+    // Tell MassTransit about your consumer
+    x.AddConsumer<UserRegisteredEventConsumer>();
+    x.AddMediator();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(
+            rabbitMqSettings["Host"],
+            rabbitMqSettings["VirtualHost"],
+            h =>
+            {
+                // NOTE: Do NOT store production secrets directly in appsettings.json.
+                h.Username(rabbitMqSettings["Username"]!);
+                h.Password(rabbitMqSettings["Password"]!);
+            });
+
+        // Configure the specific queue this API will listen to
+        cfg.ReceiveEndpoint("customer-creation-queue", e =>
+        {
+            e.ConfigureConsumer<UserRegisteredEventConsumer>(context);
+        });
+    });
+});
 
 
 

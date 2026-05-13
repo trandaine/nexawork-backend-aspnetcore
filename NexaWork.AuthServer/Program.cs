@@ -5,6 +5,7 @@ using NexaWork.AuthServer.Data.IdentityEntities;
 using NexaWork.AuthServer.Data.Seedings;
 using OpenIddict.Abstractions;
 using Quartz;
+using MassTransit;
 
 
 
@@ -17,7 +18,25 @@ builder.Services.AddDbContext<NexaWorkIdentityDbContext>(options =>
 });
 
 
-builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>()
+builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // Cho phép đăng nhập mà không cần xác nhận email
+    // Password settings
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+    // User settings
+    options.User.RequireUniqueEmail = true;
+    // Sign-in settings
+    options.SignIn.RequireConfirmedEmail = false;  // Sign in không cần confirm email
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+})
     .AddEntityFrameworkStores<NexaWorkIdentityDbContext>()
     .AddDefaultTokenProviders();
 
@@ -42,6 +61,29 @@ builder.Services.AddQuartzHostedService(options =>
 });
 
 
+// builder.Services.AddApplicationServices();
+// builder.Services.AddInfrastructureServices(builder.Configuration);
+
+
+// Configure MassTransit with RabbitMQ (The Publisher)
+var rabbitMqSettings = builder.Configuration
+    .GetSection("RabbitMQ");
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(
+            rabbitMqSettings["Host"],
+            rabbitMqSettings["VirtualHost"],
+            h =>
+            {
+                // NOTE: Do NOT store production secrets directly in appsettings.json.
+                h.Username(rabbitMqSettings["Username"]!);
+                h.Password(rabbitMqSettings["Password"]!);
+            });
+    });
+});
 
 
 builder.Services.AddOpenIddict()
