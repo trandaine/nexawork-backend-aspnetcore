@@ -28,8 +28,9 @@ packages/
 publish/
 wwwroot/dist/
 
+SharedStorage/
+
 # Entity Framework
-Migrations/
 
 # App settings (sensitive)
 appsettings.Development.json

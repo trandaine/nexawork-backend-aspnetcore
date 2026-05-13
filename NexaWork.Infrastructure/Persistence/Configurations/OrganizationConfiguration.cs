@@ -19,8 +19,10 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.Property(o => o.WebsiteUrl).HasMaxLength(255);
         builder.Property(o => o.OrganizationLogoUrl).HasMaxLength(255);
 
+        builder.HasQueryFilter(o => !o.IsDeleted);
 
-         // Relationship: Organization → JobListings (1 - many)
+
+        // Relationship: Organization → JobListings (1 - many)
         builder.HasMany(x => x.JobListings)
             .WithOne(j => j.Organization)
             .HasForeignKey(j => j.OrganizationId)

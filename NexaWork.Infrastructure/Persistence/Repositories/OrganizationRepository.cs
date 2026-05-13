@@ -38,4 +38,22 @@ internal class OrganizationRepository : IOrganizationRepository
         .ToListAsync(cancellationToken);
     }
 
+    public async Task<Organization?> GetByIdToUpdateAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _context.Organizations
+            // We use AsNoTracking() here because this method is currently 
+            // designed for the Read (Query) side of CQRS.
+            // Note: The implementation should use .AsNoTracking() since this is for read-only operations.
+            .FirstOrDefaultAsync(o => o.OrganizationId == id, cancellationToken);
+    }
+
+    public void Update(Organization organization)
+    {
+        _context.Organizations.Update(organization);
+    }
+
+    public void Remove(Organization organization)
+    {
+        _context.Organizations.Remove(organization);
+    }
 }
