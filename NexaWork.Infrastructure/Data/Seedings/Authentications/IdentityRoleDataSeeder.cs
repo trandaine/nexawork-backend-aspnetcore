@@ -31,8 +31,5 @@ public class IdentityRoleDataSeeder
                 await roleManager.CreateAsync(newRole);
             }
         }
-
-
     }
-
 }

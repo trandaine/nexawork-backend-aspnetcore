@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Application.DTOs.Post;
 using NexaWork.Application.Features.Client.Post.Commands.Create;

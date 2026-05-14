@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
@@ -19,6 +20,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <PackageReference Include="OpenIddict.AspNetCore" Version="7.4.0" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="7.4.0" />
+    <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="7.5.0" />
+    <PackageReference Include="OpenIddict.Validation.SystemNetHttp" Version="7.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
     <PackageReference Include="NuGet.Protocol" Version="7.3.1" />
     <PackageReference Include="NuGet.Packaging" Version="7.3.1" />
@@ -27,9 +30,11 @@
   <ItemGroup>
     <ProjectReference Include="..\NexaWork.Infrastructure\NexaWork.Infrastructure.csproj" />
     <ProjectReference Include="..\NexaWork.Application\NexaWork.Application.csproj" />
+    <ProjectReference Include="..\NexaWork.Contracts\NexaWork.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Consumers/" />
     <Folder Include="Models/" />
   </ItemGroup>
 
