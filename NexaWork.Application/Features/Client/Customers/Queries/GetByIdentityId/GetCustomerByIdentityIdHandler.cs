@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
 
@@ -21,7 +20,9 @@ public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdent
 
         return new CustomerWithIdentityIdDTO(
                     customerWithIdentityId.CustomerId,
-                    customerWithIdentityId.IdentityUserId
+                    customerWithIdentityId.IdentityUserId,
+                    customerWithIdentityId.FirstName,
+                    customerWithIdentityId.LastName
                 );
 
 

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Net.Mime;
 using NexaWork.Domain.Enums;
 
 namespace NexaWork.Domain.Entities;
@@ -53,5 +54,22 @@ public class Post
             SharesCount = 0
         };
     }
+
+    public void Update(string content, string? newMediaUrl, VisibilityLevel visibility)
+    {
+        Content = content;
+        Visibility = visibility;
+        UpdatedAt = DateTime.UtcNow;
+        if (newMediaUrl != null)
+        {
+            MediaUrl = newMediaUrl;
+        }
+    }
+
+    // public void Delete()
+    // {
+
+    // }
+
 
 }
