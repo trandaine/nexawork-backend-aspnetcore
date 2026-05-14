@@ -1,20 +1,42 @@
 import axios from 'axios';
 
-// 1. Khởi tạo instance với các cấu hình mặc định
-const axiosInstance = axios.create({
-  // Sử dụng biến môi trường cho linh hoạt, hoặc gõ cứng URL backend .NET tạm thời
+const getOidcAccessToken = (): string | null => {
+  try {
+    // Lặp qua tất cả các key trong sessionStorage
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      
+      // Tìm key mặc định của oidc-client-ts (bắt đầu bằng "oidc.user:")
+      if (key && key.startsWith('oidc.user:')) {
+        const oidcString = sessionStorage.getItem(key);
+        
+        if (oidcString) {
+          // Parse chuỗi JSON thành object
+          const oidcData = JSON.parse(oidcString);
+          
+          // Trả về trường access_token
+          return oidcData.access_token || null; 
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Lỗi khi phân tích dữ liệu OIDC từ sessionStorage:', error);
+  }
+  return null;
+};
+
+export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:7000/api', 
-  timeout: 10000, // Hủy request nếu server không phản hồi sau 10 giây
+  timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// 2. REQUEST INTERCEPTOR: Can thiệp trước khi gửi request xuống Backend
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Lấy token từ LocalStorage (hoặc nơi bạn đang lưu trữ token sau khi Login)
-    const token = localStorage.getItem('accessToken');
+    // Gọi hàm lấy token
+    const token = getOidcAccessToken();
     
     // Nếu có token, tự động đính kèm vào header Authorization
     if (token && config.headers) {
@@ -24,34 +46,27 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    // Xử lý lỗi trước khi request được gửi đi (ít gặp)
     return Promise.reject(error);
   }
 );
 
-// 3. RESPONSE INTERCEPTOR: Can thiệp sau khi nhận kết quả từ Backend trả về
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Bất kỳ mã trạng thái nào nằm trong dải 2xx sẽ kích hoạt hàm này
-    // Bạn có thể format lại data ở đây nếu cần, ví dụ: return response.data;
     return response;
   },
   (error) => {
-    // Bất kỳ mã trạng thái nào lọt ra ngoài dải 2xx sẽ kích hoạt hàm này
     if (error.response) {
       const status = error.response.status;
 
-      // Xử lý lỗi 401: Token hết hạn hoặc chưa đăng nhập
+      // Xử lý lỗi 401: Token hết hạn hoặc không hợp lệ
       if (status === 401) {
-        console.warn('Unauthorized! Yêu cầu đăng nhập lại.');
-        // Thực hiện logic xóa token và điều hướng về trang Login ở đây
-        // localStorage.removeItem('accessToken');
-        // window.location.href = '/auth/signin'; 
+        console.warn('Unauthorized! Yêu cầu xác thực OAuth2 lại.');
+        // Lưu ý: Với oidc-client-ts, bạn thường dùng UserManager.signinSilent() để tự động làm mới token, 
+        // hoặc gọi UserManager.signinRedirect() để đẩy người dùng về trang Identity Server đăng nhập lại.
       }
       
-      // Xử lý lỗi 403: Không có quyền truy cập
       if (status === 403) {
-        console.warn('Forbidden! Bạn không có quyền thực hiện hành động này.');
+        console.warn('Forbidden! Bạn không có quyền truy cập.');
       }
     }
 
@@ -59,4 +74,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+// export default axiosInstance;

@@ -11,7 +11,7 @@ import PageMeta from "../../components/common/PageMeta";
 
 
 import { CreatePostForm } from '../../features/post/components/CreatePost';
-// import { PostFeed } from '../../features/post/components/PostFeed';
+import { PostFeed } from '../../features/post/components/PostFeed';
 
 export default function Home() {
   return (
@@ -29,7 +29,7 @@ export default function Home() {
 
         {/* Component hiển thị danh sách bài viết */}
         <div className="mt-6">
-          {/* <PostFeed /> */}
+          <PostFeed />
         </div>
       </div>
 

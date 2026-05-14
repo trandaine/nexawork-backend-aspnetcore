@@ -1,30 +1,32 @@
-import { CreatePostRequest, PostDto } from './types';
-// Import thư viện gọi API của bạn, ví dụ axios:
-import axiosInstance from '../../shared/api/axiosInstance'; 
+import { CreatePostRequest } from './types';
+import { axiosInstance } from '../../shared/api/axiosInstance';
 
+
+/**
+ * ham de tao bai post
+ * @param data 
+ * @returns 
+ */
 export const createPostAPI = async (data: CreatePostRequest) => {
-  // 1. Khởi tạo đối tượng FormData
   const formData = new FormData();
-
-  // 2. Append các trường dữ liệu vào FormData
-  formData.append('content', data.content);
   
-  // Nối chuỗi cho visibility vì FormData chỉ nhận string hoặc Blob/File
-  formData.append('visibility', data.visibility.toString()); 
+  // Nạp dữ liệu văn bản
+  formData.append('Content', data.content);
+  formData.append('Visibility', data.visibility.toString());
 
-  // Kiểm tra xem người dùng có upload file không thì mới append
+  // Nạp file nếu người dùng có chọn ảnh
   if (data.mediaFile) {
-    formData.append('mediaFile', data.mediaFile);
+    formData.append('MediaFile', data.mediaFile);
   }
 
-  // 3. Gọi API (Ví dụ sử dụng axios)
-  // Lưu ý: Đa số các thư viện như Axios khi nhận vào FormData sẽ tự động set header 'Content-Type': 'multipart/form-data'
-  /*
-  const response = await axiosInstance.post('/api/Posts', formData, {
+  // Gọi API thông qua axiosInstance. 
+  // Lưu ý: Không cần set 'Content-Type' thủ công, Axios sẽ tự động cấu hình chuẩn xác cho FormData.
+  // const response = await axiosInstance.post('/Posts', formData);
+  const response = await axiosInstance.post('/Posts', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   });
+  
   return response.data;
-  */
 };

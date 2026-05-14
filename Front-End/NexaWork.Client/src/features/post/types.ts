@@ -20,5 +20,6 @@ export interface PostDto {
   content: string;
   mediaUrl?: string; // Tên sẽ phụ thuộc vào backend trả về
   visibility: number;
+  createdAt: string; // ISO string, bạn có thể chuyển đổi sang Date khi sử dụng
   // ... (bạn sẽ bổ sung thêm các trường như author, createdAt khi có Swagger của hàm GET)
 }
