@@ -19,4 +19,3 @@ public record CreatePostCommand(
     // string? MediaUrl,
     VisibilityLevel Visibility
 ) : IRequest<Guid>;
-

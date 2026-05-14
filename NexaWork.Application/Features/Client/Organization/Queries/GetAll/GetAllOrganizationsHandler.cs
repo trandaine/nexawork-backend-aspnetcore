@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
 

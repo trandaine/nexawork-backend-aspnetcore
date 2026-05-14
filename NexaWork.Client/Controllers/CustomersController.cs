@@ -41,7 +41,7 @@ namespace NexaWork.Client.Controllers
 
 
         // GET: api/Customers/5
-        [HttpGet("identity/{identityId}")]
+        [HttpGet("me/{identityId}")]
         public async Task<ActionResult<CustomerWithIdentityIdDTO>> GetCustomerByIdentityId(string identityId)
         {
             var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery(identityId));

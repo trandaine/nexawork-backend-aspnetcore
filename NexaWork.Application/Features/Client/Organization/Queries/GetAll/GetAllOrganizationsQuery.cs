@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 
 namespace NexaWork.Application.Features.Client.Organization.Queries.GetAll;
