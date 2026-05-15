@@ -16,10 +16,17 @@ export interface CreatePostRequest {
 
 // 2. Interface đại diện cho dữ liệu nhận về khi LẤY bài viết (Dự trù cho API GET)
 export interface PostDto {
-  id: string;
+  postId: string;
+  customerName: string;
   content: string;
-  mediaUrl?: string; // Tên sẽ phụ thuộc vào backend trả về
+  mediaUrl?: string | null;
+  // mediaUrl?: string; // Tên sẽ phụ thuộc vào backend trả về
+  likesCount: number;
+  commentsCount: number;
+  sharesCount: number;
   visibility: number;
-  createdAt: string; // ISO string, bạn có thể chuyển đổi sang Date khi sử dụng
+  createdAt: string; 
+  updatedAt: string;// ISO string, bạn có thể chuyển đổi sang Date khi sử dụng
+
   // ... (bạn sẽ bổ sung thêm các trường như author, createdAt khi có Swagger của hàm GET)
 }

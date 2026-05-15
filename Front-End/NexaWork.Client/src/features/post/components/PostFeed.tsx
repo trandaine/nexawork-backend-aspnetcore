@@ -1,32 +1,24 @@
 import React from 'react';
 import { PostCard } from './PostCard';
-import { PostDto } from '../types';
-
-// Tạo dữ liệu giả (Mock Data) để test giao diện
-const MOCK_POSTS: PostDto[] = [
-  {
-    id: '1',
-    content: 'Exclusive photos of me yearning 😩',
-    visibility: 0, // Public
-    // Dùng một đường dẫn ảnh ngẫu nhiên trên mạng để làm mẫu
-    mediaUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop', 
-    createdAt: new Date().toISOString(),
-  },
-//   {
-//     id: '2',
-//     content: 'Just finished a great coding session! Building UI with React and Tailwind CSS is so much fun. 🚀💻',
-//     visibility: 0,
-//     mediaUrl: '', // Bài viết không có ảnh
-//     createdAt: new Date().toISOString(),
-//   }
-];
+import { useGetPosts } from '../hook'; // Import hook
 
 export const PostFeed = () => {
+  // Gọi hook để lấy danh sách bài viết thật
+  const { posts, isLoading } = useGetPosts();
+
+  if (isLoading) {
+    return <div className="text-center text-gray-500 dark:text-gray-400 mt-6 py-4">Loading posts...</div>;
+  }
+
+  if (!posts || posts.length === 0) {
+    return <div className="text-center text-gray-500 dark:text-gray-400 mt-6 py-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">No posts yet. Be the first to post!</div>;
+  }
+
   return (
     <div className="mt-6 flex flex-col gap-4">
-      {/* Lặp qua mảng dữ liệu giả để in ra các thẻ PostCard */}
-      {MOCK_POSTS.map((post) => (
-        <PostCard key={post.id} post={post} />
+      {/* Duyệt qua danh sách bài viết thật, lưu ý dùng postId thay vì id */}
+      {posts.map((post) => (
+        <PostCard key={post.postId} post={post} />
       ))}
     </div>
   );

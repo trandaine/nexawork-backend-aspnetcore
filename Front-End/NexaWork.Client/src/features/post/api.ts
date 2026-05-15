@@ -30,3 +30,13 @@ export const createPostAPI = async (data: CreatePostRequest) => {
   
   return response.data;
 };
+
+/** 
+* Hàm để lấy danh sách toàn bộ bài post từ Backend
+ * @returns Array of PostDto
+ */
+export const getPostsAPI = async () => {
+  // Gọi phương thức GET tới endpoint '/Posts'
+  const response = await axiosInstance.get('/Posts'); 
+  return response.data;
+};
