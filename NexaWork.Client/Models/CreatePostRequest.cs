@@ -1,4 +1,3 @@
-using System;
 using NexaWork.Domain.Enums;
 
 namespace NexaWork.Client.Models;

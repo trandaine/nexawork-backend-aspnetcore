@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Application.DTOs.Post;
 using NexaWork.Application.Features.Client.Post.Commands.Create;
+using NexaWork.Application.Features.Client.Post.Commands.Delete;
 using NexaWork.Application.Features.Client.Post.Commands.Update;
 using NexaWork.Application.Features.Client.Post.Queries;
 using NexaWork.Application.Features.Client.Post.Queries.GetAll;
@@ -27,7 +28,11 @@ namespace NexaWork.Client.Controllers
         }
 
 
-
+        /// <summary>
+        /// Create new post method
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromForm] CreatePostRequest request)
         {
@@ -67,7 +72,10 @@ namespace NexaWork.Client.Controllers
             return Ok(postId);
         }
 
-
+        /// <summary>
+        /// Get all posts method
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<List<PostQueryDTO>>> GetAll()
         {
@@ -77,7 +85,11 @@ namespace NexaWork.Client.Controllers
 
 
 
-
+        /// <summary>
+        /// Get post by ID method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<PostQueryDTO?>> GetById(Guid id)
         {
@@ -96,7 +108,7 @@ namespace NexaWork.Client.Controllers
         /// <param name="id"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPut("{id:guid}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromForm] CreatePostRequest request)
         {
             // Extract Identity ID from JWT
@@ -125,6 +137,24 @@ namespace NexaWork.Client.Controllers
                 request.Visibility
             );
 
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+        
+        
+        /// <summary>
+        /// Delete post by ID method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            var command = new DeletePostCommand(id);
             await _mediator.Send(command);
 
             return NoContent();

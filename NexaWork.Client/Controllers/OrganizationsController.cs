@@ -48,7 +48,7 @@ namespace NexaWork.Client.Controllers
 
         // PUT: api/Organizations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id:guid}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrganizationCommand command)
         {
             if (id != command.OrganizationId)
@@ -71,7 +71,7 @@ namespace NexaWork.Client.Controllers
         }
 
         // DELETE: api/Organizations/5
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var command = new DeleteOrganizationCommand(id);

@@ -39,4 +39,9 @@ public class PostRepository : IPostRepository
     {
         _context.Posts.Update(post);
     }
+
+    public void Remove(Post post)
+    {
+        _context.Posts.Remove(post);
+    }
 }
