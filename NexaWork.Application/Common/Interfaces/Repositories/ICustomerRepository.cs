@@ -34,5 +34,11 @@ public interface ICustomerRepository
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<List<Customer>> GetAllCustomerAsync(CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Update customer information
+    /// </summary>
+    /// <param name="customer"></param>
+    void Update(Customer customer);
 
 }

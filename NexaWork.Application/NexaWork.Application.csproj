@@ -7,13 +7,11 @@
   <ItemGroup>
     <Folder Include="Common/Behaviors/" />
     <Folder Include="Common/Exceptions/" />
-    <Folder Include="Common/Interfaces/Repositories/" />
     <Folder Include="Common/Interfaces/Services/" />
     <Folder Include="DTOs/Post/" />
     <Folder Include="Features/Client/Customers/Commands/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
     <Folder Include="Features/Client/Customers/Commands/Delete/" />
-    <Folder Include="Features/Client/Customers/Commands/Update/" />
     <Folder Include="Features/Client/Customers/Queries/" />
     <Folder Include="Features/Client/Customers/Queries/GetAll/" />
     <Folder Include="Features/Client/Customers/Queries/GetById/" />

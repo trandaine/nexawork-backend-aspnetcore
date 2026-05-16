@@ -9,8 +9,10 @@ public class Customer
     public string IdentityUserId { get; private set; } = string.Empty;
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
+
     [Description("Phần bio của Profile Người dùng")]
     public string? Headline { get; private set; }
+
     public string? Summary { get; private set; }
     public string? Location { get; private set; }
 
@@ -35,28 +37,27 @@ public class Customer
 
     #endregion
 
-    private Customer() { }
+    private Customer()
+    {
+    }
 
     public static Customer Create(
         string identityUserId
-        )
+    )
     {
         return new Customer
         {
             CustomerId = Guid.NewGuid(),
             IdentityUserId = identityUserId,
-
         };
     }
 
-
-
-
-
-
-
-
-
-
-
+    public void Update(string firstName, string lastName, string? headline, string? summary, string? location)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Headline = headline;
+        Summary = summary;
+        Location = location;
+    }
 }

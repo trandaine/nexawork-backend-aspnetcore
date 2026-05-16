@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaWork.Application.Features.Client.Customers.Commands.Update;
 using NexaWork.Application.Features.Client.Customers.Queries;
 using NexaWork.Application.Features.Client.Customers.Queries.GetAll;
 using NexaWork.Application.Features.Client.Customers.Queries.GetById;
@@ -50,8 +51,20 @@ namespace NexaWork.Client.Controllers
             return Ok(customer);
         }
 
+        /// <summary>
+        /// Update customer information
+        /// </summary>
+        /// <param name="id">CustomerIdentityId</param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("update-customer/{id}")]
+        public async Task<ActionResult> UpdateCustomer(string id, [FromBody] UpdateCustomerCommand command)
+        {
+            if (id != command.IdentityUserId)
+                return BadRequest("Customer ID mismatch.");
 
-
-
+            await _mediator.Send(command);
+            return NoContent();
+        }
     }
 }

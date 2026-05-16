@@ -27,5 +27,5 @@ public interface IPostRepository
 
     void Update(Post post);
 
-
+    void Remove(Post post);
 }

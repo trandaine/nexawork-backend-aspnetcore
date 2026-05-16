@@ -6,23 +6,23 @@ namespace NexaWork.Domain.Entities;
 
 public class Post
 {
-    public Guid PostId { get; set; }
-    public Guid CustomerId { get; set; }
-    public string Content { get; set; } = string.Empty;
-    public string? MediaUrl { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
+    public Guid PostId { get; private set; }
+    public Guid CustomerId { get; private set; }
+    public string Content { get; private set; } = string.Empty;
+    public string? MediaUrl { get; private set; }
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; private set; }
 
     // Post engagement properties
-    public int LikesCount { get; set; }
-    public int CommentsCount { get; set; }
-    public int SharesCount { get; set; }
+    public int LikesCount { get; private set; }
+    public int CommentsCount { get; private set; }
+    public int SharesCount { get; private set; }
 
-    public VisibilityLevel Visibility { get; set; }
+    public VisibilityLevel Visibility { get; private set; }
 
-    public virtual Customer Customer { get; set; } = null!;
-    public virtual ICollection<Comment> Comments { get; set; } = new Collection<Comment>();
-    public virtual ICollection<Reaction> Reactions { get; set; } = new Collection<Reaction>();
+    public virtual Customer Customer { get; private set; } = null!;
+    public virtual ICollection<Comment> Comments { get; private set; } = new Collection<Comment>();
+    public virtual ICollection<Reaction> Reactions { get; private set; } = new Collection<Reaction>();
 
     private Post()
     {
@@ -31,7 +31,6 @@ public class Post
 
     public static Post Create(Guid customerId, string content, string? mediaUrl, VisibilityLevel visibility)
     {
-
         // A post cannot be completely empty without content or media
         bool hasContent = !string.IsNullOrWhiteSpace(content);
         bool hasMedia = !string.IsNullOrWhiteSpace(mediaUrl);
@@ -70,6 +69,4 @@ public class Post
     // {
 
     // }
-
-
 }
