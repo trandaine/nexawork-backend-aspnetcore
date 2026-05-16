@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-// import SignIn from "./pages/AuthPages/SignIn";
-// import SignUp from "./pages/AuthPages/SignUp";
+import SignIn from "./pages/AuthPages/SignIn";
+import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -22,7 +22,14 @@ import Home from "./pages/Dashboard/Home";
 // import ResetPassword from "./pages/AuthPages/ResetPassword";
 import { AuthProvider, useAuth } from "react-oidc-context";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Đảm bảo bạn đã import useNavigate ở trên cùng file
 
+// ==========================================
+// THÊM MỚI TẠI ĐÂY: Import Guard và Form Onboarding
+// ==========================================
+import { RequireProfileGuard } from "./features/authentication/components/RequireProfileGuard";
+import { OnboardingForm } from "./features/onboarding/components/OnboardingForm";
 
 const oidcConfig = {
   authority: "https://localhost:7036", // Your Auth Server URL
@@ -35,19 +42,36 @@ const oidcConfig = {
 
 function LoginCallback() {
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Khi xác thực thành công, dùng navigate chuyển trang "mềm" để bảo toàn trạng thái
+    if (auth.isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [auth.isAuthenticated, navigate]);
 
   if (auth.isLoading) {
-    return <div>Processing login...</div>;
-  }
-  if (auth.error) {
-    return <div>Oops... {auth.error.message}</div>;
-  }
-  if (auth.isAuthenticated) {
-    // Successfully logged in! Redirect them to the dashboard or home
-    window.location.replace("/dashboard");
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Đang xử lý đăng nhập...</p>
+      </div>
+    );
   }
 
-  return <div>Redirecting...</div>;
+  if (auth.error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500">
+        <p>Lỗi đăng nhập: {auth.error.message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Đang chuyển hướng...</p>
+    </div>
+  );
 }
 
 /**
@@ -67,10 +91,11 @@ export default function App() {
 
         <Router>
           <ScrollToTop />
-          <Routes>
-
-            <Route path="/callback/login" element={<LoginCallback />} />
-            <Route path="/callback/logout" element={<LogoutCallback />} />
+          {/* <Routes> */}
+            
+            {/* <Route path="/callback/login" element={<LoginCallback />} />
+            <Route path="/callback/logout" element={<LogoutCallback />} /> */}
+            
             {/* Dashboard Layout */}
             {/* Auth Layout */}
             {/* <Route path="/signin" element={<SignIn />} />
@@ -79,10 +104,42 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} /> */}
 
 
+            <Routes>
+            {/* ======================================================== */}
+            {/* 1. KHU VỰC PUBLIC: Ai cũng vào được (Không cần đăng nhập) */}
+            {/* ======================================================== */}
+            <Route path="/callback/login" element={<LoginCallback />} />
+            <Route path="/callback/logout" element={<LogoutCallback />} />
+            
+            {/* KHÔI PHỤC TRANG ĐĂNG NHẬP/ĐĂNG KÝ BỊ ẨN CỦA BẠN VÀ ĐẶT Ở ĐÂY */}
+            {/* <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} /> */}
+            {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
+            {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
+
+            {/* ======================================================== */}
+            {/* 2. KHU VỰC PRIVATE: Bắt buộc phải đăng nhập (Bọc bởi ProtectedRoute) */}
+            {/* ======================================================== */}
             <Route element={<ProtectedRoute />}>
+              
+              {/* TRANG ONBOARDING: Full màn hình, bảo mật 100%, không dính Sidebar */}
+              <Route path="/onboarding" element={<OnboardingForm />} />
+
+              {/* CÁC TRANG CHÍNH CỦA DASHBOARD: Có thanh Sidebar bên trái */}
               <Route element={<AppLayout />}>
-                <Route index path="/dashboard" element={<Home />} />
-                <Route index path="/" element={<Home />} />
+                
+                {/* BỌC GUARD: Cửa ngõ vào Home (Dashboard) */}
+                <Route index path="/dashboard" element={
+                  <RequireProfileGuard>
+                    <Home />
+                  </RequireProfileGuard>
+                } />
+                
+                <Route index path="/" element={
+                  <RequireProfileGuard>
+                    <Home />
+                  </RequireProfileGuard>
+                } />
 
                 {/* Others Page */}
                 <Route path="/profile" element={<UserProfiles />} />
