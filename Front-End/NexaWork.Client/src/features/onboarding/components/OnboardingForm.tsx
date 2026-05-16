@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSetupProfile } from '../hook';
 import { useNavigate } from 'react-router-dom'; 
+import { useAuth } from 'react-oidc-context';
 
 export const OnboardingForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  
+  const auth = useAuth();
   const { handleSetupProfile, isLoading, error } = useSetupProfile();
   const navigate = useNavigate();
 
@@ -15,10 +16,12 @@ export const OnboardingForm = () => {
       alert("Please fill in both First Name and Last Name!");
       return;
     }
+    const identityId = auth.user?.profile?.sub;
+    if (!identityId) return; // Đề phòng token rớt
 
-    const success = await handleSetupProfile({ firstName, lastName });
+    const success = await handleSetupProfile(identityId, firstName, lastName);
     if (success) {
-      navigate('/home'); // Lưu thành công, chuyển hướng vào trang chủ
+      navigate('/dashboard'); // Lưu thành công, chuyển hướng vào trang chủ
     }
   };
 

@@ -8,7 +8,7 @@ export const getCustomerMeAPI = async (identityId: string): Promise<CustomerMeRe
 };
 
 // API: Cập nhật FirstName và LastName
-export const setupProfileAPI = async (data: SetupProfileRequest) => {
-  const response = await axiosInstance.put('/Customers/setup-profile', data);
+export const setupProfileAPI = async (id: string, data: SetupProfileRequest) => {
+  const response = await axiosInstance.post(`/Customers/update-customer/${id}`, data);
   return response.data;
 };

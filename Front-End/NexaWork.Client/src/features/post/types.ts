@@ -16,17 +16,20 @@ export interface CreatePostRequest {
 
 // 2. Interface đại diện cho dữ liệu nhận về khi LẤY bài viết (Dự trù cho API GET)
 export interface PostDto {
+  // Unique identifier for the post
   postId: string;
   customerName: string;
   content: string;
+  // The relative or absolute path to the image. It can be null if the post has no image.
   mediaUrl?: string | null;
-  // mediaUrl?: string; // Tên sẽ phụ thuộc vào backend trả về
+  
+  // Engagement metrics
   likesCount: number;
   commentsCount: number;
   sharesCount: number;
   visibility: number;
+  
+  // Timestamps in ISO string format (e.g., "2026-05-14T18:30:39.606Z")
   createdAt: string; 
-  updatedAt: string;// ISO string, bạn có thể chuyển đổi sang Date khi sử dụng
-
-  // ... (bạn sẽ bổ sung thêm các trường như author, createdAt khi có Swagger của hàm GET)
+  updatedAt: string;
 }

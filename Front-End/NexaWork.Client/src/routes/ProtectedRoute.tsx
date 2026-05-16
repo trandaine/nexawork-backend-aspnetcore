@@ -12,11 +12,17 @@ const ProtectedRoute = () => {
       console.log('No valid session found. Redirecting to NexaWork Auth Server...');
       auth.signinRedirect();
     }
-  }, [auth]);
+  // }, [auth]);
+  }, [auth.isAuthenticated, auth.isLoading, auth.activeNavigator, auth]);
 
   // While the library is checking the token or redirecting, show a loading state
   if (auth.isLoading || auth.activeNavigator) {
-    return <div>Loading your workspace...</div>; // Replace with a spinner if you want!
+    // return <div>Loading your workspace...</div>; // Replace with a spinner if you want!
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading your workspace...</p>
+      </div>
+    );
   }
 
   // If we still aren't authenticated (about to redirect), don't render the secure pages
