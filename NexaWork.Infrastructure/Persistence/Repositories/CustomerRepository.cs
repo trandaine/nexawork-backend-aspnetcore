@@ -40,4 +40,9 @@ public class CustomerRepository : ICustomerRepository
         .AsNoTracking()
         .ToListAsync(cancellationToken);
     }
+
+    public void Update(Customer customer)
+    {
+        _context.Customers.Update(customer);
+    }
 }

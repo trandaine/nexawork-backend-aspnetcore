@@ -12,7 +12,6 @@
     <Folder Include="Features/Client/Customers/Commands/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
     <Folder Include="Features/Client/Customers/Commands/Delete/" />
-    <Folder Include="Features/Client/Customers/Commands/Update/" />
     <Folder Include="Features/Client/Customers/Queries/" />
     <Folder Include="Features/Client/Customers/Queries/GetAll/" />
     <Folder Include="Features/Client/Customers/Queries/GetById/" />
