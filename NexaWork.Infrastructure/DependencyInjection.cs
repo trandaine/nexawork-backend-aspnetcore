@@ -121,6 +121,7 @@ public static class DependencyInjection
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<ISkillRepository, SkillRepository>();
 
         // 4. Register your Services
         services.AddScoped<IFileStorageService, LocalFileStorageService>();

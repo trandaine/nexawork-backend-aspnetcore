@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NexaWork.Domain.IdentityEntites;
 using NexaWork.Infrastructure;
 using NexaWork.Infrastructure.Persistence;
@@ -15,6 +16,8 @@ builder.Services.AddControllersWithViews();
 // builder.Services.AddDbContext<NexaWorkDbIdentityContext>();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// builder.Services.AddDbContext<NexaWorkDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 

@@ -9,6 +9,7 @@ public interface INexaWorkDbContext
     DbSet<Organization> Organizations { get; }
     DbSet<Post> Posts { get; }
     DbSet<Comment> Comments { get; }
+    DbSet<Skill> Skills { get; }
 
     /// <summary>
     /// Lưu tất cả các thay đổi vào database. Trả về số lượng bản ghi bị ảnh hưởng.

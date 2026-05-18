@@ -44,4 +44,8 @@
     <ProjectReference Include="..\NexaWork.Contracts\NexaWork.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Register\Index.cshtml" />
+  </ItemGroup>
+
 </Project>

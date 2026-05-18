@@ -50,7 +50,8 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Comment> Comments => Set<Comment>();
+    // public DbSet<Comment> Comments { get; set; }
     public DbSet<Connection> Connections { get; set; }
     public DbSet<Customer> Customers => Set<Customer>();
     // public DbSet<Customer> Customers { get; set; }
@@ -61,7 +62,9 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
     public DbSet<JobListing> JobListings { get; set; }
     public DbSet<Organization> Organizations => Set<Organization>();
     // public DbSet<Organization> Organizations { get; set; }
-    public DbSet<Post> Posts { get; set; }
+    public DbSet<Post> Posts => Set<Post>();
+    // public DbSet<Post> Posts { get; set; }
     public DbSet<Reaction> Reactions { get; set; }
-    public DbSet<Skill> Skills { get; set; }
+    public DbSet<Skill> Skills => Set<Skill>();
+    // public DbSet<Skill> Skills { get; set; }
 }

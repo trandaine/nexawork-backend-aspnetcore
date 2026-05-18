@@ -17,7 +17,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -54,7 +54,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Connection", b =>
@@ -81,7 +81,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Connections");
+                    b.ToTable("Connections", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Customer", b =>
@@ -128,7 +128,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.HasIndex("IdentityUserId")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.CustomerSkill", b =>
@@ -152,7 +152,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("CustomerSkills");
+                    b.ToTable("CustomerSkills", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Education", b =>
@@ -191,7 +191,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Educations");
+                    b.ToTable("Educations", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Experience", b =>
@@ -238,7 +238,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Experiences");
+                    b.ToTable("Experiences", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.JobApplication", b =>
@@ -280,7 +280,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("JobListingId");
 
-                    b.ToTable("JobApplications");
+                    b.ToTable("JobApplications", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.JobListing", b =>
@@ -339,7 +339,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("JobListings");
+                    b.ToTable("JobListings", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Organization", b =>
@@ -432,7 +432,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Reaction", b =>
@@ -464,7 +464,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Reactions");
+                    b.ToTable("Reactions", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Skill", b =>
@@ -484,7 +484,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
 
                     b.HasKey("SkillId");
 
-                    b.ToTable("Skills");
+                    b.ToTable("Skills", (string)null);
                 });
 
             modelBuilder.Entity("NexaWork.Domain.Entities.Comment", b =>

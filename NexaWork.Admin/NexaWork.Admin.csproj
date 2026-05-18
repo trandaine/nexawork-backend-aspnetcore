@@ -25,8 +25,6 @@
 
   <ItemGroup>
     <Folder Include="LayoutBackup/" />
-    <Folder Include="Views/Authentications/" />
-    <Folder Include="Views/Settings/" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +68,29 @@
     <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
     <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
     <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Customers\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Customers\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Customers\Details.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Customers\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Customers\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\JobListings\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\JobListings\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\JobListings\Details.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\JobListings\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\JobListings\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Organizations\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Organizations\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Organizations\Details.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Organizations\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Organizations\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Organizations\Create.cshtml" />
+    <UpToDateCheckInput Remove="Views\Organizations\Delete.cshtml" />
+    <UpToDateCheckInput Remove="Views\Organizations\Details.cshtml" />
+    <UpToDateCheckInput Remove="Views\Organizations\Edit.cshtml" />
+    <UpToDateCheckInput Remove="Views\Organizations\Index.cshtml" />
   </ItemGroup>
 
   <PropertyGroup>

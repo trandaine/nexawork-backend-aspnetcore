@@ -1,9 +1,9 @@
 using System;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Admin.Models;
-using System.Text.Encodings.Web;
 
 namespace NexaWork.Admin.Controllers;
 
