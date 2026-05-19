@@ -70,7 +70,7 @@ public class Customer
             BackgroundPictureUrl = newBackgroundPictureUrl;
         }
     }
-    
+
     public void UpdateName(string firstName, string lastName)
     {
         FirstName = firstName;

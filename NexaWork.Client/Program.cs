@@ -5,7 +5,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using OpenIddict.Validation.AspNetCore;
 using MassTransit;
+using NexaWork.Application.Common.Interfaces.Services;
 using NexaWork.Client.Consumers;
+using NexaWork.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,6 +123,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
+// Required to read HTTP data inside a service
+builder.Services.AddHttpContextAccessor(); 
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
 // Register infrastructure services

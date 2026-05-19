@@ -5,7 +5,6 @@ using NexaWork.Application.DTOs;
 namespace NexaWork.Application.Features.Client.Customers.Commands.Update;
 
 public record UpdateCustomerCommand(
-    string IdentityUserId,
     // Guid CustomerId,
     string FirstName,
     string LastName,

@@ -43,16 +43,15 @@ namespace NexaWork.Client.Controllers
         [HttpGet("profile-me")]
         public async Task<ActionResult<CustomerQueryDTO>> GetCurrentCustomer()
         {
-            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                 ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+            // var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            //                      ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+            //
+            // if (string.IsNullOrEmpty(identityUserId))
+            // {
+            //     return Unauthorized("User ID not found in token.");
+            // }
 
-            if (string.IsNullOrEmpty(identityUserId))
-            {
-                return Unauthorized("User ID not found in token.");
-            }
-
-            var customer = await _mediator.Send(new GetCustomerByIdQuery(identityUserId));
-            // var customer = await _mediator.Send(new GetCustomerByIdQuery(id));
+            var customer = await _mediator.Send(new GetCustomerByIdQuery());
             if (customer == null)
                 return NotFound();
             return Ok(customer);
@@ -76,19 +75,10 @@ namespace NexaWork.Client.Controllers
         [HttpGet("me")]
         public async Task<ActionResult<CustomerWithIdentityIdDTO>> GetCurrentCustomerName()
         {
-            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                 ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
-
-            if (string.IsNullOrEmpty(identityUserId))
-            {
-                return Unauthorized("User ID not found in token.");
-            }
-
-            var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery(identityUserId));
+            var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery());
 
             if (customer == null)
             {
-                // Return 404 if the Auth login exists, but the Domain profile hasn't been created yet
                 return NotFound("Customer profile not found for this account.");
             }
 
@@ -98,25 +88,12 @@ namespace NexaWork.Client.Controllers
         /// <summary>
         /// Update customer information
         /// </summary>
-        /// <param name="id">CustomerIdentityId</param>
-        /// <param name="command"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut("update-customer-name")]
         public async Task<ActionResult> UpdateCustomer([FromBody] UpdateCustomerNameRequestDTO request)
         {
-            // Extract the secure Identity ID from the server-validated JWT
-            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                 ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
-
-            // Ensure the token actually contained an ID
-            if (string.IsNullOrEmpty(identityUserId))
-            {
-                return Unauthorized("User ID not found in token.");
-            }
-
-            // Assemble the Command using the TRUSTED server-side ID
             var command = new UpdateCustomerNameCommand(
-                identityUserId, // The user cannot spoof this!
                 request.FirstName,
                 request.LastName
             );
@@ -135,14 +112,6 @@ namespace NexaWork.Client.Controllers
         [HttpPut("update-customer-profile")]
         public async Task<IActionResult> UpdateCustomerProfile([FromForm] CustomerRequestDTO request)
         {
-            var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                 ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
-
-            if (string.IsNullOrEmpty(identityUserId))
-            {
-                return Unauthorized("User ID not found in token.");
-            }
-
             FileDTO? profilePictureFileDto = null;
             FileDTO? backgroundPictureFileDto = null;
 
@@ -167,7 +136,6 @@ namespace NexaWork.Client.Controllers
             }
 
             var command = new UpdateCustomerCommand(
-                identityUserId,
                 request.FirstName,
                 request.LastName,
                 request.Headline,
