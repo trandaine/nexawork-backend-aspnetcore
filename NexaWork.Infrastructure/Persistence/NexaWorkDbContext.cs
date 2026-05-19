@@ -10,8 +10,8 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
 {
     public NexaWorkDbContext()
     {
-        
     }
+
     public NexaWorkDbContext(DbContextOptions<NexaWorkDbContext> options) : base(options)
     {
     }
@@ -40,6 +40,9 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
         modelBuilder.ApplyConfiguration(new PostConfiguration());
         modelBuilder.ApplyConfiguration(new ReactionConfiguration());
         modelBuilder.ApplyConfiguration(new SkillConfiguration());
+        modelBuilder.ApplyConfiguration(new CustomerSocialLinkConfiguration());
+        modelBuilder.ApplyConfiguration(new CustomerAddressConfiguration());
+        
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -51,20 +54,28 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
     }
 
     public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<Skill> Skills => Set<Skill>();
     // public DbSet<Comment> Comments { get; set; }
     public DbSet<Connection> Connections { get; set; }
+
     public DbSet<Customer> Customers => Set<Customer>();
+
     // public DbSet<Customer> Customers { get; set; }
     public DbSet<CustomerSkill> CustomerSkills { get; set; }
     public DbSet<Education> Educations { get; set; }
     public DbSet<Experience> Experiences { get; set; }
     public DbSet<JobApplication> JobApplications { get; set; }
     public DbSet<JobListing> JobListings { get; set; }
+
     public DbSet<Organization> Organizations => Set<Organization>();
+
     // public DbSet<Organization> Organizations { get; set; }
     public DbSet<Post> Posts => Set<Post>();
+
     // public DbSet<Post> Posts { get; set; }
     public DbSet<Reaction> Reactions { get; set; }
-    public DbSet<Skill> Skills => Set<Skill>();
+
+    public DbSet<CustomerSocialLink> CustomerSocialLinks => Set<CustomerSocialLink>();
+    public DbSet<CustomerAddress> CustomerAddresses => Set<CustomerAddress>();
     // public DbSet<Skill> Skills { get; set; }
 }

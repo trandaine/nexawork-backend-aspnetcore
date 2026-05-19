@@ -21,6 +21,17 @@ Thiết lập các entities cơ bản cho profile người dùng, kết nối m�
     - `EducationId`: Danh sách các mục học vấn của người dùng (Foreign Key).
     - `ExperienceId`: Danh sách các mục kinh nghiệm làm việc của người dùng (Foreign Key).
 
+- `CustomerAddresses`: Quản lý thông tin địa chỉ của người dùng, bao gồm địa chỉ hiện tại và địa chỉ trước đây.
+    - `CustomerAddressId`: Primary key, định danh duy nhất cho mỗi địa chỉ.
+    - `CustomerId`: ID của người dùng chủ sở hữu địa chỉ.
+    - `City`: Thành phố.
+    - `State`: Bang hoặc tỉnh.
+    - `Country`: Quốc gia.
+    - `TaxId`: Mã số thuế (tùy chọn).
+- `CustomerSocialLinks`: Quản lý các liên kết mạng xã hội của người dùng, bao gồm LinkedIn, Twitter, Facebook, v.v.
+    - `CustomerSocialLinkId`: Primary key, định danh duy nhất cho mỗi liên kết mạng xã hội.
+    - `CustomerId`: ID của người dùng chủ sở hữu liên kết.
+    - `Url`: URL của trang mạng xã hội của người dùng.
 
 
 - `Connections`: Quản lý các kết nối giữa người dùng, bao gồm trạng thái kết nối (đang chờ, đã chấp nhận, đã từ chối).

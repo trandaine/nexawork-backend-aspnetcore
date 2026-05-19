@@ -10,6 +10,8 @@ public interface INexaWorkDbContext
     DbSet<Post> Posts { get; }
     DbSet<Comment> Comments { get; }
     DbSet<Skill> Skills { get; }
+    DbSet<CustomerSocialLink> CustomerSocialLinks { get; }
+    DbSet<CustomerAddress> CustomerAddresses { get; }
 
     /// <summary>
     /// Lưu tất cả các thay đổi vào database. Trả về số lượng bản ghi bị ảnh hưởng.

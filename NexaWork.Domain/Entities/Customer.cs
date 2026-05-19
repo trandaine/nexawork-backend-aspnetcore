@@ -12,7 +12,7 @@ public class Customer
 
     [Description("Phần bio của Profile Người dùng")]
     public string? Headline { get; private set; }
-
+    [Description("Phần giới thiệu chi tiết của Profile Người dùng")]
     public string? Summary { get; private set; }
     public string? Location { get; private set; }
 
@@ -21,6 +21,9 @@ public class Customer
 
     [Description("Ảnh bìa của Profile Người dùng")]
     public string? BackgroundPictureUrl { get; private set; }
+    
+    [Description("Số điện thoại của Người dùng")]
+    public int? PhoneNumber { get; private set; }
 
 
     #region Navigation Properties
@@ -34,6 +37,8 @@ public class Customer
     public virtual ICollection<Comment> Comments { get; private set; } = new Collection<Comment>();
     public virtual ICollection<Reaction> Reactions { get; private set; } = new Collection<Reaction>();
     public virtual ICollection<JobApplication> JobApplications { get; private set; } = new Collection<JobApplication>();
+    public virtual ICollection<CustomerSocialLink> CustomerSocialLinks { get; private set; } = new Collection<CustomerSocialLink>();
+    public virtual ICollection<CustomerAddress> CustomerAddresses { get; private set; } = new Collection<CustomerAddress>();
 
     #endregion
 
