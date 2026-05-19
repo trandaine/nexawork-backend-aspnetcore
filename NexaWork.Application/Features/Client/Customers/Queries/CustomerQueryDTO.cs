@@ -4,8 +4,8 @@ namespace NexaWork.Application.Features.Client.Customers.Queries;
 
 public record CustomerQueryDTO
 (
-    Guid CustomerId,
-    string IdentityUserId,
+    // Guid CustomerId,
+    // string IdentityUserId,
     string? FirstName,
     string? LastName,
     string? Headline,

@@ -3,13 +3,14 @@ using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
 using NexaWork.Application.Common.Interfaces.Services;
+using NexaWork.Domain.Constants;
 
 namespace NexaWork.Application.Features.Client.Post.Commands.Create;
 
 public class CreatePostHandler : IRequestHandler<CreatePostCommand, Guid>
 {
     private readonly IPostRepository _repository;
-    private readonly INexaWorkDbContext _unitOfWork; 
+    private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICustomerRepository _customerRepository;
 
@@ -25,6 +26,7 @@ public class CreatePostHandler : IRequestHandler<CreatePostCommand, Guid>
         _customerRepository = customerRepository;
         _fileStorageService = fileStorageService;
     }
+
     public async Task<Guid> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
@@ -38,7 +40,9 @@ public class CreatePostHandler : IRequestHandler<CreatePostCommand, Guid>
         // If a file was provided, upload it using the abstracted service
         if (request.MediaFile != null)
         {
-            mediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, cancellationToken);
+            // mediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, cancellationToken);
+            mediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, SubfolderConstants.Posts,
+                cancellationToken);
         }
 
 

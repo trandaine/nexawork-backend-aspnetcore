@@ -18,6 +18,14 @@ public class CustomerRepository : ICustomerRepository
         _context.Customers.Add(customer);
     }
 
+    public async Task<Customer?> GetByIdentityIdToEditAsync(string identityUserId, CancellationToken cancellationToken)
+    {
+        return await _context.Customers
+            // .AsNoTracking()
+            // .FirstOrDefaultAsync(c => c.IdentityUserId == identityUserId, cancellationToken);
+            .FirstOrDefaultAsync(c => c.IdentityUserId.Equals(identityUserId), cancellationToken);
+    }
+
     public async Task<Customer?> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Customers

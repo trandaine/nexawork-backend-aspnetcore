@@ -1,5 +1,6 @@
 using MediatR;
-using NexaWork.Application.DTOs.Post;
+using NexaWork.Application.DTOs;
+// using NexaWork.Application.DTOs.Post;
 using NexaWork.Domain.Enums;
 
 namespace NexaWork.Application.Features.Client.Post.Commands.Create;

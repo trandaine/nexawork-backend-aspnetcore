@@ -25,16 +25,15 @@ public class CreatePostValidator : AbstractValidator<CreatePostCommand>
 
 
         When(v => v.MediaFile != null, () =>
-    {
-        RuleFor(v => v.MediaFile!.Length)
-            .LessThanOrEqualTo(5 * 1024 * 1024) // 5 MB limit
-            .WithMessage("The media file must not exceed 5 MB.");
+        {
+            RuleFor(v => v.MediaFile!.Length)
+                .LessThanOrEqualTo(5 * 1024 * 1024) // 5 MB limit
+                .WithMessage("The media file must not exceed 5 MB.");
 
-        RuleFor(v => v.MediaFile!.ContentType)
-            .Must(BeAValidImage)
-            .WithMessage("Only JPEG and PNG images are allowed.");
-    });
-
+            RuleFor(v => v.MediaFile!.ContentType)
+                .Must(BeAValidImage)
+                .WithMessage("Only JPEG and PNG images are allowed.");
+        });
     }
 
     private bool BeAValidImage(string contentType)

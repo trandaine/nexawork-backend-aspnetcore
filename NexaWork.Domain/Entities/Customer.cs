@@ -52,12 +52,29 @@ public class Customer
         };
     }
 
-    public void Update(string firstName, string lastName, string? headline, string? summary, string? location)
+    public void Update(string firstName, string lastName, string? headline, string? summary, string? location,
+        string? newProfilePictureUrl, string? newBackgroundPictureUrl)
     {
         FirstName = firstName;
         LastName = lastName;
         Headline = headline;
         Summary = summary;
         Location = location;
+        if (newProfilePictureUrl != null)
+        {
+            ProfilePictureUrl = newProfilePictureUrl;
+        }
+
+        if (newBackgroundPictureUrl != null)
+        {
+            BackgroundPictureUrl = newBackgroundPictureUrl;
+        }
+    }
+    
+    public void UpdateName(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        // UpdatedAt = DateTime.UtcNow; // If you track updates!
     }
 }

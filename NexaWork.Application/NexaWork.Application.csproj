@@ -9,7 +9,6 @@
     <Folder Include="Common/Exceptions/" />
     <Folder Include="Common/Interfaces/Services/" />
     <Folder Include="DTOs/Post/" />
-    <Folder Include="Features/Client/Customers/Commands/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
     <Folder Include="Features/Client/Customers/Commands/Delete/" />
     <Folder Include="Features/Client/Customers/Queries/" />

@@ -18,6 +18,14 @@ public interface ICustomerRepository
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Customer?> GetByIdentityIdAsync(string identityUserId, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Get customer by IdentityUserId for edit
+    /// </summary>
+    /// <param name="identityUserId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Customer?> GetByIdentityIdToEditAsync(string identityUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Lấy Customer theo CustomerId. Trả về null nếu không tìm thấy.

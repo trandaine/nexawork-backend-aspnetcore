@@ -2,7 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NexaWork.Application.DTOs.Post;
+using NexaWork.Application.DTOs;
 using NexaWork.Application.Features.Client.Post.Commands.Create;
 using NexaWork.Application.Features.Client.Post.Commands.Delete;
 using NexaWork.Application.Features.Client.Post.Commands.Update;
@@ -22,7 +22,7 @@ namespace NexaWork.Client.Controllers
 
         public PostsController(
             ISender mediator
-            )
+        )
         {
             _mediator = mediator;
         }
@@ -84,7 +84,6 @@ namespace NexaWork.Client.Controllers
         }
 
 
-
         /// <summary>
         /// Get post by ID method
         /// </summary>
@@ -98,7 +97,6 @@ namespace NexaWork.Client.Controllers
                 return NotFound();
             return Ok(result);
         }
-
 
 
         /// <summary>
@@ -141,8 +139,8 @@ namespace NexaWork.Client.Controllers
 
             return NoContent();
         }
-        
-        
+
+
         /// <summary>
         /// Delete post by ID method
         /// </summary>

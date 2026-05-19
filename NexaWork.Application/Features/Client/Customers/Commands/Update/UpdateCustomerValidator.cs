@@ -20,5 +20,33 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerCommand>
             .MaximumLength(100).WithMessage("Location cannot exceed 100 characters.");
         RuleFor(x => x.Headline)
             .MaximumLength(150).WithMessage("Headline cannot exceed 150 characters.");
+
+        When(v => v.BackgroundPictureFile != null, () =>
+        {
+            RuleFor(v => v.BackgroundPictureFile!.Length)
+                .LessThanOrEqualTo(5 * 1024 * 1024) // 5 MB limit
+                .WithMessage("The media file must not exceed 5 MB.");
+
+            RuleFor(v => v.BackgroundPictureFile!.ContentType)
+                .Must(BeAValidImage)
+                .WithMessage("Only JPEG and PNG images are allowed.");
+        });
+
+        When(v => v.ProfilePictureFile != null, () =>
+        {
+            RuleFor(v => v.ProfilePictureFile!.Length)
+                .LessThanOrEqualTo(5 * 1024 * 1024) // 5 MB limit
+                .WithMessage("The media file must not exceed 5 MB.");
+
+            RuleFor(v => v.ProfilePictureFile!.ContentType)
+                .Must(BeAValidImage)
+                .WithMessage("Only JPEG and PNG images are allowed.");
+        });
+    }
+
+    private bool BeAValidImage(string contentType)
+    {
+        var allowedTypes = new[] { "image/jpeg", "image/png", "image/jpg" };
+        return allowedTypes.Contains(contentType.ToLower());
     }
 }

@@ -6,12 +6,14 @@ namespace NexaWork.Application.Features.Client.Customers.Queries.GetByIdentityId
 public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdentityIdQuery, CustomerWithIdentityIdDTO?>
 {
     private readonly ICustomerRepository _repository;
+
     public GetCustomerByIdentityIdHandler(ICustomerRepository repository)
     {
         _repository = repository;
     }
 
-    public async Task<CustomerWithIdentityIdDTO?> Handle(GetCustomerByIdentityIdQuery request, CancellationToken cancellationToken)
+    public async Task<CustomerWithIdentityIdDTO?> Handle(GetCustomerByIdentityIdQuery request,
+        CancellationToken cancellationToken)
     {
         var customerWithIdentityId = await _repository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
 
@@ -19,15 +21,10 @@ public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdent
             return null;
 
         return new CustomerWithIdentityIdDTO(
-                    customerWithIdentityId.CustomerId,
-                    customerWithIdentityId.IdentityUserId,
-                    customerWithIdentityId.FirstName,
-                    customerWithIdentityId.LastName
-                );
-
-
-
-
+            // customerWithIdentityId.CustomerId,
+            // customerWithIdentityId.IdentityUserId,
+            customerWithIdentityId.FirstName,
+            customerWithIdentityId.LastName
+        );
     }
-
 }

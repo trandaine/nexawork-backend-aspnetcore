@@ -2,6 +2,7 @@ using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
 using NexaWork.Application.Common.Interfaces.Services;
+using NexaWork.Domain.Constants;
 
 namespace NexaWork.Application.Features.Client.Post.Commands.Update;
 
@@ -11,6 +12,7 @@ public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICustomerRepository _customerRepository;
+
     public UpdatePostHandler(
         IPostRepository repository,
         INexaWorkDbContext unitOfWork,
@@ -23,6 +25,7 @@ public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
         _fileStorageService = fileStorageService;
         _customerRepository = customerRepository;
     }
+
     public async Task Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
         var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
@@ -45,7 +48,9 @@ public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
         string? newMediaUrl = null;
         if (request.MediaFile != null)
         {
-            newMediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, cancellationToken);
+            // newMediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, cancellationToken);
+            newMediaUrl = await _fileStorageService.UploadFileAsync(request.MediaFile, SubfolderConstants.Posts,
+                cancellationToken);
 
             // Optional Enterprise feature: Delete the old file from the hard drive so your server doesn't run out of space!
             // if (!string.IsNullOrEmpty(post.MediaUrl))
@@ -60,9 +65,8 @@ public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
             request.Visibility
         );
 
-        _repository.Update(post);
+        // Disable this because of it will override the record instead of update only the Content, MediaURL and visibility
+        // _repository.Update(post);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-
     }
 }
