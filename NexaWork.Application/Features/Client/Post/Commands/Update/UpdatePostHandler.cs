@@ -8,42 +8,41 @@ namespace NexaWork.Application.Features.Client.Post.Commands.Update;
 
 public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
 {
-    private readonly IPostRepository _repository;
+    private readonly IPostRepository _postRepository;
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICustomerRepository _customerRepository;
+    private readonly ICurrentUserService _currentUserService;
 
     public UpdatePostHandler(
         IPostRepository repository,
         INexaWorkDbContext unitOfWork,
         IFileStorageService fileStorageService,
-        ICustomerRepository customerRepository
+        ICustomerRepository customerRepository,
+        ICurrentUserService currentUserService
     )
     {
-        _repository = repository;
+        _postRepository = repository;
         _unitOfWork = unitOfWork;
+        _currentUserService = currentUserService;
         _fileStorageService = fileStorageService;
         _customerRepository = customerRepository;
     }
 
     public async Task Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
-        var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
-        if (customer == null)
-        {
-            throw new Exception("Customer profile not found for this user.");
-        }
+        var identityUserId = _currentUserService.UserId;
 
-        var post = await _repository.GetByIdAsync(request.PostId, cancellationToken);
+        var customer = await _customerRepository.GetByIdentityIdAsync(identityUserId, cancellationToken);
+        if (customer == null)
+            throw new UnauthorizedAccessException("Customer profile not found for this user.");
+
+        var post = await _postRepository.GetByIdForEditAsync(request.PostId, cancellationToken);
         if (post == null)
-        {
             throw new Exception("Post not found.");
-        }
 
         if (post.CustomerId != customer.CustomerId)
-        {
-            throw new Exception("Unauthorized: You can only update your own posts.");
-        }
+            throw new UnauthorizedAccessException("You can only update your own posts.");
 
         string? newMediaUrl = null;
         if (request.MediaFile != null)

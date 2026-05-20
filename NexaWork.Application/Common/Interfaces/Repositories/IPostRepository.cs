@@ -25,6 +25,8 @@ public interface IPostRepository
     /// <returns></returns>
     Task<Post?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Post?> GetByIdForEditAsync(Guid id, CancellationToken cancellationToken);
+
     void Update(Post post);
 
     void Remove(Post post);

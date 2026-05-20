@@ -19,10 +19,9 @@ public class CommentsController : Controller
         _mediator = mediator;
     }
     [HttpPost("new-comment")]
-    public async Task<IActionResult> Create(Guid postId, Guid customerId, string content)
+    public async Task<IActionResult> Create(Guid postId, string content)
     {
-        // Call the CreateCommentCommand using MediatR
-        var commentId = await _mediator.Send(new CreateCommentCommand(postId, customerId, content));
+        var commentId = await _mediator.Send(new CreateCommentCommand(postId, content));
         return Ok(commentId);
     }
     

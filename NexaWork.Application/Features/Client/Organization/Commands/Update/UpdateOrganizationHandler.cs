@@ -35,7 +35,7 @@ public class UpdateOrganizationHandler : IRequestHandler<UpdateOrganizationComma
             request.LogoUrl,
             request.FoundedDate
         );
-        _repository.Update(editOrganization);
+        // _repository.Update(editOrganization);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     }

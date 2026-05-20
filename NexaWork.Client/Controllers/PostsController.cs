@@ -36,15 +36,6 @@ namespace NexaWork.Client.Controllers
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromForm] CreatePostRequest request)
         {
-            // Extract the CustomerId from the JWT Token Claims
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Check if the claim exists and is a valid GUID, then parsed into customerId
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var customerId))
-            {
-                return Unauthorized("User ID not found in token.");
-            }
-
             FileDTO? fileDto = null;
 
             // Translate IFormFile to our pure FileDto
@@ -59,10 +50,7 @@ namespace NexaWork.Client.Controllers
             }
 
 
-            // Send the command to the application layer
             var command = new CreatePostCommand(
-                userIdClaim, // Pass the IdentityUserId (string)
-                customerId,
                 request.Content,
                 fileDto,
                 request.Visibility
@@ -109,9 +97,6 @@ namespace NexaWork.Client.Controllers
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromForm] CreatePostRequest request)
         {
-            // Extract Identity ID from JWT
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
 
             // Map the incoming request file to FileDTO (like you did in Create)
             FileDTO? fileDto = null;
@@ -129,7 +114,6 @@ namespace NexaWork.Client.Controllers
             // Assemble the command
             var command = new UpdatePostCommand(
                 id, // The ID from the URL path!
-                userIdClaim,
                 request.Content,
                 fileDto,
                 request.Visibility

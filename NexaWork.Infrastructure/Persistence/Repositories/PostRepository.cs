@@ -34,6 +34,14 @@ public class PostRepository : IPostRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.PostId == id, cancellationToken);
     }
+    
+    public async Task<Post?> GetByIdForEditAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _context.Posts
+            .Include(p => p.Customer)
+            // .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.PostId == id, cancellationToken);
+    }
 
     public void Update(Post post)
     {

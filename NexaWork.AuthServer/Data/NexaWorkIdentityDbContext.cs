@@ -32,8 +32,8 @@ public class NexaWorkIdentityDbContext : IdentityDbContext<NexaWorkUser, NexaWor
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // var connectionString = "Server= localhost, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=Dai@2018; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
-            var connectionString = "Server= 192.168.1.16, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=lohosum619@@; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
+            var connectionString = "Server= localhost, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=Dai@2018; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
+            // var connectionString = "Server= 192.168.1.16, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=lohosum619@@; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
