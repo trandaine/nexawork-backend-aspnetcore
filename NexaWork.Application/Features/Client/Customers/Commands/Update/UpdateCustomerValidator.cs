@@ -1,4 +1,5 @@
 using FluentValidation;
+using PhoneNumbers;
 
 namespace NexaWork.Application.Features.Client.Customers.Commands.Update;
 
@@ -20,7 +21,13 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerCommand>
             .MaximumLength(100).WithMessage("Location cannot exceed 100 characters.");
         RuleFor(x => x.Headline)
             .MaximumLength(150).WithMessage("Headline cannot exceed 150 characters.");
-
+        
+        // Validate phonenumber
+        RuleFor(x => x.PhoneNumber)
+            .MaximumLength(16).WithMessage("Phone number cannot exceed 16 characters.")
+            .Must(BeAValidPhoneNumber).WithMessage("The phone number provided is not a valid, routable number.");
+        
+        
         When(v => v.BackgroundPictureFile != null, () =>
         {
             RuleFor(v => v.BackgroundPictureFile!.Length)
@@ -48,5 +55,25 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerCommand>
     {
         var allowedTypes = new[] { "image/jpeg", "image/png", "image/jpg" };
         return allowedTypes.Contains(contentType.ToLower());
+    }
+    
+    private bool BeAValidPhoneNumber(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber)) return false;
+
+        var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+        try
+        {
+            // The "ZZ" means we expect the user to include the country code (like +84 or +1)
+            // If you only operate in Vietnam, you could change "ZZ" to "VN" and it will assume local numbers!
+            var parsedNumber = phoneNumberUtil.Parse(phoneNumber, "VN");
+            
+            return phoneNumberUtil.IsValidNumber(parsedNumber);
+        }
+        catch (NumberParseException)
+        {
+            // If it can't even be parsed, it's definitely invalid
+            return false;
+        }
     }
 }

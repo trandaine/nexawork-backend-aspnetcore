@@ -19,6 +19,9 @@ public class CreateCustomerHandler : IRequestHandler<CreateCustomerCommand, Guid
     }
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
+        var checkUserExisted = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
+        if (checkUserExisted is not null)        
+            throw new InvalidOperationException("Customer with the given IdentityUserId already exists.");
         var customer = NexaWork.Domain.Entities.Customer.Create(request.IdentityUserId);
 
         _customerRepository.Create(customer);

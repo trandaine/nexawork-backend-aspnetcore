@@ -20,5 +20,6 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.Location).HasMaxLength(100);
         builder.Property(c => c.ProfilePictureUrl).HasMaxLength(255);
         builder.Property(c => c.BackgroundPictureUrl).HasMaxLength(255);
+        builder.Property(c => c.PhoneNumber).HasMaxLength(16);
     }
 }

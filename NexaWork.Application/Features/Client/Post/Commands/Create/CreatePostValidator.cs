@@ -9,8 +9,6 @@ public class CreatePostValidator : AbstractValidator<CreatePostCommand>
 
     public CreatePostValidator()
     {
-        RuleFor(p => p.CustomerId)
-            .NotEmpty().WithMessage("CustomerId is required.");
 
         RuleFor(p => p.Content)
             .MaximumLength(3000).WithMessage("Post content cannot exceed 3000 characters.");

@@ -10,4 +10,5 @@ public class CustomerRequestDTO
     public string? Location { get; set; }
     public IFormFile? ProfilePictureFile { get; set; }
     public IFormFile? BackgroundPictureFile { get; set; }
+    public string? PhoneNumber { get; set; }
 }

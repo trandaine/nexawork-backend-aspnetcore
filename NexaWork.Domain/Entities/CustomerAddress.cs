@@ -13,4 +13,31 @@ public class CustomerAddress
 
     // Navigation property
     public Customer Customer { get; private set; } = null!;
+
+    private CustomerAddress()
+    {
+    }
+
+    public static CustomerAddress Create(string? city, string? postalCode, string? country, string? taxId, Guid customerId)
+    {
+        return new CustomerAddress()
+        {
+            CustomerAddressId = Guid.NewGuid(),
+            City = city,
+            PostalCode = postalCode,
+            Country = country,
+            TaxId = taxId,
+            DateCreated = DateTime.UtcNow,
+            CustomerId = customerId
+        };
+    }
+    
+    public void Update(string? city, string? postalCode, string? country, string? taxId)
+    {
+        City = city;
+        PostalCode = postalCode;
+        Country = country;
+        TaxId = taxId;
+        DateUpdated = DateTime.UtcNow;
+    }
 }

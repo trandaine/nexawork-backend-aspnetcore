@@ -23,7 +23,7 @@ public class Customer
     public string? BackgroundPictureUrl { get; private set; }
     
     [Description("Số điện thoại của Người dùng")]
-    public int? PhoneNumber { get; private set; }
+    public string? PhoneNumber { get; private set; }
 
 
     #region Navigation Properties
@@ -58,13 +58,14 @@ public class Customer
     }
 
     public void Update(string firstName, string lastName, string? headline, string? summary, string? location,
-        string? newProfilePictureUrl, string? newBackgroundPictureUrl)
+        string? newProfilePictureUrl, string? newBackgroundPictureUrl, string? phoneNumber)
     {
         FirstName = firstName;
         LastName = lastName;
         Headline = headline;
         Summary = summary;
         Location = location;
+        PhoneNumber = phoneNumber;
         if (newProfilePictureUrl != null)
         {
             ProfilePictureUrl = newProfilePictureUrl;

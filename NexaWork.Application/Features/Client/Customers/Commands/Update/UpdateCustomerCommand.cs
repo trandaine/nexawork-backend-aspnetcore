@@ -12,4 +12,5 @@ public record UpdateCustomerCommand(
     string? Summary,
     string? Location,
     FileDTO? BackgroundPictureFile,
-    FileDTO? ProfilePictureFile) : IRequest;
+    FileDTO? ProfilePictureFile,
+    string? PhoneNumber) : IRequest;

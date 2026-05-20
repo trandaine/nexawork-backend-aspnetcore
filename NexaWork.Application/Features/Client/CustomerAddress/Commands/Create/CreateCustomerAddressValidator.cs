@@ -1,0 +1,19 @@
+using FluentValidation;
+
+namespace NexaWork.Application.Features.Client.CustomerAddress.Commands.Create;
+
+public class CreateCustomerAddressValidator : AbstractValidator<CreateCustomerAddressCommand>
+{
+    public CreateCustomerAddressValidator()
+    {
+        RuleFor(cav => cav.City)
+            .MaximumLength(100).WithMessage("City must not exceed 100 characters.");
+        RuleFor(cav => cav.PostalCode)
+            .MaximumLength(20).WithMessage("Postal code must not exceed 20 characters.");
+        RuleFor(cav => cav.Country)
+            .MaximumLength(100).WithMessage("Country must not exceed 100 characters.");
+        RuleFor(cav => cav.TaxId)
+            .MaximumLength(50).WithMessage("Tax ID must not exceed 50 characters.");
+        
+    }
+}

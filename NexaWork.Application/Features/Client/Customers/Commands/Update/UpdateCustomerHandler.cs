@@ -60,7 +60,8 @@ public class UpdateCustomerHandler : IRequestHandler<UpdateCustomerCommand>
             request.Summary,
             request.Location,
             profilePictureUrl,
-            backgroundPictureUrl
+            backgroundPictureUrl,
+            request.PhoneNumber
         );
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

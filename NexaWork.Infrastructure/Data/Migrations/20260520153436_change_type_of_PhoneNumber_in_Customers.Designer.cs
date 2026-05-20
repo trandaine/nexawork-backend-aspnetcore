@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexaWork.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using NexaWork.Infrastructure.Persistence;
 namespace NexaWork.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(NexaWorkDbContext))]
-    partial class NexaWorkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260520153436_change_type_of_PhoneNumber_in_Customers")]
+    partial class change_type_of_PhoneNumber_in_Customers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

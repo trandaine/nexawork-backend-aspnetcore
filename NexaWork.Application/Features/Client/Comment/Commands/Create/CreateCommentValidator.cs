@@ -10,9 +10,6 @@ public class CreateCommentValidator : AbstractValidator<CreateCommentCommand>
             .NotEqual(Guid.Empty)
             .WithMessage("PostId is required.");
 
-        RuleFor(x => x.CustomerId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("CustomerId is required.");
 
         RuleFor(x => x.Content)
             .NotEmpty()

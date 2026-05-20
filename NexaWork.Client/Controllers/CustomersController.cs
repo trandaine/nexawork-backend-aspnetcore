@@ -142,7 +142,8 @@ namespace NexaWork.Client.Controllers
                 request.Summary,
                 request.Location,
                 backgroundPictureFileDto,
-                profilePictureFileDto
+                profilePictureFileDto,
+                request.PhoneNumber
             );
 
             await _mediator.Send(command);
