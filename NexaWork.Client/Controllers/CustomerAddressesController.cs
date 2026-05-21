@@ -11,11 +11,11 @@ namespace NexaWork.Client.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class CustomerAddress : ControllerBase
+    public class CustomerAddressesController : ControllerBase
     {
         private readonly ISender _mediator;
 
-        public CustomerAddress(ISender mediator)
+        public CustomerAddressesController(ISender mediator)
         {
             _mediator = mediator;
         }

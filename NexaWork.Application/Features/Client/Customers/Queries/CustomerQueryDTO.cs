@@ -12,5 +12,6 @@ public record CustomerQueryDTO
     string? Summary,
     string? Location,
     string? ProfilePictureUrl,
-    string? BackgroundPictureUrl
+    string? BackgroundPictureUrl,
+    string? PhoneNumber
 );

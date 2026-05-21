@@ -31,7 +31,8 @@ public class GetCustomerByIdHandler : IRequestHandler<GetCustomerByIdQuery, Cust
             customer.Summary,
             customer.Location,
             customer.ProfilePictureUrl,
-            customer.BackgroundPictureUrl
+            customer.BackgroundPictureUrl,
+            customer.PhoneNumber
         );
     }
 }

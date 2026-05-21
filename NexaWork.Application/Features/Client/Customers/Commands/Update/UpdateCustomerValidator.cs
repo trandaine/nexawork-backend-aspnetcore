@@ -25,7 +25,9 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerCommand>
         // Validate phonenumber
         RuleFor(x => x.PhoneNumber)
             .MaximumLength(16).WithMessage("Phone number cannot exceed 16 characters.")
-            .Must(BeAValidPhoneNumber).WithMessage("The phone number provided is not a valid, routable number.");
+            .Must(BeAValidPhoneNumber).WithMessage("The phone number provided is not a valid, routable number.")
+            .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
+
         
         
         When(v => v.BackgroundPictureFile != null, () =>

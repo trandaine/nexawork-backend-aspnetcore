@@ -23,7 +23,8 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, List
             customer.Summary,
             customer.Location,
             customer.ProfilePictureUrl,
-            customer.BackgroundPictureUrl
+            customer.BackgroundPictureUrl,
+            customer.PhoneNumber
         )).ToList();
 
     }
