@@ -29,12 +29,12 @@ namespace NexaWork.Client.Controllers
         }
 
         // POST api/<CustomerAddress>
-        [HttpPost("create-customer-address")]
-        public async Task<ActionResult<Guid>> CreateCustomerAddress([FromBody] CreateCustomerAddressCommand command)
-        {
-            var newCustomerAddressId = await _mediator.Send(command);
-            return Ok(newCustomerAddressId);
-        }
+        // [HttpPost("create-customer-address")]
+        // public async Task<ActionResult<Guid>> CreateCustomerAddress([FromBody] CreateCustomerAddressCommand command)
+        // {
+        //     var newCustomerAddressId = await _mediator.Send(command);
+        //     return Ok(newCustomerAddressId);
+        // }
 
         // PUT api/<CustomerAddress>/5
         [HttpPut("update-customer-address")]

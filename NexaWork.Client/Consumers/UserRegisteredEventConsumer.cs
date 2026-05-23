@@ -1,6 +1,8 @@
 using MassTransit;
 using MediatR;
+using NexaWork.Application.Features.Client.CustomerAddress.Commands.Create;
 using NexaWork.Application.Features.Client.Customers.Commands.Create;
+using NexaWork.Application.Features.Client.CustomerSocialLink.Commands.Create;
 using NexaWork.Contracts;
 
 namespace NexaWork.Client.Consumers;
@@ -19,11 +21,25 @@ public class UserRegisteredEventConsumer : IConsumer<UserRegisteredEvent>
     public async Task Consume(ConsumeContext<UserRegisteredEvent> context)
     {
         _logger.LogInformation("Received UserRegisteredEvent for User ID: {UserId}", context.Message.UserId);
+        try
+        {
+            // Run your existing business logic!
+            var createCustomerCommand = new CreateCustomerCommand(context.Message.UserId);
+            var createCustomerAddress = new CreateCustomerAddressCommand(context.Message.UserId);
+            var createCustomerSocialLink = new CreateCustomerSocialLinkCommand(context.Message.UserId);
 
-        // Run your existing business logic!
-        var command = new CreateCustomerCommand(context.Message.UserId);
-        await _mediator.Send(command);
+            await _mediator.Send(createCustomerCommand);
+            await _mediator.Send(createCustomerAddress);
+            await _mediator.Send(createCustomerSocialLink);
 
-        _logger.LogInformation("Successfully created Customer profile for User ID: {UserId}", context.Message.UserId);
+            _logger.LogInformation("Successfully created Customer profile for User ID: {UserId}",
+                context.Message.UserId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create customer profile for User ID: {UserId}", context.Message.UserId);
+            throw;
+        }
+
     }
 }

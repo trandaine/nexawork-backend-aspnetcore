@@ -26,9 +26,9 @@ public class CreateCustomerAddressHandler : IRequestHandler<CreateCustomerAddres
     }
     public async Task<Guid> Handle(CreateCustomerAddressCommand request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        // var userIdentityId = _currentUserService.UserId;
         
-        var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
+        var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
         if (customer == null)
         {
             throw new InvalidOperationException("Customer not found");
@@ -36,10 +36,6 @@ public class CreateCustomerAddressHandler : IRequestHandler<CreateCustomerAddres
 
         var customerAddress = NexaWork.Domain.Entities.CustomerAddress.Create
         (
-            request.City,
-            request.PostalCode,
-            request.Country,
-            request.TaxId,
             customer.CustomerId
         );
 

@@ -9,17 +9,17 @@ public class CreateCustomerSocialLinkHandler : IRequestHandler<CreateCustomerSoc
 {
     private readonly ICustomerSocialLinkRepository _customerSocialLinkRepository;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ICurrentUserService _currentUserService;
+    // private readonly ICurrentUserService _currentUserService;
     private readonly INexaWorkDbContext _unitOfWork;
 
     public CreateCustomerSocialLinkHandler(
         ICustomerSocialLinkRepository customerSocialLinkRepository,
         ICustomerRepository customerRepository,
-        ICurrentUserService currentUserService,
+        // ICurrentUserService currentUserService,
         INexaWorkDbContext unitOfWork
     )
     {
-        _currentUserService = currentUserService;
+        // _currentUserService = currentUserService;
         _customerSocialLinkRepository = customerSocialLinkRepository;
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
@@ -27,18 +27,14 @@ public class CreateCustomerSocialLinkHandler : IRequestHandler<CreateCustomerSoc
 
     public async Task<Guid> Handle(CreateCustomerSocialLinkCommand request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        // var userIdentityId = _currentUserService.UserId;
 
-        var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
+        var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
         if (customer == null)
             throw new UnauthorizedAccessException("Customer not found");
 
         var customerSocialLink =
             NexaWork.Domain.Entities.CustomerSocialLink.Create(
-                request.FaceBookUrl,
-                request.LinkedInUrl,
-                request.XUrl,
-                request.InstagramUrl,
                 customer.CustomerId
             );
         _customerSocialLinkRepository.Create(customerSocialLink);

@@ -7,8 +7,8 @@ public class CustomerAddress
     public string? PostalCode { get; private set; }
     public string? Country { get; private set; }
     public string? TaxId { get; private set; }
-    public DateTime DateCreated { get; set; }
-    public DateTime? DateUpdated { get; set; }
+    public DateTime DateCreated { get; private set; }
+    public DateTime? DateUpdated { get; private set; }
     public Guid CustomerId { get; private set; }
 
     // Navigation property
@@ -18,15 +18,11 @@ public class CustomerAddress
     {
     }
 
-    public static CustomerAddress Create(string? city, string? postalCode, string? country, string? taxId, Guid customerId)
+    public static CustomerAddress Create(Guid customerId)
     {
         return new CustomerAddress()
         {
             CustomerAddressId = Guid.NewGuid(),
-            City = city,
-            PostalCode = postalCode,
-            Country = country,
-            TaxId = taxId,
             DateCreated = DateTime.UtcNow,
             CustomerId = customerId
         };

@@ -39,6 +39,10 @@ public class Customer
     public virtual ICollection<JobApplication> JobApplications { get; private set; } = new Collection<JobApplication>();
     public virtual ICollection<CustomerSocialLink> CustomerSocialLinks { get; private set; } = new Collection<CustomerSocialLink>();
     public virtual ICollection<CustomerAddress> CustomerAddresses { get; private set; } = new Collection<CustomerAddress>();
+    
+    // public CustomerSocialLink CustomerSocial { get; private set; } = null!;
+    // public CustomerAddress CustomerAddresses { get; private set; } = null!;
+    
 
     #endregion
 
@@ -53,9 +57,25 @@ public class Customer
         return new Customer
         {
             CustomerId = Guid.NewGuid(),
+            
             IdentityUserId = identityUserId,
         };
     }
+    
+    // public static Customer Create(string identityUserId)
+    // {
+    //     var newCustomerId = Guid.NewGuid();
+    //     CustomerSocialLink.Create(newCustomerId);
+    //     CustomerAddress.Create(newCustomerId);
+    //     var customer = new Customer
+    //     {
+    //         CustomerId = newCustomerId,
+    //         IdentityUserId = identityUserId,
+    //         // CustomerSocialLinks = CustomerSocialLink.Create(newCustomerId),
+    //         // CustomerAddresses = CustomerAddress.Create(newCustomerId)
+    //     };
+    //     return customer;
+    // }
 
     public void Update(string firstName, string lastName, string? headline, string? summary, string? location,
         string? newProfilePictureUrl, string? newBackgroundPictureUrl, string? phoneNumber)

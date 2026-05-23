@@ -32,12 +32,12 @@ namespace NexaWork.Client.Controllers
         }
 
         // POST api/<CustomerSocialLinksController>
-        [HttpPost("create-customer-social-link")]
-        public async Task<IActionResult> Post([FromBody] CreateCustomerSocialLinkCommand command)
-        {
-            var newCustomerSocialLinkId = await _mediator.Send(command);
-            return Ok(newCustomerSocialLinkId);
-        }
+        // [HttpPost("create-customer-social-link")]
+        // public async Task<IActionResult> Post([FromBody] CreateCustomerSocialLinkCommand command)
+        // {
+        //     var newCustomerSocialLinkId = await _mediator.Send(command);
+        //     return Ok(newCustomerSocialLinkId);
+        // }
 
 
         // PUT api/<CustomerSocialLinksController>/5

@@ -7,8 +7,8 @@ public class CustomerSocialLink
     public string? LinkedInUrl { get; private set; }
     public string? XUrl { get; private set; }
     public string? InstagramUrl { get; private set; }
-    public DateTime DateCreated { get; set; }
-    public DateTime? DateUpdated { get; set; }
+    public DateTime DateCreated { get; private set; }
+    public DateTime? DateUpdated { get; private set; }
     public Guid CustomerId { get; private set; }
 
 
@@ -18,17 +18,14 @@ public class CustomerSocialLink
     private CustomerSocialLink()
     {
     }
+    
+    
 
-    public static CustomerSocialLink Create(string? faceBookUrl, string? linkedInUrl, string? xUrl,
-        string? instagramUrl, Guid customerId)
+    public static CustomerSocialLink Create(Guid customerId)
     {
         return new CustomerSocialLink()
         {
             CustomerSocialLinkId = Guid.NewGuid(),
-            FaceBookUrl = UpdateSocialLinks(faceBookUrl),
-            LinkedInUrl = UpdateSocialLinks(linkedInUrl),
-            XUrl = UpdateSocialLinks(xUrl),
-            InstagramUrl = UpdateSocialLinks(instagramUrl),
             DateCreated = DateTime.UtcNow,
             CustomerId = customerId
         };
