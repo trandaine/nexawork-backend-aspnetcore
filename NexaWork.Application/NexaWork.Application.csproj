@@ -28,6 +28,7 @@
     <Folder Include="Features/Client/Post/Queries/GetAll/" />
     <Folder Include="Features/Client/Post/Queries/GetById/" />
     <Folder Include="Features\Client\CustomerSocialLink\Commands\Delete\" />
+    <Folder Include="Features\Client\Education\Commands\Delete\" />
   </ItemGroup>
 
   <ItemGroup>

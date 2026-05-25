@@ -124,6 +124,7 @@ public static class DependencyInjection
         services.AddScoped<ISkillRepository, SkillRepository>();
         services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
         services.AddScoped<ICustomerSocialLinkRepository, CustomerSocialLinkRepository>();
+        services.AddScoped<IEducationRepository, EducationRepository>();
 
         // 4. Register your Services
         services.AddScoped<IFileStorageService, LocalFileStorageService>();

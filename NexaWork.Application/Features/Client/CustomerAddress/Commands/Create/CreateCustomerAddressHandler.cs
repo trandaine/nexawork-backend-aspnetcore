@@ -33,6 +33,10 @@ public class CreateCustomerAddressHandler : IRequestHandler<CreateCustomerAddres
         {
             throw new InvalidOperationException("Customer not found");
         }
+        
+        var customerAddressExist = await _customerAddressRepository.GetByCustomerAddressIdAsync(customer.CustomerId, cancellationToken);
+        if (customerAddressExist != null)        
+            throw new InvalidOperationException("Customer address already exists for this customer");
 
         var customerAddress = NexaWork.Domain.Entities.CustomerAddress.Create
         (
