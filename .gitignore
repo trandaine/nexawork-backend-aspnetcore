@@ -3,7 +3,8 @@
 bin/
 obj/
 out/
-
+.git/
+nexawork-backend-aspnetcore.git/
 # Visual Studio
 .vs/
 *.user
