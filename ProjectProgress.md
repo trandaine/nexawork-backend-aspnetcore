@@ -17,3 +17,8 @@
 - Ngày 2/4/2026: Hoàn thành chức năng đăng ký tài khoản mới, đăng nhập trong `AuthenticationController` của dự án `NexaWork.Client`, bao gồm việc kiểm tra tính hợp lệ của email và tên đăng nhập, tạo tài khoản người dùng mới và trả về phản hồi phù hợp cho frontend. đồng thời cung cấp thông tin chi tiết về lỗi nếu quá trình đăng ký thất bại (ví dụ: mật khẩu quá yếu hoặc email đã tồn tại). Tôi sẽ tiếp tục phát triển các chức năng khác như đăng xuất, reset password và quản lý tài khoản người dùng trong thời gian tới.
 
 - Ngày 6/4/2026: Update lại các entities với 'virtual' và 'ICollection', 'Collection'. Backup là cần thiết.
+
+## Giai đoạn 2: Xây dựng các chức năng nâng cao:
+
+- Sau khi hoàn thành các chức năng cơ bản thì ta sẽ bắt đầu chăm chút vào các chức năng quản lý thông tin người dùng đăng nhập nâng cao hơn. Chúng ta sẽ bắt đầu với việc refactor lại dự án AuthSever thành một dự án MVC thuần để dễ dàng phát triển các chức năng quản lý tài khoản người dùng, bao gồm việc thay đổi mật khẩu, cập nhật thông tin cá nhân và thiết lập xác thực hai yếu tố (2FA). Điều này sẽ giúp tăng cường bảo mật cho người dùng và cải thiện trải nghiệm người dùng trên nền tảng NexaWork. 
+- Ngày 25/05/2026: Tạo nhánh `feature/advanced-authen` để refactor lại dự án `NexaWork.AuthSever` thành một dự án MVC thuần, đồng thời bắt đầu phát triển các chức năng quản lý tài khoản người dùng nâng cao như thay đổi mật khẩu, cập nhật thông tin cá nhân và thiết lập xác thực hai yếu tố (2FA). Tôi sẽ đảm bảo rằng các chức năng này được tích hợp một cách liền mạch vào hệ thống Identity hiện tại và cung cấp trải nghiệm người dùng tốt nhất có thể. Ngoài ra, tôi cũng sẽ chú trọng đến việc bảo mật các chức năng này để đảm bảo rằng thông tin người dùng được bảo vệ một cách an toàn.
