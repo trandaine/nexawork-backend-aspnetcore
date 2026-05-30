@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Sign in with Passkey";
+    Layout = "_Layout_2";
+}
+
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-body">
+            <section class="row flexbox-container">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+                        <div class="card border-grey border-lighten-3 m-0">
+                            <div class="card-header border-0 pb-0">
+                                <div class="card-title text-center">
+                                    <div class="p-1">
+                                        <h2>NexaWork Security</h2>
+                                    </div>
+                                </div>
+                                <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
+                                    <span>Passkey Verification</span>
+                                </h6>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-body text-center">
+                                    <i class="la la-fingerprint text-primary mb-2" style="font-size: 5rem;"></i>
+                                    <p class="text-muted">Use your fingerprint, face, or screen lock to sign in.</p>
+
+                                    <button class="btn btn-primary btn-block shadow mb-2"
+                                            style="border-radius: 20px; font-weight: bold;"
+                                            onclick="loginWithPasskey('@ViewData["Username"]', '@ViewData["ReturnUrl"]')">
+                                        Verify Passkey
+                                    </button>
+
+                                    <hr/>
+                                    <p class="text-center">
+                                        Can't use your passkey?
+                                        <br/>
+                                        <a asp-action="Select2faProvider" asp-route-returnUrl="@ViewData["ReturnUrl"]">Choose
+                                            another method</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/webauthn.js"></script>
+    <script>
+        // Auto trigger the passkey prompt when the page loads
+        document.addEventListener("DOMContentLoaded", function () {
+            loginWithPasskey('@ViewData["Username"]', '@ViewData["ReturnUrl"]');
+        });
+    </script>
+}

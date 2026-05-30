@@ -164,6 +164,25 @@ builder.Services.AddCors(options =>
 
 
 
+// Add Session for FIDO2 Challenge storage
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.IsEssential = true;
+});
+
+// Add FIDO2 Services
+builder.Services.AddFido2(options =>
+{
+    options.ServerDomain = "localhost";
+    options.ServerName = "NexaWork Security";
+    options.Origins = new HashSet<string> { "https://localhost:7036" };
+    options.TimestampDriftTolerance = 300000;
+});
+
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
@@ -207,6 +226,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseSession();
 app.UseRouting();
 
 app.UseAuthentication();

@@ -5,6 +5,7 @@ using NexaWork.Authentication.Data.IdentityEntities;
 using NexaWork.Authentication.Models.ManageViewModels;
 using QRCoder;
 using System.Text.Encodings.Web;
+using NexaWork.Authentication.Data;
 
 namespace NexaWork.Authentication.Controllers;
 
@@ -16,14 +17,18 @@ public class ManageController : Controller
     private readonly UrlEncoder _urlEncoder;
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
+    private readonly NexaWorkIdentityDbContext _context;
+
     public ManageController(
         UserManager<NexaWorkUser> userManager,
         SignInManager<NexaWorkUser> signInManager,
-        UrlEncoder urlEncoder)
+        UrlEncoder urlEncoder,
+        NexaWorkIdentityDbContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _urlEncoder = urlEncoder;
+        _context = context;
     }
 
     [HttpGet]
@@ -112,6 +117,10 @@ public class ManageController : Controller
         var is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
         ViewData["Is2faEnabled"] = is2faEnabled;
         ViewData["RecoveryCodesLeft"] = await _userManager.CountRecoveryCodesAsync(user);
+
+        var passkeys = _context.FidoStoredCredentials.Where(c => c.UserId == user.Id).ToList();
+        ViewData["Passkeys"] = passkeys;
+        ViewData["Preferred2faMethod"] = user.Preferred2faMethod;
 
         return View();
     }
@@ -268,5 +277,35 @@ public class ManageController : Controller
         using var qrCode = new PngByteQRCode(qrCodeData);
         var qrCodeImage = qrCode.GetGraphic(20);
         return Convert.ToBase64String(qrCodeImage);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetPreferred2faMethod(string method)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound();
+
+        user.Preferred2faMethod = string.IsNullOrEmpty(method) ? null : method;
+        await _userManager.UpdateAsync(user);
+
+        return RedirectToAction(nameof(TwoFactorAuthentication));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemovePasskey(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound();
+
+        var passkey = _context.FidoStoredCredentials.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
+        if (passkey != null)
+        {
+            _context.FidoStoredCredentials.Remove(passkey);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 }

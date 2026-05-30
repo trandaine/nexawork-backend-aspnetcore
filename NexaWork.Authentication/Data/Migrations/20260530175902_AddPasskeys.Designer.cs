@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexaWork.Authentication.Data;
 
@@ -11,9 +12,11 @@ using NexaWork.Authentication.Data;
 namespace NexaWork.Authentication.Data.Migrations
 {
     [DbContext(typeof(NexaWorkIdentityDbContext))]
-    partial class NexaWorkIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260530175902_AddPasskeys")]
+    partial class AddPasskeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

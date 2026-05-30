@@ -59,7 +59,15 @@ namespace NexaWork.Authentication.Controllers
             }
             if (result.RequiresTwoFactor)
             {
-                return RedirectToAction(nameof(LoginWith2fa), new { returnUrl });
+                if (user.Preferred2faMethod == "Passkey")
+                {
+                    return RedirectToAction(nameof(LoginWithPasskey), new { returnUrl });
+                }
+                else if (user.Preferred2faMethod == "TOTP")
+                {
+                    return RedirectToAction(nameof(LoginWith2fa), new { returnUrl });
+                }
+                return RedirectToAction(nameof(Select2faProvider), new { returnUrl });
             }
             if (result.IsLockedOut)
             {
@@ -177,6 +185,77 @@ namespace NexaWork.Authentication.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
                 return View(model);
             }
+        }
+
+        [HttpGet("Select2faProvider")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Select2faProvider(string? returnUrl = null)
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException("Unable to load two-factor authentication user.");
+            }
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost("Select2faProvider")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Select2faProvider(string provider, bool rememberChoice, string? returnUrl = null)
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null) return RedirectToAction("Login");
+
+            if (rememberChoice)
+            {
+                user.Preferred2faMethod = provider;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (provider == "Passkey")
+            {
+                return RedirectToAction(nameof(LoginWithPasskey), new { returnUrl });
+            }
+            
+            return RedirectToAction(nameof(LoginWith2fa), new { returnUrl });
+        }
+
+        [HttpGet("LoginWithPasskey")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWithPasskey(string? returnUrl = null)
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null) return RedirectToAction("Login");
+
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Username"] = user.UserName;
+            return View();
+        }
+
+        [HttpPost("LoginCallbackWithPasskey")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginCallbackWithPasskey(string? returnUrl = null)
+        {
+            var userId = HttpContext.Session.GetString("fido2.authenticatedUserId");
+            if (string.IsNullOrEmpty(userId))
+            {
+                ModelState.AddModelError(string.Empty, "Session expired or invalid FIDO2 login.");
+                return View("Login");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return RedirectToAction("Login");
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            HttpContext.Session.Remove("fido2.authenticatedUserId");
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return Redirect("~/");
         }
 
         [HttpGet("Register")]
