@@ -14,17 +14,14 @@ namespace NexaWork.Authentication.Controllers
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly SignInManager<NexaWorkUser> _signInManager;
         private readonly UserManager<NexaWorkUser> _userManager;
-        // private readonly ISender _mediator;
 
         public AccountController(
             SignInManager<NexaWorkUser> signInManager,
             UserManager<NexaWorkUser> userManager,
-            // ISender mediator,
             IPublishEndpoint publishEndpoint)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            // _mediator = mediator;
             _publishEndpoint = publishEndpoint;
         }
 
@@ -32,7 +29,7 @@ namespace NexaWork.Authentication.Controllers
         public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View(); // You will need to create a Views/Account/Login.cshtml file
+            return View(); 
         }
 
         [HttpPost("Login")]
@@ -46,7 +43,6 @@ namespace NexaWork.Authentication.Controllers
 
             if (user == null)
             {
-                // Trả về lỗi chung chung để bảo mật
                 ModelState.AddModelError(string.Empty, "Username or Password not match.");
                 return View(model);
             }
@@ -55,62 +51,143 @@ namespace NexaWork.Authentication.Controllers
 
             if (result.Succeeded)
             {
-                // // Search for an existing customer linked to this IdentityUser
-                // var customerExists = await _mediator.Send(new GetCustomerByIdentityIdQuery(user.Id));
-                // if (customerExists == null)
-                // {
-                //     // If no customer exists, create a new one
-                //     var isCustomerCreated = await CreateNewCustomer(user.Id);
-                //     if (!isCustomerCreated)
-                //     {
-                //         // If customer creation fails, log out the user and show an error
-                //         await _signInManager.SignOutAsync();
-                //         ModelState.AddModelError(string.Empty, "An error occurred while creating your customer profile. Please try again.");
-                //         return View(model);
-                //     }
-                // }
-                // // If login is successful, redirect back to the OpenIddict authorization flow
-                // return LocalRedirect(returnUrl ?? "/");
-
-                // Security Fix: Prevent Open Redirect Vulnerabilities
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
                 return Redirect("~/");
             }
+            if (result.RequiresTwoFactor)
+            {
+                return RedirectToAction(nameof(LoginWith2fa), new { returnUrl });
+            }
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty, "Account locked out.");
+                return View(model);
+            }
 
             ModelState.AddModelError(string.Empty, "(401) Username or Password not match.");
             return View(model);
         }
-        // public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
-        // {
-        //     ViewData["ReturnUrl"] = returnUrl;
 
-        //     var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
-
-        //     if (result.Succeeded)
-        //     {
-        //         // If login is successful, redirect back to the OpenIddict authorization flow
-        //         return LocalRedirect(returnUrl ?? "/");
-        //     }
-
-        //     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        //     return View();
-        // }
-
-
-
-        [HttpGet]
+        [HttpGet("LoginWith2fa")]
         [AllowAnonymous]
-        public IActionResult Register(string? returnUrl = null)
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string? returnUrl = null)
         {
-            // Pass the ReturnUrl to the view so we don't lose it!
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            }
+
+            var model = new LoginWith2faViewModel { RememberMe = rememberMe };
+            ViewData["ReturnUrl"] = returnUrl;
+
+            return View(model);
+        }
+
+        [HttpPost("LoginWith2fa")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginWith2fa(LoginWith2faViewModel model, string? returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            }
+
+            var authenticatorCode = model.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, model.RememberMachine);
+
+            if (result.Succeeded)
+            {
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return Redirect("~/");
+            }
+            else if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty, "Account locked out.");
+                return View(model);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
+                return View(model);
+            }
+        }
+
+        [HttpGet("LoginWithRecoveryCode")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWithRecoveryCode(string? returnUrl = null)
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("LoginWithRecoveryCode")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model, string? returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+            }
+
+            var recoveryCode = model.RecoveryCode.Replace(" ", string.Empty);
+            var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+
+            if (result.Succeeded)
+            {
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return Redirect("~/");
+            }
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty, "Account locked out.");
+                return View(model);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
+                return View(model);
+            }
+        }
+
+        [HttpGet("Register")]
+        [AllowAnonymous]
+        public IActionResult Register(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost("Register")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequestDTO model, string? returnUrl = null)
@@ -135,26 +212,21 @@ namespace NexaWork.Authentication.Controllers
                     return LocalRedirect(returnUrl ?? "/");
                 }
 
-                // If it failed (e.g., weak password), show errors on the form
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-
-
-        // [HttpPost("Logout")]
-        // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Logout()
-        // {
-        //     await _signInManager.SignOutAsync();
-        //     return Redirect("~/");
-        // }
-
+        [HttpPost("Logout")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Redirect("~/");
+        }
     }
 }

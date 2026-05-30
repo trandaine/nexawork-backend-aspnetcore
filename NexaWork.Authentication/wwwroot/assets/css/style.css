@@ -8,3 +8,14 @@ NOTE:
 ------
 PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
 WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+
+ul.navigation-main li.nav-item:last-child {
+    margin-top: auto;
+    margin-bottom: 20px; /* Gives it a little breathing room at the bottom */
+}
+
+.main-menu-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Or 100vh depending on your template's wrapper */
+}

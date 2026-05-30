@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -26,8 +26,8 @@
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/cryptocoins/cryptocoins.css">
-    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/fonts/simple-line-icons/style.min.css">
+
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
@@ -36,7 +36,8 @@
     <link rel="stylesheet" href="~/css/site.css"/>
 
 </head>
-<body class="vertical-layout vertical-menu 2-columns   fixed-navbar" data-open="click" data-menu="vertical-menu"
+<body class="vertical-layout vertical-menu 2-columns   fixed-navbar" data-open="click"
+      data-menu="vertical-menu"
       data-col="2-columns">
 
 <!-- BEGIN: Main Menu-->
@@ -44,26 +45,29 @@
 <div class="main-menu menu-fixed menu-light menu-accordion    menu-shadow " data-scroll-to-active="true">
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class=" nav-item"><a href="index.html"><i class="la la-home"></i><span class="menu-title"
-                                                                                       data-i18n="Dashboard">Dashboard</span><span
-                                                                                                                                 class="badge badge badge-info badge-pill float-right mr-2">3</span></a>
-                <ul class="menu-content">
-                    <li><a class="menu-item" href="dashboard-ecommerce.html"><i></i><span data-i18n="eCommerce">eCommerce</span></a>
-                    </li>
-                    <li class="active"><a class="menu-item" href="dashboard-crypto.html"><i></i><span
-                                                                                                    data-i18n="Crypto">Crypto</span></a>
-                    </li>
-                    <li><a class="menu-item" href="dashboard-sales.html"><i></i><span data-i18n="Sales">Sales</span></a>
-                    </li>
-                </ul>
-            </li>
-            
-            <li class=" nav-item"><a asp-action="Index"><i class="la la-home"></i><span class="menu-title" data-i18n="eCommerce">Dashboard</span></a>
 
-            <li class=" navigation-header"><span>Layouts</span><i class="la la-ellipsis-h" data-toggle="tooltip"
-                                                                  data-placement="right"
-                                                                  data-original-title="Layouts"></i>
+
+            <li class=" nav-item"><a asp-controller="Home" asp-action="Index"><i class="la la-home"></i><span
+                        class="menu-title" data-i18n="eCommerce">Dashboard</span></a>
+
+              
+            <li class=" nav-item"><a asp-controller="Manage" asp-action="Index"><i class="icon-users"></i><span
+                        class="menu-title">Account Settings</span></a>
             </li>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li class="nav-item" style="position: absolute; bottom: 30px; width: 100%; text-align: center;">
+                    <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post" class="m-0 p-0">
+                        <button type="submit" class="btn btn-danger round shadow btn-min-width mr-1 mb-1" 
+                                @* style="width: 80%; font-weight: bold;" *@
+                                > 
+                            <i class="la la-power-off"></i> 
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
+            }
         </ul>
     </div>
 </div>

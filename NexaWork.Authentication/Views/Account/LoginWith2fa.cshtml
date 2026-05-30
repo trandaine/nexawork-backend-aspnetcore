@@ -1,0 +1,67 @@
+@model NexaWork.Authentication.Models.AccountViewModels.LoginWith2faViewModel
+@{
+    ViewData["Title"] = "Two-factor authentication";
+    Layout = "_Layout_2";
+}
+
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-body">
+            <section class="row flexbox-container">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+                        <div class="card border-grey border-lighten-3 m-0">
+                            <div class="card-header border-0 pb-0">
+                                <div class="card-title text-center">
+                                    <div class="p-1">
+                                        <h2>NexaWork Security</h2>
+                                    </div>
+                                </div>
+                                <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
+                                    <span>Two-Factor Authentication</span>
+                                </h6>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <p class="text-center text-muted">Your login is protected with an authenticator app. Enter your authenticator code below.</p>
+                                    
+                                    <form method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                                        
+                                        <fieldset class="form-group position-relative has-icon-left">
+                                            <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" placeholder="6-digit code" />
+                                            <div class="form-control-position">
+                                                <i class="la la-key"></i>
+                                            </div>
+                                            <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <div class="form-group row">
+                                            <div class="col-sm-12 col-12 text-center text-sm-left">
+                                                <fieldset>
+                                                    <input asp-for="RememberMachine" type="checkbox" class="chk-remember" />
+                                                    <label asp-for="RememberMachine">Remember this machine</label>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+
+                                        <input asp-for="RememberMe" type="hidden" />
+
+                                        <button type="submit" class="btn btn-outline-info btn-block"><i class="la la-unlock"></i> Verify</button>
+                                    </form>
+                                    <hr />
+                                    <p class="text-center">
+                                        Don't have access to your authenticator device? 
+                                        <br/>
+                                        <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@ViewData["ReturnUrl"]">Log in with a recovery code</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

@@ -38,20 +38,19 @@
     <link rel="stylesheet" href="~/css/site.css"/>
 
 </head>
-<body class="vertical-layout vertical-menu 2-columns   fixed-navbar" data-open="click" data-menu="vertical-menu"
-      data-col="2-columns">
-@* <div class="app-content content"> *@
-@* <div class="content-overlay"></div> *@
-@* <div class="content-wrapper"> *@
-@*     <div class="content-header row"> *@
-@*     </div> *@
-<div class="content-body">
+<body class="vertical-layout 1-column blank-page" data-col="1-column">
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body mt-3 ml-3 mr-3">
 
-    @RenderBody()
+            @RenderBody()
 
+        </div>
+    </div>
 </div>
-@*     </div> *@
-@* </div> *@
 
 <div class="sidenav-overlay"></div>
 <div class="drag-target"></div>
