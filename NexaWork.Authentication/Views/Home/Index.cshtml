@@ -1,8 +1,97 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Account Center";
+    var fullName = ViewData["FullName"] as string;
+    var email = ViewData["Email"] as string;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .account-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        border-radius: 12px;
+        border: 1px solid #e3e6f0;
+        height: 100%;
+        cursor: pointer;
+    }
+    .account-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .account-card-icon {
+        font-size: 2.5rem;
+        color: #4e73df;
+        margin-bottom: 15px;
+    }
+    .hero-section {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 40px 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    }
+    .hero-avatar {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="hero-section">
+                <div class="hero-avatar">
+                    @(!string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "U")
+                </div>
+                <h2>Welcome, @fullName!</h2>
+                <p class="mb-0">Manage your info, privacy, and security to make NexaWork work better for you.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <a href="@Url.Action("Index", "Manage")" class="text-decoration-none text-dark">
+                <div class="card account-card text-center p-4">
+                    <div class="card-body">
+                        <i class="la la-user account-card-icon"></i>
+                        <h4 class="card-title font-weight-bold">Personal Info</h4>
+                        <p class="card-text text-muted">Manage your personal information like your email, phone number, and basic profile data.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <a href="@Url.Action("ChangePassword", "Manage")" class="text-decoration-none text-dark">
+                <div class="card account-card text-center p-4">
+                    <div class="card-body">
+                        <i class="la la-lock account-card-icon"></i>
+                        <h4 class="card-title font-weight-bold">Security & Password</h4>
+                        <p class="card-text text-muted">Keep your account secure by updating your password regularly and managing credentials.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <a href="@Url.Action("TwoFactorAuthentication", "Manage")" class="text-decoration-none text-dark">
+                <div class="card account-card text-center p-4">
+                    <div class="card-body">
+                        <i class="la la-shield account-card-icon"></i>
+                        <h4 class="card-title font-weight-bold">2-Step Verification</h4>
+                        <p class="card-text text-muted">Add an extra layer of security. Turn on 2-Step Verification with an authenticator app.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
