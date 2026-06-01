@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Security Settings (2FA & Passkeys)";
     var is2faEnabled = ViewData["Is2faEnabled"] as bool? ?? false;
+    var hasAuthenticator = ViewData["HasAuthenticator"] as bool? ?? false;
     var recoveryCodesLeft = ViewData["RecoveryCodesLeft"] as int? ?? 0;
     var passkeys = ViewData["Passkeys"] as List<FidoStoredCredential> ?? new List<FidoStoredCredential>();
     var preferredMethod = ViewData["Preferred2faMethod"] as string;
@@ -12,11 +13,11 @@
 
 <div class="row">
     <!-- Authenticator App Section -->
-    <div class="col-md-6 mb-2">
+    <div class="col-md-4 mb-2">
         <div class="card shadow-sm border-info h-100">
             <div class="card-body">
                 <h5 class="card-title"><i class="la la-mobile-phone text-info"></i> Authenticator App</h5>
-                @if (is2faEnabled)
+                @if (hasAuthenticator)
                 {
                     <p class="text-success"><i class="la la-check-circle"></i> Enabled</p>
                     <div class="mb-2">
@@ -53,8 +54,28 @@
         </div>
     </div>
 
+
+    <!-- Email 2FA Section -->
+    <div class="col-md-4 mb-2">
+        <div class="card shadow-sm border-success h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="la la-envelope text-success"></i> Email 2FA</h5>
+                @if (is2faEnabled && (preferredMethod == "Email" || preferredMethod == null))
+                {
+                    <p class="text-success"><i class="la la-check-circle"></i> Ready</p>
+                    <p class="text-muted small">You can receive 2FA codes via email.</p>
+                }
+                else
+                {
+                    <p class="text-muted">Turn on Email 2FA to receive secure codes in your inbox.</p>
+                    <a asp-action="EnableEmail2fa" class="btn btn-success">Turn on Email 2FA</a>
+                }
+            </div>
+        </div>
+    </div>
+
     <!-- Passkeys Section -->
-    <div class="col-md-6 mb-2">
+    <div class="col-md-4 mb-2">
         <div class="card shadow-sm border-primary h-100">
             <div class="card-body">
                 <h5 class="card-title"><i class="la la-fingerprint text-primary"></i> Passkeys (WebAuthn)</h5>
@@ -88,7 +109,7 @@
 </div>
 
 <!-- Preferred Login Method Section -->
-@if (is2faEnabled && passkeys.Any())
+@if (is2faEnabled)
 {
     <div class="row mt-2">
         <div class="col-12">
@@ -102,6 +123,7 @@
                             <option value="">Ask me every time</option>
                             @if (preferredMethod == "Passkey") { <option value="Passkey" selected>Passkey</option> } else { <option value="Passkey">Passkey</option> }
                             @if (preferredMethod == "TOTP") { <option value="TOTP" selected>Authenticator App</option> } else { <option value="TOTP">Authenticator App</option> }
+                            @if (preferredMethod == "Email") { <option value="Email" selected>Email</option> } else { <option value="Email">Email</option> }
                         </select>
                         <button type="submit" class="btn btn-secondary mb-2">Save Preference</button>
                     </form>

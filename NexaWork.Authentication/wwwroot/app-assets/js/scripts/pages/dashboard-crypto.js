@@ -14,7 +14,7 @@
    *               BTC Card                    *
    ********************************************/
   //Get the context of the Chart canvas element we want to select
-  var btcChartjs = document.getElementById("btc-chartjs").getContext("2d");
+  // var btcChartjs = document.getElementById("btc-chartjs").getContext("2d");
   // Create Linear Gradient
   var blue_trans_gradient = btcChartjs.createLinearGradient(0, 0, 0, 100);
   blue_trans_gradient.addColorStop(0, "rgba(255, 145, 73,0.4)");

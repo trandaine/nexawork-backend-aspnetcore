@@ -18,17 +18,20 @@ public class ManageController : Controller
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
     private readonly NexaWorkIdentityDbContext _context;
+    private readonly NexaWork.Authentication.Services.IEmailSender _emailSender;
 
     public ManageController(
         UserManager<NexaWorkUser> userManager,
         SignInManager<NexaWorkUser> signInManager,
         UrlEncoder urlEncoder,
-        NexaWorkIdentityDbContext context)
+        NexaWorkIdentityDbContext context,
+        NexaWork.Authentication.Services.IEmailSender emailSender)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _urlEncoder = urlEncoder;
         _context = context;
+        _emailSender = emailSender;
     }
 
     [HttpGet]
@@ -117,6 +120,7 @@ public class ManageController : Controller
         var is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
         ViewData["Is2faEnabled"] = is2faEnabled;
         ViewData["RecoveryCodesLeft"] = await _userManager.CountRecoveryCodesAsync(user);
+        ViewData["HasAuthenticator"] = await _userManager.GetAuthenticatorKeyAsync(user) != null;
 
         var passkeys = _context.FidoStoredCredentials.Where(c => c.UserId == user.Id).ToList();
         ViewData["Passkeys"] = passkeys;
@@ -307,5 +311,46 @@ public class ManageController : Controller
         }
 
         return RedirectToAction(nameof(TwoFactorAuthentication));
+    }
+
+        [HttpGet]
+        public async Task<IActionResult> EnableEmail2fa()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var emailHtml = NexaWork.Authentication.Services.EmailTemplates.GetVerificationEmailHtml(
+                code, "Setup Email 2FA", "You are setting up Email as a Two-Factor Authentication method. Please enter the verification code below to confirm this action.");
+            
+            await _emailSender.SendEmailAsync(user.Email, "NexaWork Email 2FA Setup", emailHtml);
+
+            ViewData["Email"] = user.Email;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnableEmail2fa(string code)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", code);
+            if (isValid)
+            {
+                await _userManager.SetTwoFactorEnabledAsync(user, true);
+                
+                // Auto set user's preferred 2FA method to Email when they enable it for the first time
+                // user.Preferred2faMethod = "Email";
+                // await _userManager.UpdateAsync(user);
+
+                TempData["StatusMessage"] = "Email 2FA has been verified and enabled.";
+                return RedirectToAction(nameof(TwoFactorAuthentication));
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid verification code.");
+            ViewData["Email"] = user.Email;
+            return View();
     }
 }

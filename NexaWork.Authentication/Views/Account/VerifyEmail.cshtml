@@ -1,7 +1,8 @@
-@model NexaWork.Authentication.Models.AccountViewModels.LoginWithRecoveryCodeViewModel
 @{
-    ViewData["Title"] = "Recovery code verification";
+    ViewData["Title"] = "Verify Email";
     Layout = "_Layout_2";
+    var email = ViewData["Email"] as string;
+    var returnUrl = ViewData["ReturnUrl"] as string;
 }
 
 <div class="app-content content">
@@ -19,37 +20,28 @@
                                     </div>
                                 </div>
                                 <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
-                                    <span>Recovery Code Login</span>
+                                    <span>Verify Email Address</span>
                                 </h6>
                             </div>
                             <div class="card-content">
                                 <div class="card-body">
-                                    <div class="alert alert-warning mb-3">
-                                        You have requested to log in with a recovery code. This login will not be
-                                        remembered until you provide an authenticator app code at log in or disable 2FA
-                                        and log in again.
-                                    </div>
-
-                                    <form method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                                    <p class="text-center text-muted">We have sent a 6-digit verification code to <strong>@email</strong>. Please enter the code below to verify your account.</p>
+                                    
+                                    <form method="post" asp-action="VerifyEmail">
                                         <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                                        
+                                        <input type="hidden" name="email" value="@email" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
 
                                         <fieldset class="form-group position-relative has-icon-left">
-                                            <input asp-for="RecoveryCode" class="form-control" autocomplete="off"
-                                                   placeholder="e.g. 1a2b-3c4d"/>
+                                            <input name="code" class="form-control" autocomplete="off" placeholder="6-digit code" required />
                                             <div class="form-control-position">
-                                                <i class="la la-life-ring"></i>
+                                                <i class="la la-key"></i>
                                             </div>
-                                            <span asp-validation-for="RecoveryCode" class="text-danger"></span>
                                         </fieldset>
 
-                                        <button type="submit" class="btn btn-outline-warning btn-block"><i
-                                                class="la la-unlock"></i> Log in
-                                        </button>
+                                        <button type="submit" class="btn btn-outline-info btn-block"><i class="la la-unlock"></i> Verify Email</button>
                                     </form>
-                                    <hr/>
-                                    <div class="text-center">
-                                        <a asp-action="Select2faProvider" asp-route-returnUrl="@ViewData["ReturnUrl"]">Other ways to verify</a>
-                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,11 @@
 @{
     ViewData["Title"] = "Select Authentication Method";
     Layout = "_Layout_2";
+    
+    // Lookup for enabled 2FA methods
+    var hasEmail = ViewData["HasEmail"] as bool? ?? false;
+    var hasAuthenticator = ViewData["HasAuthenticator"] as bool? ?? false;
+    var hasPasskeys = ViewData["HasPasskeys"] as bool? ?? false;
 }
 
 <div class="app-content content">
@@ -30,24 +35,42 @@
                                           asp-route-returnUrl="@ViewData["ReturnUrl"]">
 
                                         <div class="row text-center my-2">
-                                            <div class="col-6">
-                                                <button type="submit" name="provider" value="Passkey"
-                                                        class="btn btn-outline-primary btn-block p-2"
-                                                        style="border-radius: 10px; height: 100%;">
-                                                    <i class="la la-fingerprint" style="font-size: 2rem;"></i>
-                                                    <br/>
-                                                    Passkey
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="submit" name="provider" value="TOTP"
-                                                        class="btn btn-outline-info btn-block p-2"
-                                                        style="border-radius: 10px; height: 100%;">
-                                                    <i class="la la-mobile-phone" style="font-size: 2rem;"></i>
-                                                    <br/>
-                                                    Authenticator App
-                                                </button>
-                                            </div>
+                                            @if (hasPasskeys)
+                                            {
+                                                <div class="col-4">
+                                                    <button type="submit" name="provider" value="Passkey"
+                                                            class="btn btn-outline-primary btn-block p-2"
+                                                            style="border-radius: 10px; height: 100%;">
+                                                        <i class="la la-fingerprint" style="font-size: 2rem;"></i>
+                                                        <br/>
+                                                        Passkey
+                                                    </button>
+                                                </div>
+                                            }
+                                            @if (hasAuthenticator)
+                                            {
+                                                <div class="col-4">
+                                                    <button type="submit" name="provider" value="TOTP"
+                                                            class="btn btn-outline-info btn-block p-2"
+                                                            style="border-radius: 10px; height: 100%;">
+                                                        <i class="la la-mobile-phone" style="font-size: 2rem;"></i>
+                                                        <br/>
+                                                        App
+                                                    </button>
+                                                </div>
+                                            }
+                                            @if (hasEmail)
+                                            {
+                                                <div class="col-4">
+                                                    <button type="submit" name="provider" value="Email"
+                                                            class="btn btn-outline-success btn-block p-2"
+                                                            style="border-radius: 10px; height: 100%;">
+                                                        <i class="la la-envelope" style="font-size: 2rem;"></i>
+                                                        <br/>
+                                                        Email
+                                                    </button>
+                                                </div>
+                                            }
                                         </div>
 
                                         <div class="form-group row mt-2">

@@ -22,49 +22,6 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 
 
-#region Cấu hình Identity
-builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options =>
-{
-    // Sign-in settings
-    options.SignIn.RequireConfirmedAccount = true;
-    // Password settings
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    // Lockout settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(10);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-    // User settings
-    options.User.RequireUniqueEmail = true;
-    // Sign-in settings
-    options.SignIn.RequireConfirmedEmail = false;
-    options.SignIn.RequireConfirmedPhoneNumber = false;
-
-
-})
-    .AddEntityFrameworkStores<NexaWorkDbIdentityContext>()
-    .AddDefaultTokenProviders();
-
-// Cau hinh cookie va sessions
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Authentications/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-});
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-#endregion
-
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();

@@ -72,12 +72,24 @@
                                             class="la la-linkedin font-medium-4"></span></a>
                                     <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-github"><span
                                             class="la la-github font-medium-4"></span></a>
+                                    @* <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-openid"><span *@
+                                    @*         class="la la-key font-medium-4"></span></a> *@
+                                    <a href="#"
+                                       onclick="loginWithPasskey('', '@returnUrl'); return false;"
+                                       class="btn btn-social-icon mr-1 mb-1 btn-outline-openid"
+                                       title="Sign in with Passkey"
+                                       aria-label="Sign in with Passkey">
+                                        <span class="la la-key font-medium-4"></span>
+                                    </a>
+
                                 </div>
-                                <div class="text-center my-1 px-2">
-                                    <button onclick="loginWithPasskey('', '@returnUrl')" class="btn btn-primary btn-block shadow-sm" style="border-radius: 20px; font-weight: bold;">
-                                        <i class="la la-fingerprint"></i> Sign in with Passkey
-                                    </button>
-                                </div>
+                                @* <div class="text-center my-1 px-2"> *@
+                                @*     <button onclick="loginWithPasskey('', '@returnUrl')" *@
+                                @*             class="btn btn-primary btn-block shadow-sm" *@
+                                @*             style="border-radius: 20px; font-weight: bold;"> *@
+                                @*         <i class="la la-fingerprint"></i> Sign in with Passkey *@
+                                @*     </button> *@
+                                @* </div> *@
                                 <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1"><span>OR Using Account
                                             Details</span></p>
                                 <div class="card-body">
