@@ -64,6 +64,16 @@ public class Post
             MediaUrl = newMediaUrl;
         }
     }
+    
+    public void UpdateLikesCount()
+    {
+        LikesCount++;
+    }
+
+    public void DecrementLikesCount()
+    {
+        LikesCount--;
+    }
 
     // public void Delete()
     // {

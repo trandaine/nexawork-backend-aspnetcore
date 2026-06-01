@@ -6,6 +6,7 @@ public record PostQueryDTO
 (
     Guid PostId,
     string CustomerName,
+    string? CustomerProfilePictureUrl,
     string Content,
     string? MediaUrl,
     int LikesCount,
