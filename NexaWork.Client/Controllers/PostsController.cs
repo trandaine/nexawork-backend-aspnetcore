@@ -102,9 +102,9 @@ namespace NexaWork.Client.Controllers
             FileDTO? fileDto = null;
             if (request.MediaFile != null)
             {
-                using var stream = request.MediaFile.OpenReadStream();
+                //using var stream = request.MediaFile.OpenReadStream();
                 fileDto = new FileDTO(
-                    stream,
+                    request.MediaFile.OpenReadStream(),
                     request.MediaFile.FileName,
                     request.MediaFile.ContentType,
                     request.MediaFile.Length
