@@ -15,7 +15,7 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, List
         var customers = await _repository.GetAllCustomerAsync(cancellationToken);
 
         return customers.Select(customer => new CustomerQueryDTO(
-            // customer.CustomerId,
+            customer.CustomerId,
             // customer.IdentityUserId,
             customer.FirstName,
             customer.LastName,

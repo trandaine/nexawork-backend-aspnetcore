@@ -1,17 +1,16 @@
-using MediatR;
+﻿using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
 using NexaWork.Application.Common.Interfaces.Services;
 
+namespace NexaWork.Application.Features.Client.Post.Queries.GetAllCurrentCustomer;
 
-namespace NexaWork.Application.Features.Client.Post.Queries.GetAll;
-
-public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQueryDTO>>
+public class GetAllCurrentCustomerHandler : IRequestHandler<GetAllCurrentCustomerQuery, List<PostQueryDTO>>
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly ICustomerRepository _customerRepository;
     private readonly IPostRepository _postRepository;
 
-    public GetAllPostsHandler(
+    public GetAllCurrentCustomerHandler(
         ICurrentUserService currentUserService,
         IPostRepository postRepository,
         ICustomerRepository customerRepository
@@ -21,8 +20,7 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
         _customerRepository = customerRepository;
         _currentUserService = currentUserService;
     }
-
-    public async Task<List<PostQueryDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<List<PostQueryDTO>> Handle(GetAllCurrentCustomerQuery request, CancellationToken cancellationToken)
     {
         var userIdentityId = _currentUserService.UserId;
         var currentCustomer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
@@ -30,7 +28,7 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
             throw new UnauthorizedAccessException(
                 "This request cannot be processed without authentication. Please log in to continue.");
 
-        var posts = await _postRepository.GetAllAsync(currentCustomer.CustomerId, cancellationToken);
+        var posts = await _postRepository.GetAllPostsForMeAsync(currentCustomer.CustomerId, cancellationToken);
 
 
         return posts
@@ -38,11 +36,11 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
             (
                 post.PostId,
                 post.CustomerId,
-                string.IsNullOrWhiteSpace(post.Customer.FirstName) && string.IsNullOrWhiteSpace(post.Customer.LastName)
+                string.IsNullOrWhiteSpace(post.Customer?.FirstName) && string.IsNullOrWhiteSpace(post.Customer?.LastName)
                     ? "Anonymous User" // If both are null
-                    : (post.Customer.FirstName + " " + post.Customer.LastName)
+                    : (post.Customer?.FirstName + " " + post.Customer?.LastName)
                     .Trim(), // Trim to remove any extra space if one of them is null
-                string.IsNullOrEmpty(post.Customer.ProfilePictureUrl) ? null : post.Customer.ProfilePictureUrl,
+                string.IsNullOrEmpty(post.Customer?.ProfilePictureUrl) ? null : post.Customer?.ProfilePictureUrl,
                 //customerAvatar,
                 post.Content,
                 post.MediaUrl,
@@ -56,5 +54,3 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
             .ToList();
     }
 }
-
-// 

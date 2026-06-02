@@ -10,7 +10,6 @@
     <Folder Include="DTOs/Post/" />
     <Folder Include="Features/Client/Customers/Commands/Create/" />
     <Folder Include="Features/Client/Customers/Commands/Delete/" />
-    <Folder Include="Features/Client/Customers/Queries/" />
     <Folder Include="Features/Client/Customers/Queries/GetAll/" />
     <Folder Include="Features/Client/Customers/Queries/GetById/" />
     <Folder Include="Features/Client/Customers/Queries/GetByIdentityId/" />
@@ -24,7 +23,6 @@
     <Folder Include="Features/Client/Post/Commands/Create/" />
     <Folder Include="Features/Client/Post/Commands/Delete/" />
     <Folder Include="Features/Client/Post/Commands/Update/" />
-    <Folder Include="Features/Client/Post/Queries/" />
     <Folder Include="Features/Client/Post/Queries/GetAll/" />
     <Folder Include="Features/Client/Post/Queries/GetById/" />
     <Folder Include="Features\Client\CustomerSocialLink\Commands\Delete\" />

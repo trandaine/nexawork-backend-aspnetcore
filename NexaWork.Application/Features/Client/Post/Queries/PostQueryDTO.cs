@@ -5,6 +5,7 @@ namespace NexaWork.Application.Features.Client.Post.Queries;
 public record PostQueryDTO
 (
     Guid PostId,
+    Guid CustomerId,
     string CustomerName,
     string? CustomerProfilePictureUrl,
     string Content,
