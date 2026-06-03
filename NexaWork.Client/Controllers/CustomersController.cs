@@ -43,30 +43,21 @@ namespace NexaWork.Client.Controllers
         [HttpGet("profile-me")]
         public async Task<ActionResult<CustomerQueryDTO>> GetCurrentCustomer()
         {
-            // var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-            //                      ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
-            //
-            // if (string.IsNullOrEmpty(identityUserId))
-            // {
-            //     return Unauthorized("User ID not found in token.");
-            // }
+            
 
-            var customer = await _mediator.Send(new GetCustomerByIdQuery());
+            var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery());
             if (customer == null)
                 return NotFound();
             return Ok(customer);
         }
 
 
-        // GET: api/Customers/5
-        // [HttpGet("me/{identityId}")]
-        // public async Task<ActionResult<CustomerWithIdentityIdDTO>> GetCustomerByIdentityId(string identityId)
-        // {
-        //     var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery(identityId));
-        //     if (customer == null)
-        //         return NotFound();
-        //     return Ok(customer);
-        // }
+        [HttpGet("profile/{customerId:guid}")]
+        public async Task<ActionResult<CustomerQueryDTO>> GetById(Guid customerId)
+        {
+            var customer = await _mediator.Send(new GetCustomerByIdQuery(customerId));
+            return Ok(customer);
+        }
 
         /// <summary>
         /// GET CURRENT CUSTOMER INFORMATION WITH TOKEN.

@@ -1,55 +1,49 @@
 using MediatR;
-using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
+using NexaWork.Application.Common.Interfaces.Services;
 
 
 namespace NexaWork.Application.Features.Client.Post.Queries.GetAll;
 
 public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQueryDTO>>
 {
+    private readonly ICurrentUserService _currentUserService;
+    private readonly ICustomerRepository _customerRepository;
     private readonly IPostRepository _postRepository;
-    private readonly INexaWorkDbContext _context;
 
     public GetAllPostsHandler(
+        ICurrentUserService currentUserService,
         IPostRepository postRepository,
-        INexaWorkDbContext context
+        ICustomerRepository customerRepository
     )
     {
         _postRepository = postRepository;
-        _context = context;
+        _customerRepository = customerRepository;
+        _currentUserService = currentUserService;
     }
+
     public async Task<List<PostQueryDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        // var posts = await _postRepository.GetAllAsync(cancellationToken);
+        var userIdentityId = _currentUserService.UserId;
+        var currentCustomer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
+        if (currentCustomer == null)
+            throw new UnauthorizedAccessException(
+                "This request cannot be processed without authentication. Please log in to continue.");
 
-        // return posts.Select(posts => new PostQueryDTO
-        // (
-        //     posts.PostId,
-        //     $"{posts.Customer.FirstName} {posts.Customer.LastName}",
-        //     posts.Content,
-        //     posts.MediaUrl,
-        //     posts.LikesCount,
-        //     posts.CommentsCount,
-        //     posts.SharesCount,
-        //     posts.Visibility,
-        //     posts.CreatedAt,
-        //     posts.UpdatedAt
-        // )).ToList();
+        var posts = await _postRepository.GetAllAsync(currentCustomer.CustomerId, cancellationToken);
 
 
-        // Instead of fetching all posts and then mapping them in memory, we can directly project the data into PostQueryDTO using LINQ. 
-        // This way, we only retrieve the necessary fields from the database, which can significantly improve performance, especially when dealing with a large number of posts.
-        return await _context.Posts
-            .AsNoTracking()
-            .OrderByDescending(p => p.CreatedAt)
+        return posts
             .Select(post => new PostQueryDTO
             (
                 post.PostId,
-                // $"{post.Customer.FirstName} {post.Customer.LastName}",
+                post.CustomerId,
                 string.IsNullOrWhiteSpace(post.Customer.FirstName) && string.IsNullOrWhiteSpace(post.Customer.LastName)
                     ? "Anonymous User" // If both are null
-                    : (post.Customer.FirstName + " " + post.Customer.LastName).Trim(), // Trim to remove any extra space if one of them is null
+                    : (post.Customer.FirstName + " " + post.Customer.LastName)
+                    .Trim(), // Trim to remove any extra space if one of them is null
+                string.IsNullOrEmpty(post.Customer.ProfilePictureUrl) ? null : post.Customer.ProfilePictureUrl,
+                //customerAvatar,
                 post.Content,
                 post.MediaUrl,
                 post.LikesCount,
@@ -59,7 +53,7 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
                 post.CreatedAt,
                 post.UpdatedAt
             ))
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 }
 

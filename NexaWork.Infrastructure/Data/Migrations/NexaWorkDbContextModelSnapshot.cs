@@ -578,7 +578,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.HasOne("NexaWork.Domain.Entities.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -732,7 +732,7 @@ namespace NexaWork.Infrastructure.Data.Migrations
                     b.HasOne("NexaWork.Domain.Entities.Post", "Post")
                         .WithMany("Reactions")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Comment");
 

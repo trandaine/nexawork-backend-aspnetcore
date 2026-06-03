@@ -15,7 +15,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasOne(c => c.Post)
                .WithMany(p => p.Comments)
                .HasForeignKey(c => c.PostId)
-               .OnDelete(DeleteBehavior.NoAction); // Tránh multiple cascade paths trong SQL Server
+               .OnDelete(DeleteBehavior.Cascade); 
 
         builder.HasOne(c => c.Customer)
                .WithMany(u => u.Comments)

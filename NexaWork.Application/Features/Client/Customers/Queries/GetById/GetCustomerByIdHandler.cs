@@ -16,14 +16,14 @@ public class GetCustomerByIdHandler : IRequestHandler<GetCustomerByIdQuery, Cust
     }
     public async Task<CustomerQueryDTO?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        var identityId = _currentUserService.UserId;
-        // var customer = await _repository.GetCustomerByIdAsync(request.Id, cancellationToken);
-        var customer = await _repository.GetByIdentityIdAsync(identityId, cancellationToken);
+        // var identityId = _currentUserService.UserId;
+        var customer = await _repository.GetCustomerByIdAsync(request.CustomerId, cancellationToken);
+        // var customer = await _repository.GetByIdentityIdAsync(identityId, cancellationToken);
         if (customer == null)
             return null;
 
         return new CustomerQueryDTO(
-            // customer.CustomerId,
+            customer.CustomerId,
             // customer.IdentityUserId,
             customer.FirstName,
             customer.LastName,

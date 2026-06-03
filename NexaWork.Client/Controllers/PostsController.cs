@@ -8,6 +8,7 @@ using NexaWork.Application.Features.Client.Post.Commands.Delete;
 using NexaWork.Application.Features.Client.Post.Commands.Update;
 using NexaWork.Application.Features.Client.Post.Queries;
 using NexaWork.Application.Features.Client.Post.Queries.GetAll;
+using NexaWork.Application.Features.Client.Post.Queries.GetAllCurrentCustomer;
 using NexaWork.Application.Features.Client.Post.Queries.GetById;
 using NexaWork.Client.Models;
 
@@ -71,6 +72,30 @@ namespace NexaWork.Client.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get all post to display on other customer Profile
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpGet("profile/{customerId:guid}")]
+        public async Task<ActionResult<List<PostQueryDTO>>> GetAllPostsOtherCustomer(Guid customerId)
+        {
+            var result = await _mediator.Send(new GetPostByIdQuery(customerId));
+            return Ok(result);
+        }
+        
+        /// <summary>
+        /// Get all post to display on currently logged-in customer to display on their profile page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("me")]
+        public async Task<ActionResult<List<PostQueryDTO>>> GetAllPostsForMe()
+        {
+            var result = await _mediator.Send(new GetAllCurrentCustomerQuery());
+            return Ok(result);
+        }
+        
+
 
         /// <summary>
         /// Get post by ID method
@@ -97,7 +122,6 @@ namespace NexaWork.Client.Controllers
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromForm] CreatePostRequest request)
         {
-
             // Map the incoming request file to FileDTO (like you did in Create)
             FileDTO? fileDto = null;
             if (request.MediaFile != null)
