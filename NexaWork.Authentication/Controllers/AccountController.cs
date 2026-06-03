@@ -35,7 +35,7 @@ namespace NexaWork.Authentication.Controllers
         public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View(); 
+            return View();
         }
 
         [HttpPost("Login")]
@@ -45,7 +45,7 @@ namespace NexaWork.Authentication.Controllers
             ViewData["ReturnUrl"] = returnUrl;
 
             var user = await _userManager.FindByEmailAsync(model.Email)
-                      ?? await _userManager.FindByNameAsync(model.Email);
+                       ?? await _userManager.FindByNameAsync(model.Email);
 
             if (user == null)
             {
@@ -53,7 +53,8 @@ namespace NexaWork.Authentication.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false,
+                lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
@@ -61,8 +62,10 @@ namespace NexaWork.Authentication.Controllers
                 {
                     return Redirect(returnUrl);
                 }
+
                 return Redirect("~/");
             }
+
             if (result.RequiresTwoFactor)
             {
                 if (user.Preferred2faMethod == "Passkey")
@@ -77,8 +80,10 @@ namespace NexaWork.Authentication.Controllers
                 {
                     return RedirectToAction(nameof(LoginWithEmailCode), new { rememberMe = false, returnUrl });
                 }
+
                 return RedirectToAction(nameof(Select2faProvider), new { returnUrl });
             }
+
             if (result.IsLockedOut)
             {
                 ModelState.AddModelError(string.Empty, "Account locked out.");
@@ -122,7 +127,9 @@ namespace NexaWork.Authentication.Controllers
             }
 
             var authenticatorCode = model.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
-            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, model.RememberMachine);
+            var result =
+                await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe,
+                    model.RememberMachine);
 
             if (result.Succeeded)
             {
@@ -130,6 +137,7 @@ namespace NexaWork.Authentication.Controllers
                 {
                     return Redirect(returnUrl);
                 }
+
                 return Redirect("~/");
             }
             else if (result.IsLockedOut)
@@ -161,7 +169,8 @@ namespace NexaWork.Authentication.Controllers
         [HttpPost("LoginWithRecoveryCode")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model, string? returnUrl = null)
+        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model,
+            string? returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
@@ -183,8 +192,10 @@ namespace NexaWork.Authentication.Controllers
                 {
                     return Redirect(returnUrl);
                 }
+
                 return Redirect("~/");
             }
+
             if (result.IsLockedOut)
             {
                 ModelState.AddModelError(string.Empty, "Account locked out.");
@@ -206,11 +217,11 @@ namespace NexaWork.Authentication.Controllers
             {
                 throw new InvalidOperationException("Unable to load two-factor authentication user.");
             }
-            
+
             ViewData["HasEmail"] = await _userManager.GetTwoFactorEnabledAsync(user);
             ViewData["HasAuthenticator"] = await _userManager.GetAuthenticatorKeyAsync(user) != null;
             ViewData["HasPasskeys"] = _context.FidoStoredCredentials.Any(c => c.UserId == user.Id);
-            
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -218,7 +229,8 @@ namespace NexaWork.Authentication.Controllers
         [HttpPost("Select2faProvider")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Select2faProvider(string provider, bool rememberChoice, string? returnUrl = null)
+        public async Task<IActionResult> Select2faProvider(string provider, bool rememberChoice,
+            string? returnUrl = null)
         {
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null) return RedirectToAction("Login");
@@ -237,7 +249,7 @@ namespace NexaWork.Authentication.Controllers
             {
                 return RedirectToAction(nameof(LoginWithEmailCode), new { rememberMe = false, returnUrl });
             }
-            
+
             return RedirectToAction(nameof(LoginWith2fa), new { returnUrl });
         }
 
@@ -274,6 +286,7 @@ namespace NexaWork.Authentication.Controllers
             {
                 return Redirect(returnUrl);
             }
+
             return Redirect("~/");
         }
 
@@ -307,8 +320,9 @@ namespace NexaWork.Authentication.Controllers
 
                     var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
                     var emailHtml = NexaWork.Authentication.Services.EmailTemplates.GetVerificationEmailHtml(
-                        code, "Welcome to NexaWork!", "Thanks for creating an account with NexaWork. We are excited to have you on board! This is your first time you log in to NexaWork. We hope you have a great experience using our platform. Please enter the verification code below to verify your email address and complete your account setup.");
-                    
+                        code, "Welcome to NexaWork!",
+                        "Thanks for creating an account with NexaWork. We are excited to have you on board! This is your first time you log in to NexaWork. We hope you have a great experience using our platform. Please enter the verification code below to verify your email address and complete your account setup.");
+
                     await _emailSender.SendEmailAsync(user.Email, "Verify your NexaWork account", emailHtml);
 
                     return RedirectToAction(nameof(VerifyEmail), new { email = user.Email, returnUrl });
@@ -382,8 +396,9 @@ namespace NexaWork.Authentication.Controllers
 
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
             var emailHtml = NexaWork.Authentication.Services.EmailTemplates.GetVerificationEmailHtml(
-                code, "Your NexaWork Login Code", "You are trying to log in to NexaWork. Please enter the verification code below to complete your sign in.");
-            
+                code, "Your NexaWork Login Code",
+                "You are trying to log in to NexaWork. Please enter the verification code below to complete your sign in.");
+
             await _emailSender.SendEmailAsync(user.Email, "Your Login Code", emailHtml);
 
             return View(new LoginWith2faViewModel { RememberMe = rememberMe });
@@ -397,7 +412,8 @@ namespace NexaWork.Authentication.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await _signInManager.TwoFactorSignInAsync("Email", model.TwoFactorCode, model.RememberMe, rememberClient: false);
+            var result = await _signInManager.TwoFactorSignInAsync("Email", model.TwoFactorCode, model.RememberMe,
+                rememberClient: false);
 
             if (result.Succeeded)
             {
@@ -414,6 +430,5 @@ namespace NexaWork.Authentication.Controllers
                 return View(model);
             }
         }
-
     }
 }

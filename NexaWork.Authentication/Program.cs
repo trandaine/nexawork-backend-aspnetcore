@@ -11,9 +11,10 @@ using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<NexaWorkIdentityDbContext>(options =>
 {
+    options.UseSqlServer(connectionString);
     options.UseOpenIddict();
 });
 

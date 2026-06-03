@@ -5,30 +5,52 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using OpenIddict.Validation.AspNetCore;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using NexaWork.Application.Common.Interfaces.Services;
 using NexaWork.Client.Consumers;
 using NexaWork.Client.Services;
+using NexaWork.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var openIdictSettings = builder.Configuration.GetSection("OpenIddict");
+var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
+// var urlSettings = builder.Configuration.GetSection("Url");
+var swaggerSettings = builder.Configuration.GetSection("Swagger");
 
 
-
+builder.Services.AddDbContext<NexaWorkDbContext>(options => { options.UseSqlServer(connectionString); });
 
 // Configure OpenIddict Validation
+
+#region OpenIdict Services
+
+string GetRequiredOpenIdSetting(string key)
+{
+    var value = openIdictSettings[key];
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new InvalidOperationException(
+            $"Configuration Error: The OpenIddict setting '{key}' is missing or empty. " +
+            $"Please check your appsettings.Development.json.");
+    }
+
+    return value;
+}
+
 builder.Services.AddOpenIddict()
     .AddValidation(options =>
     {
         // Tell the API where your Auth Server lives
-        options.SetIssuer("https://localhost:7036");
+        options.SetIssuer(GetRequiredOpenIdSetting("Issuer"));
 
-        // Tell the API its own name (must match the principal.SetResources in Auth Server)
-        options.AddAudiences("nexawork_client_api");
+        // Tell the API its own name
+        options.AddAudiences(GetRequiredOpenIdSetting("Audience"));
 
         // Allow downloading the public keys from the Auth Server automatically
         options.UseSystemNetHttp();
@@ -36,20 +58,36 @@ builder.Services.AddOpenIddict()
         // Register the ASP.NET Core integration
         options.UseAspNetCore();
 
-        // For introspection, tell the API how to authenticate to the Auth Server instead of instead of local JWT validation
+        // For introspection, tell the API how to authenticate to the Auth Server
         options.UseIntrospection()
-               .SetClientId("nexawork_client_api")
-               .SetClientSecret("v_IRV1;OPbz(*OhepHrh!6KYwM1o!!4pVO&MiLFjxJX");
+            .SetClientId(GetRequiredOpenIdSetting("ClientId"))
+            .SetClientSecret(GetRequiredOpenIdSetting("ClientSecret"));
     });
 
 // Set OpenIddict as the default Authentication Scheme
 builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization();
 
+#endregion
 
 // MassTransit with RabbitMQ (The Consumer)
-var rabbitMqSettings = builder.Configuration
-    .GetSection("RabbitMQ");
+
+#region RabbitMQ Services
+
+string GetRequiredRabbitMqSettings(string key)
+{
+    var value = rabbitMqSettings[key];
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new InvalidOperationException(
+            $"Configuration Error: The RabbitMQ setting '{key}' is missing or empty. " +
+            $"Please check your appsettings.Development.json.");
+    }
+
+    return value;
+}
+
 builder.Services.AddMassTransit(x =>
 {
     // Tell MassTransit about your consumer
@@ -58,25 +96,38 @@ builder.Services.AddMassTransit(x =>
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(
-            rabbitMqSettings["Host"],
-            rabbitMqSettings["VirtualHost"],
+            GetRequiredRabbitMqSettings("Host"),
+            GetRequiredRabbitMqSettings("VirtualHost"),
             h =>
             {
-                // NOTE: Do NOT store production secrets directly in appsettings.json.
-                h.Username(rabbitMqSettings["Username"]!);
-                h.Password(rabbitMqSettings["Password"]!);
+                h.Username(GetRequiredRabbitMqSettings("Username"));
+                h.Password(GetRequiredRabbitMqSettings("Password"));
             });
 
         // Configure the specific queue this API will listen to
-        cfg.ReceiveEndpoint("customer-creation-queue", e =>
-        {
-            e.ConfigureConsumer<UserRegisteredEventConsumer>(context);
-        });
+        cfg.ReceiveEndpoint(GetRequiredRabbitMqSettings("QueueName"),
+            e => { e.ConfigureConsumer<UserRegisteredEventConsumer>(context); });
     });
 });
 
+#endregion
 
 
+#region Swagger Services
+
+string GetRequiredSwaggerSettings(string key)
+{
+    var value = swaggerSettings[key];
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new InvalidOperationException(
+            $"Configuration Error: The Swagger setting '{key}' is missing or empty. " +
+            $"Please check your appsettings.Development.json.");
+    }
+
+    return value;
+}
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "NexaWork Client API", Version = "v1" });
@@ -102,8 +153,9 @@ builder.Services.AddSwaggerGen(c =>
             AuthorizationCode = new OpenApiOAuthFlow
             {
                 // Point these to your Auth Server
-                AuthorizationUrl = new Uri("https://localhost:7036/connect/authorize"),
-                TokenUrl = new Uri("https://localhost:7036/connect/token"),
+                // AuthorizationUrl = new Uri("https://localhost:7036/connect/authorize"),
+                AuthorizationUrl = new Uri(GetRequiredSwaggerSettings("AuthorizationCallback")),
+                TokenUrl = new Uri(GetRequiredSwaggerSettings("TokenEndpoint")),
                 Scopes = new Dictionary<string, string>
                 {
                     // This must match the scope your API requires
@@ -116,28 +168,26 @@ builder.Services.AddSwaggerGen(c =>
     // Global Security Requirement
     c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        // Notice how we pass the "document" parameter here now
         // [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
 
         [new OpenApiSecuritySchemeReference("oauth2", document)] = new List<string> { "api" }
     });
 });
+#endregion
+
 
 
 // Required to read HTTP data inside a service
-builder.Services.AddHttpContextAccessor(); 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
-// Register infrastructure services
-builder.Services.AddInfrastructureServices(builder.Configuration);
-
-// Register application services
+// builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
 
 
 #region Client API Services
-
 
 builder.Services.AddCors(options =>
 {
@@ -145,8 +195,8 @@ builder.Services.AddCors(options =>
     {
         // policy.WithOrigins("http://localhost:5173") // Replace with your React app's URL
         policy.WithOrigins(BaseURLConstants.REACT_APP_URL) // Replace with your React app's URL
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         //   .AllowCredentials(); // Crucial for accepting the authentication cookie
     });
 });
@@ -170,16 +220,11 @@ builder.Services.AddCors(options =>
 //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
 //     };
 // });
+
 #endregion
 
 
 var app = builder.Build();
-
-
-
-
-
-
 
 
 // Configure the HTTP request pipeline.
@@ -193,7 +238,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         // Tell Swagger which Client ID to use
-        options.OAuthClientId("nexawork_client_api_swagger");
+        options.OAuthClientId(swaggerSettings["OAuthClientId"]!);
+        // options.OAuthClientId("nexawork_client_api_swagger");
 
         // Enable PKCE (Crucial for security, just like in React!)
         options.OAuthUsePkce();
@@ -203,7 +249,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-var sharedStoragePath = Path.GetFullPath(builder.Configuration.GetValue<string>("Storage:SharedFolderPath") ?? "../SharedStorage");
+var sharedStoragePath =
+    Path.GetFullPath(builder.Configuration.GetValue<string>("Storage:SharedFolderPath")
+                     ?? throw new InvalidOperationException("SharedFolderPath path is not configured in appsettings.json."));
 
 // Ensure it exists when the API starts up
 if (!Directory.Exists(sharedStoragePath))
@@ -215,11 +263,10 @@ if (!Directory.Exists(sharedStoragePath))
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(sharedStoragePath),
-    RequestPath = "/uploads" // This matches the string returned in our Service!
+    // RequestPath = "/uploads" // This matches the string returned in our Service!
+    RequestPath = builder.Configuration.GetValue<string>("Storage:RequestPath")
+                  ?? throw new InvalidOperationException("RequestPath of Storage is not configured in appsettings.json.") 
 });
-
-
-
 
 
 app.UseCors();
@@ -227,8 +274,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapGet("/", () => "NexaWork Identity Provider is running.");
-// app.MapGet("/swagger/index.html", () => "Redirecting to Swagger UI...").ExcludeFromDescription();
 
 app.MapControllers();
 

@@ -39,13 +39,4 @@ public class NexaWorkIdentityDbContext : IdentityDbContext<NexaWorkUser, NexaWor
 
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = "Server= 100.81.167.42, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=Dai@2018; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
-            // var connectionString = "Server= 100.125.57.47, 1433; Database=NexaWorkAuthenticationDatabase; User Id=sa; password=lohosum619@@; TrustServerCertificate=True; Trusted_Connection=False; MultipleActiveResultSets=true;";
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
 }
