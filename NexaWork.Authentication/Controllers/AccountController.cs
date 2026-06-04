@@ -377,7 +377,13 @@ namespace NexaWork.Authentication.Controllers
                 user.Preferred2faMethod = "Email";
                 await _userManager.UpdateAsync(user);
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl ?? "/");
+                
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                return Redirect("~/");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid verification code.");

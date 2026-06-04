@@ -1,4 +1,4 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model NexaWork.Authentication.Models.AccountViewModels.RegisterRequestDTO
 @{
     Layout = null;
@@ -83,7 +83,8 @@
                                     <span>OR Using Email</span></p>
                                 <div class="card-body">
                                     <form class="form-horizontal" asp-controller="Account" asp-action="Register"
-                                          asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate>
+                                          method="post" novalidate>
+                                        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]"/>
                                         <fieldset class="form-group position-relative has-icon-left">
                                             <input type="email" asp-for="Email" class="form-control"
                                                    placeholder="Your Email Address" required>
