@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
 using NexaWork.Application.Common.Interfaces.Services;
 
@@ -9,7 +9,6 @@ public class GetAllCurrentCustomerHandler : IRequestHandler<GetAllCurrentCustome
     private readonly ICurrentUserService _currentUserService;
     private readonly ICustomerRepository _customerRepository;
     private readonly IPostRepository _postRepository;
-
     public GetAllCurrentCustomerHandler(
         ICurrentUserService currentUserService,
         IPostRepository postRepository,
@@ -30,7 +29,6 @@ public class GetAllCurrentCustomerHandler : IRequestHandler<GetAllCurrentCustome
 
         var posts = await _postRepository.GetAllPostsForMeAsync(currentCustomer.CustomerId, cancellationToken);
 
-
         return posts
             .Select(post => new PostQueryDTO
             (
@@ -49,7 +47,8 @@ public class GetAllCurrentCustomerHandler : IRequestHandler<GetAllCurrentCustome
                 post.SharesCount,
                 post.Visibility,
                 post.CreatedAt,
-                post.UpdatedAt
+                post.UpdatedAt,
+                true
             ))
             .ToList();
     }

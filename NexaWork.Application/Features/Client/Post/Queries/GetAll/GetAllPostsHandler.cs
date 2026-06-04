@@ -10,16 +10,19 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
     private readonly ICurrentUserService _currentUserService;
     private readonly ICustomerRepository _customerRepository;
     private readonly IPostRepository _postRepository;
+    private readonly IConnectionRepository _connectionRepository;
 
     public GetAllPostsHandler(
         ICurrentUserService currentUserService,
         IPostRepository postRepository,
-        ICustomerRepository customerRepository
+        ICustomerRepository customerRepository,
+        IConnectionRepository connectionRepository
     )
     {
         _postRepository = postRepository;
         _customerRepository = customerRepository;
         _currentUserService = currentUserService;
+        _connectionRepository = connectionRepository;
     }
 
     public async Task<List<PostQueryDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
@@ -32,6 +35,8 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
 
         var posts = await _postRepository.GetAllAsync(currentCustomer.CustomerId, cancellationToken);
 
+        var connections = await _connectionRepository.GetConnectionsAsync(currentCustomer.CustomerId, cancellationToken);
+        var friendIds = connections.Select(c => c.CustomerId == currentCustomer.CustomerId ? c.ConnectedCustomerId : c.CustomerId).ToHashSet();
 
         return posts
             .Select(post => new PostQueryDTO
@@ -51,7 +56,9 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
                 post.SharesCount,
                 post.Visibility,
                 post.CreatedAt,
-                post.UpdatedAt
+                post.UpdatedAt,
+                // if the post owner is belonged to the current user set true, if it is other user post, if not friend (false), if friend (true) 
+                post.CustomerId == currentCustomer.CustomerId || friendIds.Contains(post.CustomerId)
             ))
             .ToList();
     }

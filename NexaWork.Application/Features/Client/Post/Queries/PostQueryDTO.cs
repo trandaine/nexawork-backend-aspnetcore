@@ -15,5 +15,6 @@ public record PostQueryDTO
     int SharesCount,
     VisibilityLevel Visibility,
     DateTime CreatedAt,
-    DateTime? UpdatedAt
+    DateTime? UpdatedAt,
+    bool IsFriend = false
 );
