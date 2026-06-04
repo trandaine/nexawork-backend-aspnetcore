@@ -5,7 +5,9 @@ using NexaWork.Application.DTOs.Connections;
 using NexaWork.Application.Features.Client.Connections.Commands.AcceptRequest;
 using NexaWork.Application.Features.Client.Connections.Commands.BlockConnection;
 using NexaWork.Application.Features.Client.Connections.Commands.RejectRequest;
+using NexaWork.Application.Features.Client.Connections.Commands.RemoveConnection;
 using NexaWork.Application.Features.Client.Connections.Commands.SendRequest;
+using NexaWork.Application.Features.Client.Connections.Commands.UndoRequest;
 using NexaWork.Application.Features.Client.Connections.Queries.GetConnections;
 using NexaWork.Application.Features.Client.Connections.Queries.GetPendingConnections;
 
@@ -69,6 +71,30 @@ namespace NexaWork.Client.Controllers
         public async Task<ActionResult> BlockConnection(Guid targetCustomerId)
         {
             await _mediator.Send(new BlockConnectionCommand(targetCustomerId));
+            return NoContent();
+        }
+        
+        /// <summary>
+        /// Undo a pending connection request that was sent to the target customer
+        /// </summary>
+        /// <param name="targetCustomerId"></param>
+        /// <returns></returns>
+        [HttpDelete("{targetCustomerId:guid}/undo")]
+        public async Task<ActionResult> UndoRequest(Guid targetCustomerId)
+        {
+            await _mediator.Send(new UndoConnectionRequestCommand(targetCustomerId));
+            return NoContent();
+        }
+        
+        /// <summary>
+        /// Remove an accepted connection with the target customer
+        /// </summary>
+        /// <param name="targetCustomerId"></param>
+        /// <returns></returns>
+        [HttpDelete("{targetCustomerId:guid}/remove")]
+        public async Task<ActionResult> RemoveConnection(Guid targetCustomerId)
+        {
+            await _mediator.Send(new RemoveConnectionCommand(targetCustomerId));
             return NoContent();
         }
         
