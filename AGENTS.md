@@ -1,7 +1,22 @@
 # NexaWork AI Coding Agent Guidelines
 
 ## Project Overview
-**NexaWork** is a LinkedIn Clone platform built with ASP.NET Core. It uses Clean Architecture with an event-driven messaging system to coordinate authentication, customer onboarding, and content sharing across multiple microservices.
+**NexaWork** is a comprehensive LinkedIn Clone platform built with ASP.NET Core. Its core capabilities include:
+- **Profile & Networking**: Management of user profiles, addresses, social links, and custom networking connections (self-referencing many-to-many).
+- **Resumes & Portfolios**: Management of user educations, work experiences, and skills.
+- **Content & Feeds**: Creating posts with media, commenting, and diverse user reactions (Like, Love, Insightful, etc.).
+- **Job Board**: Organizations can post job listings, and users can submit job applications with resumes and cover letters.
+
+It uses Clean Architecture with an event-driven messaging system to coordinate authentication, customer onboarding, and content sharing across multiple microservices.
+
+## Tech Specs & Tools
+- **Frameworks**: ASP.NET Core (Web API & MVC), React (Frontend).
+- **Architecture**: Clean Architecture (Domain, Application, Infrastructure, Presentation/Client layers).
+- **Design Patterns**: CQRS via **MediatR**, Repository Pattern for data access, Pipeline Validation via **FluentValidation**.
+- **Database & ORM**: SQL Server with **Entity Framework Core** (utilizing proxy-based lazy loading via `virtual` navigation properties).
+- **Authentication**: Custom Identity (`NexaWorkUser`) decoupled using **OpenIddict** (OAuth2/OIDC) for JWT token generation and introspection. Supports advanced features like 2FA.
+- **Message Broker**: **RabbitMQ** integrated via **MassTransit** for asynchronous event messaging across microservices (e.g., `UserRegisteredEvent`).
+- **Background Tasks**: **Quartz.NET** for background job scheduling.
 
 ## Architecture: The Big Picture
 

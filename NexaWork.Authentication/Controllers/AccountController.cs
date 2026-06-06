@@ -58,9 +58,13 @@ namespace NexaWork.Authentication.Controllers
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    var cleanReturnUrl = returnUrl.Split(',')[0];
+                    if (Url.IsLocalUrl(cleanReturnUrl))
+                    {
+                        return Redirect(cleanReturnUrl);
+                    }
                 }
 
                 return Redirect("~/");
@@ -133,9 +137,13 @@ namespace NexaWork.Authentication.Controllers
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    var cleanReturnUrl = returnUrl.Split(',')[0];
+                    if (Url.IsLocalUrl(cleanReturnUrl))
+                    {
+                        return Redirect(cleanReturnUrl);
+                    }
                 }
 
                 return Redirect("~/");
@@ -188,9 +196,13 @@ namespace NexaWork.Authentication.Controllers
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    var cleanReturnUrl = returnUrl.Split(',')[0];
+                    if (Url.IsLocalUrl(cleanReturnUrl))
+                    {
+                        return Redirect(cleanReturnUrl);
+                    }
                 }
 
                 return Redirect("~/");
@@ -282,9 +294,13 @@ namespace NexaWork.Authentication.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
             HttpContext.Session.Remove("fido2.authenticatedUserId");
 
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl))
             {
-                return Redirect(returnUrl);
+                var cleanReturnUrl = returnUrl.Split(',')[0];
+                if (Url.IsLocalUrl(cleanReturnUrl))
+                {
+                    return Redirect(cleanReturnUrl);
+                }
             }
 
             return Redirect("~/");
@@ -303,6 +319,7 @@ namespace NexaWork.Authentication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequestDTO model, string? returnUrl = null)
         {
+            if (!string.IsNullOrEmpty(returnUrl)) returnUrl = returnUrl.Split(',')[0];
             ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
@@ -378,9 +395,13 @@ namespace NexaWork.Authentication.Controllers
                 await _userManager.UpdateAsync(user);
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    var cleanReturnUrl = returnUrl.Split(',')[0];
+                    if (Url.IsLocalUrl(cleanReturnUrl))
+                    {
+                        return Redirect(cleanReturnUrl);
+                    }
                 }
 
                 return Redirect("~/");
@@ -423,7 +444,15 @@ namespace NexaWork.Authentication.Controllers
 
             if (result.Succeeded)
             {
-                return LocalRedirect(returnUrl ?? "/");
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    var cleanReturnUrl = returnUrl.Split(',')[0];
+                    if (Url.IsLocalUrl(cleanReturnUrl))
+                    {
+                        return Redirect(cleanReturnUrl);
+                    }
+                }
+                return Redirect("~/");
             }
             else if (result.IsLockedOut)
             {
@@ -435,6 +464,149 @@ namespace NexaWork.Authentication.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid login code.");
                 return View(model);
             }
+        }
+        [HttpGet("ForgotPassword")]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost("ForgotPassword")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string? returnUrl = null)
+        {
+            if (!string.IsNullOrEmpty(returnUrl)) returnUrl = returnUrl.Split(',')[0];
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return RedirectToAction(nameof(VerifyResetCode), new { email = model.Email, returnUrl });
+                }
+
+                // Generate a 6-digit code for password reset using the Email token provider
+                var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                
+                var emailHtml = NexaWork.Authentication.Services.EmailTemplates.GetVerificationEmailHtml(
+                    code, "Reset your NexaWork password",
+                    "We received a request to reset your password. Please enter the verification code below to proceed with resetting your password. If you did not request a password reset, you can safely ignore this email.");
+
+                await _emailSender.SendEmailAsync(model.Email, "Reset your password", emailHtml);
+
+                return RedirectToAction(nameof(VerifyResetCode), new { email = model.Email, returnUrl });
+            }
+
+            return View(model);
+        }
+
+        [HttpGet("VerifyResetCode")]
+        [AllowAnonymous]
+        public IActionResult VerifyResetCode(string email, string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Email"] = email;
+            
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(ForgotPassword), new { returnUrl });
+            }
+            
+            return View();
+        }
+
+        [HttpPost("VerifyResetCode")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyResetCode(VerifyResetCodeViewModel model, string? returnUrl = null)
+        {
+            if (!string.IsNullOrEmpty(returnUrl)) returnUrl = returnUrl.Split(',')[0];
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Email"] = model.Email;
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal user doesn't exist
+                ModelState.AddModelError(string.Empty, "Invalid verification code.");
+                return View(model);
+            }
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", model.Code);
+            if (isValid)
+            {
+                // Generate the highly secure Identity reset token in the background
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                
+                // Redirect to the ResetPassword page passing the token
+                return RedirectToAction(nameof(ResetPassword), new { email = model.Email, resetToken, returnUrl });
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid verification code.");
+            return View(model);
+        }
+
+        [HttpGet("ResetPassword")]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email, string resetToken, string? returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(resetToken))
+            {
+                return BadRequest("A valid email and token must be supplied for password reset.");
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            
+            var model = new ResetPasswordViewModel
+            {
+                Email = email,
+                ResetToken = resetToken
+            };
+            
+            return View(model);
+        }
+
+        [HttpPost("ResetPassword")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string? returnUrl = null)
+        {
+            if (!string.IsNullOrEmpty(returnUrl)) returnUrl = returnUrl.Split(',')[0];
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction(nameof(Login), new { returnUrl });
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Your password has been reset successfully. Please log in with your new password.";
+                return RedirectToAction(nameof(Login), new { returnUrl });
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
     }
 }
