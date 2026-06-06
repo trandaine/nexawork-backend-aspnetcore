@@ -12,6 +12,9 @@ public interface INexaWorkDbContext
     DbSet<Skill> Skills { get; }
     DbSet<CustomerSocialLink> CustomerSocialLinks { get; }
     DbSet<CustomerAddress> CustomerAddresses { get; }
+    DbSet<Connection> Connections { get; }
+    DbSet<Reaction> Reactions { get; }
+    
 
     /// <summary>
     /// Lưu tất cả các thay đổi vào database. Trả về số lượng bản ghi bị ảnh hưởng.

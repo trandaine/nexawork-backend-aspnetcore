@@ -4,7 +4,7 @@ using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.Customers.Queries.GetByIdentityId;
 
-public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdentityIdQuery, CustomerWithIdentityIdDTO?>
+public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdentityIdQuery, CustomerQueryDTO?>
 {
     private readonly ICustomerRepository _repository;
     private readonly ICurrentUserService _currentUserService;
@@ -15,7 +15,7 @@ public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdent
         _currentUserService = currentUserService;
     }
 
-    public async Task<CustomerWithIdentityIdDTO?> Handle(GetCustomerByIdentityIdQuery request,
+    public async Task<CustomerQueryDTO?> Handle(GetCustomerByIdentityIdQuery request,
         CancellationToken cancellationToken)
     {
         var identityId = _currentUserService.UserId;
@@ -24,11 +24,20 @@ public class GetCustomerByIdentityIdHandler : IRequestHandler<GetCustomerByIdent
         if (customerWithIdentityId == null)
             return null;
 
-        return new CustomerWithIdentityIdDTO(
-            // customerWithIdentityId.CustomerId,
-            // customerWithIdentityId.IdentityUserId,
+        return new CustomerQueryDTO(
+            // // customerWithIdentityId.CustomerId,
+            // // customerWithIdentityId.IdentityUserId,
+            // customerWithIdentityId.FirstName,
+            // customerWithIdentityId.LastName
+            customerWithIdentityId.CustomerId,
             customerWithIdentityId.FirstName,
-            customerWithIdentityId.LastName
+            customerWithIdentityId.LastName,
+            customerWithIdentityId.Headline,
+            customerWithIdentityId.Summary,
+            customerWithIdentityId.Location,
+            customerWithIdentityId.ProfilePictureUrl,
+            customerWithIdentityId.BackgroundPictureUrl,
+            customerWithIdentityId.PhoneNumber
         );
     }
 }

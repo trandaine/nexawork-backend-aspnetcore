@@ -1,42 +1,89 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NexaWork.Domain.IdentityEntites;
-using NexaWork.Infrastructure;
-using NexaWork.Infrastructure.Data.Seedings;
-using NexaWork.Infrastructure.Data.Seedings.Authentications;
+using NexaWork.Authentication.Data;
+using NexaWork.Authentication.Data.IdentityEntities;
+using NexaWork.Authentication.Data.Seedings;
+using OpenIddict.Abstractions;
+using Quartz;
+using MassTransit;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
-// var connectionString = builder.Configuration.GetConnectionString("NexaWorkDbIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'NexaWorkDbIdentityContextConnection' not found.");;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-
-builder.Services.AddDbContext<NexaWorkDbIdentityContext>(options =>
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<NexaWorkIdentityDbContext>(options =>
 {
+    options.UseSqlServer(connectionString);
     options.UseOpenIddict();
 });
 
-// builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NexaWorkDbIdentityContext>();
 
-
-builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options => {
-        // Có thể cấu hình thêm rules cho password tại đây
-        options.SignIn.RequireConfirmedAccount = false; 
-    })
-    .AddEntityFrameworkStores<NexaWorkDbIdentityContext>()
-    .AddDefaultTokenProviders()
-    .AddDefaultUI(); // Cực kỳ quan trọng để các trang Scaffold UI hoạt động
-
-
-
+builder.Services.AddIdentity<NexaWorkUser, NexaWorkRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // Cho phép đăng nhập mà không cần xác nhận email
+    // Password settings
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+    // User settings
+    options.User.RequireUniqueEmail = true;
+    // Sign-in settings
+    options.SignIn.RequireConfirmedEmail = false;  // Sign in không cần confirm email
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+})
+    .AddEntityFrameworkStores<NexaWorkIdentityDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
+
+// Add Quartz services
+builder.Services.AddQuartz(options =>
+{
+    options.UseSimpleTypeLoader();
+    options.UseInMemoryStore();
+});
+
+// Register the Quartz backgound service
+builder.Services.AddQuartzHostedService(options =>
+{
+    // Wait for active jobs to finish before shutting down the server
+    options.WaitForJobsToComplete = true;
+});
+
+
+// builder.Services.AddApplicationServices();
+// builder.Services.AddInfrastructureServices(builder.Configuration);
+
+
+// Configure MassTransit with RabbitMQ (The Publisher)
+var rabbitMqSettings = builder.Configuration
+    .GetSection("RabbitMQ");
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(
+            rabbitMqSettings["Host"],
+            rabbitMqSettings["VirtualHost"],
+            h =>
+            {
+                // NOTE: Do NOT store production secrets directly in appsettings.json.
+                h.Username(rabbitMqSettings["Username"]!);
+                h.Password(rabbitMqSettings["Password"]!);
+            });
+    });
 });
 
 
@@ -44,29 +91,57 @@ builder.Services.AddOpenIddict()
     .AddCore(options =>
     {
         options.UseEntityFrameworkCore()
-               .UseDbContext<NexaWorkDbIdentityContext>();
+               .UseDbContext<NexaWorkIdentityDbContext>();
+
+        options.UseQuartz()
+        // By default, OpenIddict waits until tokens are 14 days old before deleting them.
+        // If you want it to aggressively delete younger tokens, you can lower the lifespan limit
+        // (Note: The absolute minimum lifespan OpenIddict allows is 10 minutes)
+        // Note: This is not required when cleanup every 15 minutes. This is make the database overwhelmed with Delete command. Consider turn off when Production.
+            .SetMinimumTokenLifespan(TimeSpan.FromMinutes(15))
+            .SetMinimumAuthorizationLifespan(TimeSpan.FromMinutes(15));
+
     })
     .AddServer(options =>
     {
-        // Cấu hình các Endpoints chuẩn
+
+        options.SetEndSessionEndpointUris("connect/logout");
+
+        // Define your OAuth2 endpoints
         options.SetAuthorizationEndpointUris("connect/authorize")
                .SetTokenEndpointUris("connect/token")
-               .SetEndSessionEndpointUris("connect/logout");
+               .SetIntrospectionEndpointUris("connect/introspect");
 
-        // Bật luồng Authorization Code (dành cho React & React Native)
-        options.AllowAuthorizationCodeFlow();
-        // Bắt buộc mọi Client phải dùng PKCE cho an toàn
-        options.RequireProofKeyForCodeExchange();
+        // Enable the Authorization Code Flow with PKCE (Crucial for React/React Native)
+        options.AllowAuthorizationCodeFlow()
+               .RequireProofKeyForCodeExchange()
+               .AllowRefreshTokenFlow();
 
-        // Key dùng cho môi trường dev
+        // Register scopes (what the client is allowed to access)
+        // options.RegisterScopes("api");
+        options.RegisterScopes(
+
+            OpenIddictConstants.Scopes.OpenId,
+            OpenIddictConstants.Scopes.Profile,
+            "api"
+        );
+
+        // Development keys (do not use in production)
         options.AddDevelopmentEncryptionCertificate()
+               // Add signing certificate for JWT tokens (also for development)
                .AddDevelopmentSigningCertificate();
 
-        // Đăng ký cho ASP.NET Core
+
+        // Disable access token encryption (makes it easier to debug with tools like jwt.ms or jwt.io)
+        // OpenIddict to issue standard, readable JWTs instead of encrypted opaque tokens
+        // options.DisableAccessTokenEncryption();
+
+
+        // Integrate with ASP.NET Core
         options.UseAspNetCore()
+               .EnableTokenEndpointPassthrough()
                .EnableAuthorizationEndpointPassthrough()
-               .EnableTokenEndpointPassthrough();
-            //    .EnableLogoutEndpointPassthrough();
+               .EnableEndSessionEndpointPassthrough();
     })
     .AddValidation(options =>
     {
@@ -75,39 +150,65 @@ builder.Services.AddOpenIddict()
     });
 
 
-
-// //=== Cấu hình CORS để React App có thể gọi API mà không bị chặn bởi trình duyệt ===
-// builder.Services.AddCors(options =>
-// {
-//     options.AddDefaultPolicy(policy =>
-//     {
-//         policy.WithOrigins("http://localhost:5173") // Domain của React App
-//               .AllowAnyHeader()
-//               .AllowAnyMethod();
-//     });
-// });
-
-
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAppsAccess", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:5173", // React app
+            "https://localhost:7172" // Client API
+            )
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 
 
+// Add Session for FIDO2 Challenge storage
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.IsEssential = true;
+});
 
+// Add FIDO2 Services
+builder.Services.AddFido2(options =>
+{
+    options.ServerDomain = "localhost";
+    options.ServerName = "NexaWork Security";
+    options.Origins = new HashSet<string> { "https://localhost:7036" };
+    options.TimestampDriftTolerance = 300000;
+});
+
+// Add services to the container.
+builder.Services.AddScoped<NexaWork.Authentication.Services.IEmailSender, NexaWork.Authentication.Services.MailtrapEmailSender>();
+
+builder.Services.AddControllersWithViews();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseCors("AllowAppsAccess");
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<NexaWorkDbIdentityContext>();
+    var context = services.GetRequiredService<NexaWorkIdentityDbContext>();
     // Tự động apply migration và tạo DB nếu chưa có
-    // context.Database.Migrate(); 
+    // context.Database.Migrate();
 
     try
     {
         await IdentityRoleDataSeeder.SeedRoleAsync(services);
-        await IdentityUserDataSeeder.SeedAdminAsync(services); // Bỏ comment nếu bạn có file này
+        await IdentityUserDataSeeder.SeedAdminAsync(services);
         await OpenIddictDataSeeder.SeedClientAsync(services);
+        await OpenIddictDataSeeder.SeedSwaggerAPIClientAsync(services);
+        await OpenIddictDataSeeder.SeedClientAPIIntrospectionAsync(services);
     }
     catch (Exception ex)
     {
@@ -118,38 +219,25 @@ using (var scope = app.Services.CreateScope())
 
 
 
-
-
-
-
-
-
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles(); // Cho phép phục vụ file tĩnh từ wwwroot
-
-
+app.UseStaticFiles();
+app.UseSession();
 app.UseRouting();
-// app.UseCors(); // Kích hoạt CORS nếu bạn đã cấu hình ở trên
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
+// app.MapControllers();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-app.MapRazorPages(); // Bắt buộc để chạy các trang Identity UI
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+    // pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

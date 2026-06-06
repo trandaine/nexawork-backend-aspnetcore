@@ -2,4 +2,4 @@ using MediatR;
 
 namespace NexaWork.Application.Features.Client.Customers.Queries.GetById;
 
-public record GetCustomerByIdQuery() : IRequest<CustomerQueryDTO?>;
+public record GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerQueryDTO?>;

@@ -14,12 +14,11 @@ namespace NexaWork.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureServices(
-        this IServiceCollection services,
-    IConfiguration configuration
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services
+        // , IConfiguration configuration
     )
     {
-        // 1. Register the DbContext (Your Database Connection)
+        //  Register the DbContext (Your Database Connection)
         // services.AddDbContext<NexaWorkDbContext>(options =>
         //     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
         //         builder => builder.MigrationsAssembly(typeof(NexaWorkDbContext).Assembly.FullName)));
@@ -109,7 +108,7 @@ public static class DependencyInjection
 
 
 
-        // 2. Register the Unit of Work
+        //  Register the Unit of Work
         // This ensures that when a Handler asks for IApplicationDbContext, 
         // it gets the exact same NexaWorkDbContext instance used by the repositories.
         services.AddScoped<INexaWorkDbContext>(provider =>
@@ -125,8 +124,11 @@ public static class DependencyInjection
         services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
         services.AddScoped<ICustomerSocialLinkRepository, CustomerSocialLinkRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
+        services.AddScoped<IReactionRepository, ReactionRepository>();
+        services.AddScoped<IConnectionRepository, ConnectionRepository>();
+        
 
-        // 4. Register your Services
+        // Register your Services
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         return services;

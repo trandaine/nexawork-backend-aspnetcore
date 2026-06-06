@@ -16,16 +16,6 @@ public class NexaWorkDbContext : DbContext, INexaWorkDbContext
     {
     }
 
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = ConnectionStringConstants.ConnectionString;
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CommentConfiguration());

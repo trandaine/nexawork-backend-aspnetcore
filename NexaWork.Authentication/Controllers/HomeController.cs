@@ -1,24 +1,32 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NexaWork.Authentication.Models;
+using NexaWork.Authentication.Data.IdentityEntities;
 
 namespace NexaWork.Authentication.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly UserManager<NexaWorkUser> _userManager;
+
+    public HomeController(UserManager<NexaWorkUser> userManager)
     {
-        return View();
+        _userManager = userManager;
     }
 
-    public IActionResult Privacy()
+    public async Task<IActionResult> Index()
     {
-        return View();
-    }
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        // We can pass user info to the view to make the dashboard personalized.
+        ViewData["FullName"] = user.UserName; // Assuming Username is their primary handle here
+        ViewData["Email"] = user.Email;
+
+        return View();
     }
 }

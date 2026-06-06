@@ -1,0 +1,15 @@
+@{
+    var hasExternalLogins = false; // We can expand this later if using Facebook/Google logins
+}
+
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")" asp-action="Index">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ChangePassword" ? "active" : "")" asp-action="ChangePassword">Password</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "TwoFactorAuthentication" || ViewContext.RouteData.Values["Action"].ToString() == "EnableAuthenticator" ? "active" : "")" asp-action="TwoFactorAuthentication">Two-factor authentication</a>
+    </li>
+</ul>

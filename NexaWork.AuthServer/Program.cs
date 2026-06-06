@@ -206,10 +206,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
+// app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}");
+    // pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

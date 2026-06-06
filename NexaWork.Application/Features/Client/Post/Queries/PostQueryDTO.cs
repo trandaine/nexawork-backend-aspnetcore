@@ -5,7 +5,9 @@ namespace NexaWork.Application.Features.Client.Post.Queries;
 public record PostQueryDTO
 (
     Guid PostId,
+    Guid CustomerId,
     string CustomerName,
+    string? CustomerProfilePictureUrl,
     string Content,
     string? MediaUrl,
     int LikesCount,
@@ -13,5 +15,6 @@ public record PostQueryDTO
     int SharesCount,
     VisibilityLevel Visibility,
     DateTime CreatedAt,
-    DateTime? UpdatedAt
+    DateTime? UpdatedAt,
+    bool IsFriend = false
 );

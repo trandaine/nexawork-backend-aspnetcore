@@ -28,6 +28,7 @@
     <PackageReference Include="OpenIddict.Quartz" Version="7.5.0" />
     <PackageReference Include="OpenIddict.Server.AspNetCore" Version="7.5.0" />
     <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="7.5.0" />
+    <PackageReference Include="QRCoder" Version="1.8.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.18.1" />
   </ItemGroup>
 

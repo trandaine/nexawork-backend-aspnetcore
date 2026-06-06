@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Enable Email 2FA";
+    ViewData["ActivePage"] = "TwoFactorAuthentication";
+    var email = ViewData["Email"] as string;
+}
+
+<h4 class="card-title">Enable Email Two-Factor Authentication</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <p>We have sent a verification code to your email: <strong>@email</strong></p>
+        <p>Please enter the code below to verify and enable Email 2FA.</p>
+        
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label for="code" class="form-label">Verification Code</label>
+                <input type="text" name="code" class="form-control" autocomplete="off" placeholder="Enter 6-digit code" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Verify & Enable</button>
+        </form>
+    </div>
+</div>
