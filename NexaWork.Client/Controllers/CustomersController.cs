@@ -43,8 +43,6 @@ namespace NexaWork.Client.Controllers
         [HttpGet("profile-me")]
         public async Task<ActionResult<CustomerQueryDTO>> GetCurrentCustomer()
         {
-            
-
             var customer = await _mediator.Send(new GetCustomerByIdentityIdQuery());
             if (customer == null)
                 return NotFound();
