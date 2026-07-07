@@ -1,196 +1,135 @@
-# NexaWork AI Coding Agent Guidelines
+# NexaWork Full-Stack AI Coding Agent Guidelines
 
-## Project Overview
-**NexaWork** is a comprehensive LinkedIn Clone platform built with ASP.NET Core. Its core capabilities include:
-- **Profile & Networking**: Management of user profiles, addresses, social links, and custom networking connections (self-referencing many-to-many).
-- **Resumes & Portfolios**: Management of user educations, work experiences, and skills.
-- **Content & Feeds**: Creating posts with media, commenting, and diverse user reactions (Like, Love, Insightful, etc.).
-- **Job Board**: Organizations can post job listings, and users can submit job applications with resumes and cover letters.
+Welcome, AI Assistant! This document is your ultimate architectural master guide for the **NexaWork** ecosystem. Review this document thoroughly to understand the design patterns, microservice boundaries, event-driven messaging, authentication flows, and frontend integrations before modifying or generating any code.
 
-It uses Clean Architecture with an event-driven messaging system to coordinate authentication, customer onboarding, and content sharing across multiple microservices.
+---
 
-## Tech Specs & Tools
-- **Frameworks**: ASP.NET Core (Web API & MVC), React (Frontend).
-- **Architecture**: Clean Architecture (Domain, Application, Infrastructure, Presentation/Client layers).
-- **Design Patterns**: CQRS via **MediatR**, Repository Pattern for data access, Pipeline Validation via **FluentValidation**.
-- **Database & ORM**: SQL Server with **Entity Framework Core** (utilizing proxy-based lazy loading via `virtual` navigation properties).
-- **Authentication**: Custom Identity (`NexaWorkUser`) decoupled using **OpenIddict** (OAuth2/OIDC) for JWT token generation and introspection. Supports advanced features like 2FA.
-- **Message Broker**: **RabbitMQ** integrated via **MassTransit** for asynchronous event messaging across microservices (e.g., `UserRegisteredEvent`).
-- **Background Tasks**: **Quartz.NET** for background job scheduling.
+## 1. Project Overview & Ecosystem
+**NexaWork** is a state-of-the-art, enterprise-grade professional networking platform (a modern LinkedIn clone) built on ASP.NET Core Clean Architecture and a Next.js (Turbopack) frontend.
 
-## Architecture: The Big Picture
+### Core Business Capabilities
+- **Identity & Security (`NexaWork.Authentication`)**: Centralized OAuth2/OIDC Identity Provider (IDP) utilizing OpenIddict, ASP.NET Core Identity, and advanced passwordless FIDO2/WebAuthn multi-factor authentication.
+- **Protected Resource API (`NexaWork.Client`)**: The core business engine serving professional profiles, networking connections (self-referencing M2M), feeds, job boards, resumes, and static storage.
+- **Frontend (`nexawork-frontend`)**: A Next.js application strictly implementing Feature-Sliced Design (FSD) architecture and utilizing the Backend-For-Frontend (BFF) pattern via Auth.js (NextAuth v5).
 
-### Service Separation & Data Flows
+---
+
+## 2. System Architecture & Data Flows
+
 ```
-[AuthServer (OpenIddict OAuth2)]
-         ↓
-    Publishes: UserRegisteredEvent
-         ↓
-[NexaWork.Client API (Main Business Logic)]  ← Consumes event via RabbitMQ
-                                              ← Uses repositories & MediatR
-                                              
-[NexaWork.Authentication/Admin]              ← MVC projects
-         ↓ (Tokens)
-   Validates against AuthServer
++-----------------------------------------------------------------------+
+|                       Next.js Frontend (BFF & FSD)                    |
+|       (http://localhost:3000 | Auth.js | TanStack Query | Axios)      |
++-----------------------------------------------------------------------+
+          |                                            |
+          | 1. OAuth2 / PKCE Login                     | 3. Bearer Token / API Requests
+          v                                            v
++-------------------------------+             +-------------------------------+
+|    NexaWork.Authentication    |             |        NexaWork.Client        |
+|    (IDP: https://localhost:7036) |             | (Resource: https://localhost:7172) |
++-------------------------------+             +-------------------------------+
+          |                                            ^
+          | 2. Publishes UserRegisteredEvent           | 4. Consumes Event via MassTransit
+          +-------------> [ RabbitMQ Broker ] ---------+
+                                                       | 5. Token Introspection
+                                                       +---> (Calls Auth Server on 7036)
 ```
 
-**Critical Decision**: Authentication is intentionally decoupled via OpenIddict. The AuthServer (`NexaWork.AuthServer`) is the ONLY source for user identity. NexaWork.Client consumes this via OpenIddict validation, not direct db access.
+### Key Architectural Pillars
+1. **Decoupled Identity:** `NexaWork.Authentication` is the sole authority for user identity (`NexaWorkUser`, `NexaWorkRole`). The `NexaWork.Client` API never accesses identity tables directly; instead, it performs active token introspection against the Auth Server using its own client credentials (`nexawork_client_api`).
+2. **Event-Driven Onboarding:** When a new user registers in `NexaWork.Authentication`, MassTransit publishes a `UserRegisteredEvent` to RabbitMQ. `NexaWork.Client` consumes this event via `UserRegisteredEventConsumer` and automatically seeds the user's `Customer` profile in the business database.
+3. **CQRS via MediatR:** All business operations in `NexaWork.Client` are strictly separated into Commands (modifying state) and Queries (reading state). Controllers remain ultra-lean, merely dispatching requests via `_mediator.Send()`.
+4. **Validation Pipeline:** FluentValidation operates as a MediatR pipeline behavior (`ValidationBehavior`). Requests are automatically validated before any command/query handler executes.
 
-### Core Patterns (Why They Matter)
-1. **MediatR CQRS**: Commands/Queries organized by domain entity under `NexaWork.Application/Features/Client/{Entity}/{Commands|Queries}`
-2. **Repository Pattern**: All db access through scoped repositories defined in `NexaWork.Infrastructure/Persistence/Repositories`
-3. **Validation Pipeline**: `ValidationBehavior<TRequest, TResponse>` runs FluentValidation before handlers execute
-4. **Event Publishing**: AuthServer publishes `UserRegisteredEvent` → RabbitMQ → NexaWork.Client consumes to create Customer profile
+---
 
-## Critical Developer Workflows
+## 3. Microservice Deep Dive
 
-### Adding a New Feature (e.g., Skills Management)
-1. **Define entity** in `NexaWork.Domain/Entities/Skill.cs` with `virtual` collection properties (required for EF lazy loading)
-2. **Create DbSet** in `NexaWork.Infrastructure/Persistence/NexaWorkDbContext.cs`
-3. **Add configuration** in `NexaWork.Infrastructure/Persistence/Configurations/SkillConfiguration.cs` (all entities require this)
-4. **Create command**: `NexaWork.Application/Features/Client/Skill/Commands/Create/CreateSkillCommand.cs` as `record`, implement `IRequest<Guid>`
-5. **Create handler**: `CreateSkillCommandHandler.cs` implementing `IRequestHandler<CreateSkillCommand, Guid>`
-6. **Create validator**: `CreateSkillCommandValidator.cs` extending `AbstractValidator<CreateSkillCommand>`
-7. **Create controller endpoint**: `NexaWork.Client/Controllers/SkillController.cs`, inject `IMediator` and call `mediator.Send(command)`
+### A. `NexaWork.Authentication` (Port 7036)
+- **Database:** `NexaWorkIdentityDbContext` (SQL Server).
+- **OAuth2 Server:** Powered by OpenIddict. Configured for Authorization Code Flow with PKCE (`/connect/authorize`, `/connect/token`, `/connect/logout`, `/connect/userinfo`, `/connect/introspect`).
+- **Background Pruning:** Quartz.NET runs as a hosted background service to aggressively clean up expired tokens every 15 minutes.
+- **FIDO2 / WebAuthn:** Integrates passwordless authentication (`WebAuthnController.cs`), storing challenge data in distributed memory session caches.
+- **CORS Policy (`AllowAppsAccess`):** Whitelists `http://localhost:5173` (React) and `https://localhost:7172` (Client API).
 
-**Never** query DbContext directly in controllers—always use MediatR.
+### B. `NexaWork.Client` (Port 7172)
+- **Database:** `NexaWorkDbContext` (SQL Server).
+- **Controllers & Routing:** Adheres strictly to `[Route("api/[controller]")]`. For example, `CustomersController` endpoints start with `/api/Customers`.
+- **Static Storage:** Configured with `PhysicalFileProvider` to serve uploaded profile banners and avatars directly from `../SharedStorage` onto the `/uploads` request path.
+- **User Context:** `ICurrentUserService` extracts the authenticated user's ID directly from the introspected JWT claims (`HttpContext.User`).
+- **CORS Policy:** Explicitly allows `BaseURLConstants.REACT_APP_URL` (`http://localhost:3000`) with `.AllowCredentials()`.
 
-### Database Migrations
+---
+
+## 4. Frontend Integration & FSD Architecture
+
+The Next.js frontend is structured around strict Feature-Sliced Design (FSD) layers:
+```
+src/
+  ├── app/                  # App Router (routing, layout.tsx, globals.css, providers)
+  ├── views/                # FSD Pages layer (full page components: dashboard, home, login)
+  ├── widgets/              # Standalone UI blocks (app-sidebar, site-header, nav-user)
+  ├── features/             # User interactions (auth-actions, login-form, dashboard charts)
+  ├── entities/             # Domain representations (Customer types, useCustomer hook)
+  ├── shared/               # Reusable core (shadcn UI, Axios apiClient, auth config)
+  └── proxy.ts              # Next.js Middleware (resides at project root)
+```
+
+### Essential Frontend Rules
+1. **API Client & Routes:** The global Axios instance (`src/shared/api/apiClient.ts`) utilizes `NEXT_PUBLIC_SERVER_RESOURCE_PUBLIC_API_URL` (`https://localhost:7172/api`). Always ensure client-side API requests include the controller name (e.g., `/Customers/profile-me`, **not** `/profile-me`).
+2. **Error Interception:** The Axios response interceptor actively traps `401 Unauthorized` and `404 Not Found` API responses, instantly redirecting the browser to `/login`.
+3. **Federated Logout:** The logout flow in `NavUser` executes an RP-Initiated Federated Logout. It destroys the local NextAuth session and redirects the browser to `https://localhost:7036/connect/logout?post_logout_redirect_uri=...&id_token_hint=...` to completely terminate the IDP session.
+
+---
+
+## 5. Critical Developer Workflows
+
+### Adding a New Domain Feature
+1. **Define Entity:** Create `NexaWork.Domain/Entities/{Entity}.cs`. Ensure all navigation properties are marked `virtual` to satisfy Entity Framework Core's proxy-based lazy loading requirements.
+2. **Configure Entity:** Create `NexaWork.Infrastructure/Persistence/Configurations/{Entity}Configuration.cs` implementing `IEntityTypeConfiguration<{Entity}>` to define table names, foreign keys, and column constraints.
+3. **Register DbSet:** Add `DbSet<{Entity}>` to `NexaWorkDbContext.cs`.
+4. **Create Command/Query:** Define under `NexaWork.Application/Features/Client/{Entity}/Commands/{Action}/{Action}{Entity}Command.cs` as a C# `record` implementing `IRequest<T>`.
+5. **Create Handler & Validator:** Define the `IRequestHandler` and `AbstractValidator` within the exact same feature folder.
+6. **Create Controller Endpoint:** Add to `NexaWork.Client/Controllers/{Entity}sController.cs`, inject `ISender _mediator`, and execute `_mediator.Send(command)`. **Never inject `NexaWorkDbContext` directly into controllers.**
+
+### Executing Database Migrations
+Always specify the correct Startup (`-s`) and Project (`-p`) flags when generating migrations:
+
 ```bash
-# Add migration (from NexaWork.Client project directory)
+# Adding a migration for NexaWork.Client (from NexaWork.Client directory)
 dotnet ef migrations add {MigrationName} -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext
 
-# Update database
+# Updating the database
 dotnet ef database update -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext
 ```
 
-**Key Requirement**: Use `-s` for startup project (the project with Program.cs) and `-p` for the project containing DbContext.
-
-### Running Local Development
+### Spinning Up Local Development
+Execute the startup sequence in this exact order to ensure successful messaging and token validation:
 ```bash
-# 1. Start RabbitMQ (required for messaging)
+# 1. Start RabbitMQ container
 docker run --detach --hostname my-rabbit --name nexawork-rabbitmq \
     --env RABBITMQ_DEFAULT_USER=admin \
     --env RABBITMQ_DEFAULT_PASS=Admin@123456 \
     --publish 15672:15672 --publish 5672:5672 \
     rabbitmq:3-management
 
-# 2. Ensure databases are migrated
-dotnet ef database update -s NexaWork.Client -p NexaWork.Infrastructure
+# 2. Start NexaWork.Authentication (Auth Server MUST be running first)
+cd NexaWork.Authentication && dotnet run
 
-# 3. Run AuthServer first (it publishes events)
-cd NexaWork.AuthServer && dotnet run
-
-# 4. Run NexaWork.Client API (in separate terminal)
+# 3. Start NexaWork.Client (in a separate terminal)
 cd NexaWork.Client && dotnet run
+
+# 4. Start Next.js Frontend (in the frontend project directory)
+npm run dev
 ```
 
-**Why this order**: AuthServer must be running for NexaWork.Client's OpenIddict validation to work.
+---
 
-## Project-Specific Conventions
+## 6. Common Pitfalls & Anti-Patterns to Avoid
 
-### Repository Implementations (Infrastructure Layer)
-- Located in `NexaWork.Infrastructure/Persistence/Repositories`
-- Always implement corresponding interface from `NexaWork.Application/Common/Interfaces/Repositories`
-- Example: `IOrganizationRepository` → `OrganizationRepository`, registered as scoped in `DependencyInjection.cs`
-- All repositories depend on `INexaWorkDbContext` injected via constructor
-
-### Feature Organization
-```
-NexaWork.Application/Features/Client/
-├── Organization/
-│   ├── Commands/
-│   │   └── Create/
-│   │       ├── CreateOrganizationCommand.cs    (record IRequest<Guid>)
-│   │       ├── CreateOrganizationHandler.cs    (IRequestHandler)
-│   │       └── CreateOrganizationValidator.cs  (AbstractValidator)
-│   └── Queries/
-│       └── GetOrganization/
-│           └── GetOrganizationQuery.cs
-└── Customers/
-    └── Commands/
-        └── Create/
-            └── CreateCustomerCommand.cs
-```
-
-**Naming Rule**: Match folder structure to command name (CreateOrganizationCommand → Create folder → CreateOrganization* files)
-
-### Command Records Pattern
-Use C# `record` type for commands (immutable, auto-generated equality):
-```csharp
-public record CreateOrganizationCommand(
-    string Name,
-    string? Industry,
-    DateTime? FoundedDate
-) : IRequest<Guid>;
-```
-
-### Entity Lazy Loading Requirements
-All navigation properties must be `virtual` (required for EF's proxy-based lazy loading):
-```csharp
-public class Customer
-{
-    public Guid CustomerId { get; set; }
-    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
-    public virtual Organization? Organization { get; set; }
-}
-```
-
-## Integration Points & Cross-Project Communication
-
-### AuthServer ↔ Client Integration
-- **NexaWork.AuthServer** (port 7036): Generates JWT tokens via OpenIddict
-- **NexaWork.Client** (port 5000+): Validates tokens by calling AuthServer's introspection endpoint
-- **Configuration** in `NexaWork.Client/Program.cs`:
-  - Issuer: `https://localhost:7036`
-  - Audience: `nexawork_client_api`
-  - Introspection endpoint uses client credentials (see `SetClientId`/`SetClientSecret`)
-
-### Event-Driven User Onboarding (RabbitMQ)
-1. AuthServer registers user → publishes `UserRegisteredEvent` to RabbitMQ
-2. Event contract: `NexaWork.Contracts/UserRegisteredEvent.cs`
-3. NexaWork.Client listens via `UserRegisteredEventConsumer` (in Consumers folder)
-4. Consumer uses MediatR to send `CreateCustomerCommand` + related commands
-5. **Configuration**: `RabbitMQ` settings in `appsettings.json` (Host, VirtualHost, Username, Password)
-
-### Current User Context (For Authorization)
-- Inject `ICurrentUserService` in controllers to get current user ID from JWT claims
-- Implementation: `NexaWork.Client/Services/CurrentUserService.cs`
-- Automatically extracts from `HttpContext.User` claims
-
-## Database & Migrations Context
-
-### Key Entities (Extend these, don't create parallel structures)
-- **Customer**: User profile (ForeignKey to AuthServer's NexaWorkUser via UserId)
-- **Post**: Content shared by customers
-- **Skill**: Catalog of available skills
-- **Organization**: Company profiles
-- **Connection**: Self-referencing M2M for customer networks
-- **Education**, **Experience**: Resume data
-- **Comment**, **Reaction**: Engagement on posts
-- **JobListing**, **JobApplication**: Job board features
-
-### Configuration Example Pattern
-Each entity has a configuration class (e.g., `SkillConfiguration.cs` implementing `IEntityTypeConfiguration<Skill>`). These apply constraints like `HasMaxLength`, relationships, and table names in `OnModelCreating`.
-
-## External Dependencies You'll Encounter
-
-| Package | Purpose | Location |
-|---------|---------|----------|
-| **MediatR** | CQRS command/query dispatch | Application layer |
-| **FluentValidation** | Request validation | Application validators |
-| **OpenIddict** | OAuth2/OIDC server & validation | AuthServer & Client |
-| **MassTransit** | Event publish/consume with RabbitMQ | Client Consumers |
-| **Entity Framework Core** | ORM & migrations | Infrastructure |
-| **Quartz** | Background job scheduling (cleanup) | AuthServer |
-
-## Common Mistakes to Avoid
-
-1. **Querying DbContext directly in handlers**: Use repositories instead
-2. **Forgetting `virtual` on navigation properties**: Breaks lazy loading
-3. **Mixing authentication concerns**: AuthServer owns user identity; Client uses tokens
-4. **Hardcoding connection strings**: Use `appsettings.json` and `ConnectionStringConstants`
-5. **Creating new DbContext instances**: Always inject and use the registered `INexaWorkDbContext`
-6. **Skipping validation validators**: Every command must have a corresponding validator registered in Dependency Injection
-7. **Wrong migration project order**: Use correct `-s` (startup) and `-p` (context) flags
-
+1. **Missing `NEXT_PUBLIC_` on Frontend Env Vars:** Client-side Axios will fail or hit Next.js 404s if `NEXT_PUBLIC_` is omitted from environment variable declarations.
+2. **Omitting `virtual` on Navigation Properties:** Doing so completely breaks EF Core lazy loading, causing null reference exceptions when accessing child collections.
+3. **Bypassing MediatR:** Never query or save to `DbContext` directly within API controllers. Always maintain strict CQRS separation.
+4. **Ignoring Controller Route Prefixes:** Remember that C# controllers use `api/[controller]`. A frontend fetch to `/profile-me` will 404; it must be `/Customers/profile-me`.
+5. **Direct Identity Table Access:** Never attempt to join `NexaWorkUser` tables directly from `NexaWork.Client`. Use OpenIddict token introspection and `ICurrentUserService`.
+6. **Unregistered Validators:** Ensure every command has an accompanying FluentValidation class registered in the Dependency Injection container.

@@ -75,7 +75,7 @@
                                     @* <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-openid"><span *@
                                     @*         class="la la-key font-medium-4"></span></a> *@
                                     <a href="#"
-                                       onclick="loginWithPasskey('', '@returnUrl'); return false;"
+                                       onclick='loginWithPasskey("", @Html.Raw(Json.Serialize(returnUrl))); return false;'
                                        class="btn btn-social-icon mr-1 mb-1 btn-outline-openid"
                                        title="Sign in with Passkey"
                                        aria-label="Sign in with Passkey">
