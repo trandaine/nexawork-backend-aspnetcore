@@ -23,6 +23,7 @@ public static class DependencyInjection
         //     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
         //         builder => builder.MigrationsAssembly(typeof(NexaWorkDbContext).Assembly.FullName)));
         services.AddDbContext<NexaWorkDbContext>();
+        services.AddDbContext<MessageDbContext>();
         // services.AddDbContext<NexaWorkDbIdentityContext>();
 
 
@@ -113,6 +114,8 @@ public static class DependencyInjection
         // it gets the exact same NexaWorkDbContext instance used by the repositories.
         services.AddScoped<INexaWorkDbContext>(provider =>
             provider.GetRequiredService<NexaWorkDbContext>());
+        services.AddScoped<IMessageDbContext>(provider =>
+            provider.GetRequiredService<MessageDbContext>());
 
         // 3. Register your Repositories
         // We use AddScoped so a new instance is created once per HTTP request.
@@ -126,6 +129,7 @@ public static class DependencyInjection
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<IReactionRepository, ReactionRepository>();
         services.AddScoped<IConnectionRepository, ConnectionRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
         
 
         // Register your Services

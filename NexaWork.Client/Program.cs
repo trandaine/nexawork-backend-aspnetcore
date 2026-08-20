@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.SignalR;
+using NexaWork.Client.Hubs;
 using NexaWork.Domain.Constants;
 using NexaWork.Infrastructure;
 using NexaWork.Application;
@@ -17,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var messageConnectionString = builder.Configuration.GetConnectionString("MessageConnection") ?? connectionString;
 var openIdictSettings = builder.Configuration.GetSection("OpenIddict");
 var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
 // var urlSettings = builder.Configuration.GetSection("Url");
@@ -24,6 +27,7 @@ var swaggerSettings = builder.Configuration.GetSection("Swagger");
 
 
 builder.Services.AddDbContext<NexaWorkDbContext>(options => { options.UseSqlServer(connectionString); });
+builder.Services.AddDbContext<MessageDbContext>(options => { options.UseSqlServer(messageConnectionString); });
 
 // Configure OpenIddict Validation
 
@@ -181,6 +185,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+// SignalR Real-Time Services
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+builder.Services.AddScoped<IMessageNotificationService, MessageNotificationService>();
+
 
 // builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddInfrastructureServices();
@@ -276,5 +285,6 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();
