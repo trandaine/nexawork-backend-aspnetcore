@@ -7,9 +7,9 @@ public class CreateCustomerSocialLinkValidator : AbstractValidator<CreateCustome
     public CreateCustomerSocialLinkValidator()
     {
         
-        RuleFor(x => x.IdentityUserId)
-            .NotEmpty().WithMessage("IdentityUserId is required.")
-            .Must(id => Guid.TryParse(id, out _)).WithMessage("IdentityUserId must be a valid GUID.");
+        RuleFor(x => x.UserId)
+            .NotEmpty().WithMessage("UserId is required.")
+            .Must(id => Guid.TryParse(id, out _)).WithMessage("UserId must be a valid GUID.");
         // RuleFor(slv => slv.FaceBookUrl)
         //     .MaximumLength(200).WithMessage("Facebook URL must not exceed 200 characters.");
         //     

@@ -13,17 +13,15 @@ public class CreatePostHandler : IRequestHandler<CreatePostCommand, Guid>
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ICurrentUserService _currentUserService;
 
     public CreatePostHandler(
-        ICurrentUserService currentUserService,
+        
         IPostRepository repository,
         ICustomerRepository customerRepository,
         INexaWorkDbContext unitOfWork,
         IFileStorageService fileStorageService)
     {
         _repository = repository;
-        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
         _customerRepository = customerRepository;
         _fileStorageService = fileStorageService;
@@ -31,7 +29,7 @@ public class CreatePostHandler : IRequestHandler<CreatePostCommand, Guid>
 
     public async Task<Guid> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (customer == null)
         {

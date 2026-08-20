@@ -1,6 +1,10 @@
+using NexaWork.Application.Common.Interfaces;
 using System;
 using MediatR;
 
 namespace NexaWork.Application.Features.Client.Post.Commands.Delete;
 
-public record DeletePostCommand(Guid PostId) : IRequest;
+public record DeletePostCommand(Guid PostId) : IRequest, IUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+}

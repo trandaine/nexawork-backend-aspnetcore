@@ -1,3 +1,4 @@
+using NexaWork.Application.Common.Interfaces;
 using MediatR;
 using NexaWork.Application.DTOs;
 // using NexaWork.Application.DTOs.Post;
@@ -10,4 +11,7 @@ public record UpdatePostCommand(
     string Content,
     FileDTO? MediaFile,
     VisibilityLevel Visibility
-) : IRequest;
+) : IRequest, IUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+}

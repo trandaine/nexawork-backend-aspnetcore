@@ -1,7 +1,6 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace NexaWork.Application.Features.Client.Post.Queries.GetById;
@@ -10,24 +9,21 @@ public class GetPostByIdHandler : IRequestHandler<GetPostByIdQuery, List<PostQue
 {
     private readonly IPostRepository _postRepository;
     private readonly INexaWorkDbContext _context;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IConnectionRepository _connectionRepository;
 
     public GetPostByIdHandler(
         IPostRepository postRepository,
         INexaWorkDbContext context,
-        ICurrentUserService currentUserService,
         IConnectionRepository connectionRepository)
     {
         _postRepository = postRepository;
         _context = context;
-        _currentUserService = currentUserService;
         _connectionRepository = connectionRepository;
     }
 
     public async Task<List<PostQueryDTO>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         var currentCustomer =
             await _context.Customers.FirstOrDefaultAsync(c => c.IdentityUserId == userIdentityId, cancellationToken);
         var friendIds = new HashSet<Guid>();

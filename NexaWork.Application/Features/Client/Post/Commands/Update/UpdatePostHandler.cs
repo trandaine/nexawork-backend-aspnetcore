@@ -12,26 +12,23 @@ public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ICurrentUserService _currentUserService;
 
     public UpdatePostHandler(
         IPostRepository repository,
         INexaWorkDbContext unitOfWork,
         IFileStorageService fileStorageService,
-        ICustomerRepository customerRepository,
-        ICurrentUserService currentUserService
+        ICustomerRepository customerRepository
     )
     {
         _postRepository = repository;
         _unitOfWork = unitOfWork;
-        _currentUserService = currentUserService;
         _fileStorageService = fileStorageService;
         _customerRepository = customerRepository;
     }
 
     public async Task Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
-        var identityUserId = _currentUserService.UserId;
+        var identityUserId = request.UserId;
 
         var customer = await _customerRepository.GetByIdentityIdAsync(identityUserId, cancellationToken);
         if (customer == null)

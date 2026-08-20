@@ -1,10 +1,14 @@
+using NexaWork.Application.Common.Interfaces;
 using MediatR;
 
 namespace NexaWork.Application.Features.Client.Customers.Commands.Create;
 
 public record CreateCustomerCommand(
-    string IdentityUserId
-) : IRequest<Guid>;
+    
+) : IRequest<Guid>, IUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+}
 
 
 

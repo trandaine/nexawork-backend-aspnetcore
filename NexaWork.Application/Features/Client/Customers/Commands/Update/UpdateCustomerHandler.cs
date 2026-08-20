@@ -11,25 +11,22 @@ public class UpdateCustomerHandler : IRequestHandler<UpdateCustomerCommand>
     private readonly ICustomerRepository _customerRepository;
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
-    private readonly ICurrentUserService _currentUserService;
 
 
     public UpdateCustomerHandler(
         ICustomerRepository customerRepository,
         INexaWorkDbContext unitOfWork,
-        IFileStorageService fileStorageService,
-        ICurrentUserService currentUserService
+        IFileStorageService fileStorageService
     )
     {
         _unitOfWork = unitOfWork;
-        _currentUserService = currentUserService;
         _customerRepository = customerRepository;
         _fileStorageService = fileStorageService;
     }
 
     public async Task Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var identityUserId = _currentUserService.UserId;
+        var identityUserId = request.UserId;
         var customer = await _customerRepository.GetByIdentityIdToEditAsync(identityUserId, cancellationToken);
         if (customer == null)
         {

@@ -1,22 +1,19 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.Customers.Queries.GetById;
 
 public class GetCustomerByIdHandler : IRequestHandler<GetCustomerByIdQuery, CustomerQueryDTO?>
 {
     private readonly ICustomerRepository _repository;
-    private readonly ICurrentUserService _currentUserService;
 
-    public GetCustomerByIdHandler(ICustomerRepository repository, ICurrentUserService currentUserService)
+    public GetCustomerByIdHandler(ICustomerRepository repository)
     {
-        _currentUserService = currentUserService;
         _repository = repository;
     }
     public async Task<CustomerQueryDTO?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        // var identityId = _currentUserService.UserId;
+        // var identityId = request.UserId;
         var customer = await _repository.GetCustomerByIdAsync(request.CustomerId, cancellationToken);
         // var customer = await _repository.GetByIdentityIdAsync(identityId, cancellationToken);
         if (customer == null)
