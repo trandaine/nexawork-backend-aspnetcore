@@ -1,7 +1,6 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.CustomerSocialLink.Commands.Update;
 
@@ -9,17 +8,14 @@ public class UpdateCustomerSocialLinkHandler : IRequestHandler<UpdateCustomerSoc
 {
     private readonly ICustomerSocialLinkRepository _customerSocialLinkRepository;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly INexaWorkDbContext _unitOfWork;
 
     public UpdateCustomerSocialLinkHandler(
         ICustomerSocialLinkRepository customerSocialLinkRepository,
         ICustomerRepository customerRepository,
-        ICurrentUserService currentUserService,
         INexaWorkDbContext unitOfWork
     )
     {
-        _currentUserService = currentUserService;
         _customerSocialLinkRepository = customerSocialLinkRepository;
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
@@ -27,7 +23,7 @@ public class UpdateCustomerSocialLinkHandler : IRequestHandler<UpdateCustomerSoc
 
     public async Task Handle(UpdateCustomerSocialLinkCommand request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         
         var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (customer == null)

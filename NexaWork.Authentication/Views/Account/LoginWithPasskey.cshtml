@@ -28,7 +28,7 @@
 
                                     <button class="btn btn-primary btn-block shadow mb-2"
                                             style="border-radius: 20px; font-weight: bold;"
-                                            onclick="loginWithPasskey('@ViewData["Username"]', '@ViewData["ReturnUrl"]')">
+                                            onclick='loginWithPasskey(@Html.Raw(Json.Serialize(ViewData["Username"])), @Html.Raw(Json.Serialize(ViewData["ReturnUrl"])))'>
                                         Verify Passkey
                                     </button>
 
@@ -54,7 +54,7 @@
     <script>
         // Auto trigger the passkey prompt when the page loads
         document.addEventListener("DOMContentLoaded", function () {
-            loginWithPasskey('@ViewData["Username"]', '@ViewData["ReturnUrl"]');
+            loginWithPasskey(@Html.Raw(Json.Serialize(ViewData["Username"])), @Html.Raw(Json.Serialize(ViewData["ReturnUrl"])));
         });
     </script>
 }

@@ -1,3 +1,4 @@
+using NexaWork.Application.Common.Interfaces;
 using MediatR;
 using NexaWork.Application.DTOs;
 // using NexaWork.Application.DTOs.Customer;
@@ -13,4 +14,7 @@ public record UpdateCustomerCommand(
     string? Location,
     FileDTO? BackgroundPictureFile,
     FileDTO? ProfilePictureFile,
-    string? PhoneNumber) : IRequest;
+    string? PhoneNumber) : IRequest, IUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+}

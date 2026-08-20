@@ -24,9 +24,9 @@ public class UserRegisteredEventConsumer : IConsumer<UserRegisteredEvent>
         try
         {
             // Run your existing business logic!
-            var createCustomerCommand = new CreateCustomerCommand(context.Message.UserId);
-            var createCustomerAddress = new CreateCustomerAddressCommand(context.Message.UserId);
-            var createCustomerSocialLink = new CreateCustomerSocialLinkCommand(context.Message.UserId);
+            var createCustomerCommand = new CreateCustomerCommand { UserId = context.Message.UserId };
+            var createCustomerAddress = new CreateCustomerAddressCommand { UserId = context.Message.UserId };
+            var createCustomerSocialLink = new CreateCustomerSocialLinkCommand { UserId = context.Message.UserId };
 
             await _mediator.Send(createCustomerCommand);
             await _mediator.Send(createCustomerAddress);

@@ -1,29 +1,25 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.Education.Queries.GetById;
 
 public class GetEducationByIdHandler : IRequestHandler<GetEducationByIdQuery, EducationQueryDTO?>
 {
     private readonly IEducationRepository _educationRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly ICustomerRepository _customerRepository;
 
     public GetEducationByIdHandler(
         IEducationRepository educationRepository,
-        ICurrentUserService currentUserService,
         ICustomerRepository customerRepository
     )
     {
         _educationRepository = educationRepository;
-        _currentUserService = currentUserService;
         _customerRepository = customerRepository;
     }
 
     public async Task<EducationQueryDTO?> Handle(GetEducationByIdQuery request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (customer == null)
             throw new Exception("Customer not found");

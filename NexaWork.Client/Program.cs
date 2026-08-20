@@ -205,8 +205,8 @@ builder.Services.AddCors(options =>
         // policy.WithOrigins("http://localhost:5173") // Replace with your React app's URL
         policy.WithOrigins(BaseURLConstants.REACT_APP_URL) // Replace with your React app's URL
             .AllowAnyHeader()
-            .AllowAnyMethod();
-        //   .AllowCredentials(); // Crucial for accepting the authentication cookie
+            .AllowAnyMethod()
+            .AllowCredentials(); // Crucial for accepting the authentication cookie
     });
 });
 

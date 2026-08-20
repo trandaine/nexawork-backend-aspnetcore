@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NexaWork.Authentication.Data.IdentityEntities;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 
 namespace NexaWork.Authentication.Controllers
 {
@@ -148,6 +150,51 @@ namespace NexaWork.Authentication.Controllers
                 {
                     RedirectUri = "/"
                 });
+        }
+        
+        
+        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+        [HttpGet("~/connect/userinfo"), HttpPost("~/connect/userinfo")]
+        [Produces("application/json")]
+        public async Task<IActionResult> UserInfo()
+        {
+            // Extract the user ID (subject) from the validated access token
+            var subject = User.GetClaim(OpenIddictConstants.Claims.Subject);
+    
+            if (subject == null)
+            {
+                return Challenge(
+                    authenticationSchemes: OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictValidationAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidToken,
+                        [OpenIddictValidationAspNetCoreConstants.Properties.ErrorDescription] = "The token is no longer valid."
+                    }));
+            }
+
+            // Find the user in your database (assuming you use ASP.NET Core Identity)
+            var user = await _userManager.FindByIdAsync(subject);
+            if (user == null)
+            {
+                return Challenge(
+                    authenticationSchemes: OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictValidationAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidToken,
+                        [OpenIddictValidationAspNetCoreConstants.Properties.ErrorDescription] = "The user no longer exists."
+                    }));
+            }
+
+            // Return the claims NextAuth is looking for
+            var claims = new Dictionary<string, object>(StringComparer.Ordinal)
+            {
+                [OpenIddictConstants.Claims.Subject] = await _userManager.GetUserIdAsync(user),
+                [OpenIddictConstants.Claims.Name] = user.UserName,
+                // Add other claims like email if needed:
+                [OpenIddictConstants.Claims.Email] = await _userManager.GetEmailAsync(user)
+            };
+
+            return Ok(claims);
         }
     }
 }

@@ -1,19 +1,17 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 
 namespace NexaWork.Application.Features.Client.Post.Queries.GetAll;
 
 public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQueryDTO>>
 {
-    private readonly ICurrentUserService _currentUserService;
     private readonly ICustomerRepository _customerRepository;
     private readonly IPostRepository _postRepository;
     private readonly IConnectionRepository _connectionRepository;
 
     public GetAllPostsHandler(
-        ICurrentUserService currentUserService,
+        
         IPostRepository postRepository,
         ICustomerRepository customerRepository,
         IConnectionRepository connectionRepository
@@ -21,13 +19,12 @@ public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, List<PostQue
     {
         _postRepository = postRepository;
         _customerRepository = customerRepository;
-        _currentUserService = currentUserService;
         _connectionRepository = connectionRepository;
     }
 
     public async Task<List<PostQueryDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         var currentCustomer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (currentCustomer == null)
             throw new UnauthorizedAccessException(

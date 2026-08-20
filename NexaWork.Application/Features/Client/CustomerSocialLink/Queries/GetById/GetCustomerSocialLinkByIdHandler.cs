@@ -1,6 +1,5 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.CustomerSocialLink.Queries.GetById;
 
@@ -9,23 +8,20 @@ public class
 {
     private readonly ICustomerSocialLinkRepository _customerSocialLinkRepository;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ICurrentUserService _currentUserService;
 
     public GetCustomerSocialLinkByIdHandler(
         ICustomerSocialLinkRepository customerSocialLinkRepository,
-        ICustomerRepository customerRepository,
-        ICurrentUserService currentUserService
+        ICustomerRepository customerRepository
     )
     {
         _customerSocialLinkRepository = customerSocialLinkRepository;
         _customerRepository = customerRepository;
-        _currentUserService = currentUserService;
     }
 
     public async Task<CustomerSocialLinkQueryDTO?> Handle(GetCustomerSocialLinkByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
 
         var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (customer == null)

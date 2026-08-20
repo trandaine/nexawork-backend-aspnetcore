@@ -1,33 +1,29 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.Education.Commands.Create;
 
 public class CreateEducationHandler : IRequestHandler<CreateEducationCommand, Guid>
 {
     private readonly IEducationRepository _educationRepository;
-    private readonly ICurrentUserService _currentUserService;
     private readonly INexaWorkDbContext _unitOfWork;
     private readonly ICustomerRepository _customerRepository;
 
     public CreateEducationHandler(
         IEducationRepository educationRepository,
-        ICurrentUserService currentUserService,
         INexaWorkDbContext unitOfWork,
         ICustomerRepository customerRepository
     )
     {
         _educationRepository = educationRepository;
-        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
         _customerRepository = customerRepository;
     }
 
     public async Task<Guid> Handle(CreateEducationCommand request, CancellationToken cancellationToken)
     {
-        var userIdentityId = _currentUserService.UserId;
+        var userIdentityId = request.UserId;
         var customer = await _customerRepository.GetByIdentityIdAsync(userIdentityId, cancellationToken);
         if (customer == null)
             throw new Exception("Customer not found");

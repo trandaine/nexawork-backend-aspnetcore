@@ -1,5 +1,6 @@
 using OpenIddict.Abstractions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.Extensions.Configuration;
 
 namespace NexaWork.Authentication.Data.Seedings;
 
@@ -8,7 +9,6 @@ public class OpenIddictDataSeeder
     public static async Task SeedClientAsync(IServiceProvider services)
     {
         var manager = services.GetRequiredService<IOpenIddictApplicationManager>();
-
 
         const string clientId = "nexawork_react_web";
 
@@ -22,19 +22,63 @@ public class OpenIddictDataSeeder
                 PostLogoutRedirectUris = { new Uri("http://localhost:5173/callback/logout") },
                 RedirectUris = { new Uri("http://localhost:5173/callback/login") },
                 Permissions =
+                {
+                    Permissions.Endpoints.EndSession,
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.ResponseTypes.Code,
+
+
+                    Permissions.Prefixes.Scope + Scopes.OpenId,
+                    Permissions.Prefixes.Scope + Scopes.Profile,
+                    Permissions.Prefixes.Scope + "api"
+                }
+            });
+        }
+    }
+
+    public static async Task SeedReactNextJsAsync(IServiceProvider services)
+    {
+        var manager = services.GetRequiredService<IOpenIddictApplicationManager>();
+        var configuration = services.GetRequiredService<IConfiguration>();
+
+
+        const string clientId = "nexawork_frontend_nextjs";
+        string clientSecret = configuration["OpenIddict:Clients:NextJs:ClientSecret"];
+
+        if (string.IsNullOrEmpty(clientSecret))
+        {
+            throw new InvalidOperationException(
+                "The OpenIddict ClientSecret for the Next.js frontend is missing from configuration.");
+        }
+
+        if (await manager.FindByClientIdAsync(clientId) == null)
+        {
+            await manager.CreateAsync(new OpenIddictApplicationDescriptor
             {
-                Permissions.Endpoints.EndSession,
-                Permissions.Endpoints.Authorization,
-                Permissions.Endpoints.Token,
-                Permissions.GrantTypes.AuthorizationCode,
-                Permissions.GrantTypes.RefreshToken,
-                Permissions.ResponseTypes.Code,
+                ClientId = clientId,
+                ClientType = ClientTypes.Confidential,
+                ClientSecret = clientSecret,
+                ConsentType = ConsentTypes.Implicit,
+                DisplayName = "NexaWork Frontend Next.js Application",
+                PostLogoutRedirectUris = { new Uri("http://localhost:3000/callback/logout") },
+                RedirectUris = { new Uri("http://localhost:3000/api/auth/callback/openiddict") },
+                Permissions =
+                {
+                    Permissions.Endpoints.EndSession,
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.ResponseTypes.Code,
 
 
-                Permissions.Prefixes.Scope + Scopes.OpenId,
-                Permissions.Prefixes.Scope + Scopes.Profile,
-                Permissions.Prefixes.Scope + "api"
-            }
+                    Permissions.Prefixes.Scope + Scopes.OpenId,
+                    Permissions.Prefixes.Scope + Scopes.Profile,
+                    Permissions.Prefixes.Scope + "api"
+                }
             });
         }
     }
@@ -55,14 +99,14 @@ public class OpenIddictDataSeeder
                 DisplayName = "Swagger UI Testing Client",
                 RedirectUris = { new Uri("https://localhost:7172/swagger/oauth2-redirect.html") },
                 Permissions =
-        {
-            Permissions.Endpoints.EndSession,
-            Permissions.Endpoints.Authorization,
-            Permissions.Endpoints.Token,
-            Permissions.GrantTypes.AuthorizationCode,
-            Permissions.ResponseTypes.Code,
-            Permissions.Prefixes.Scope + "api"
-        }
+                {
+                    Permissions.Endpoints.EndSession,
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.ResponseTypes.Code,
+                    Permissions.Prefixes.Scope + "api"
+                }
             });
         }
     }
@@ -90,12 +134,11 @@ public class OpenIddictDataSeeder
                 ClientSecret = apiClientSecret,
                 DisplayName = "NexaWork Client API (Resource Server)",
                 Permissions =
-        {
-            // The API ONLY needs permission to use the Introspection endpoint
-            Permissions.Endpoints.Introspection
-        }
+                {
+                    // The API ONLY needs permission to use the Introspection endpoint
+                    Permissions.Endpoints.Introspection
+                }
             });
         }
     }
-
 }

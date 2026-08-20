@@ -269,6 +269,19 @@ namespace NexaWork.Authentication.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginWithPasskey(string? returnUrl = null)
         {
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = returnUrl.Split(',')[0];
+            }
+
+            if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                // If invalid return url is ~/, the web browser has no idea what ~/ means!
+                // browser will treat ~/ as a relative directory name and try to navigate to https://localhost:7036/Account/~/, throwing a 404 Not Found error!
+                // returnUrl = "~/";
+                returnUrl = "/";
+            }
+
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null) return RedirectToAction("Login");
 

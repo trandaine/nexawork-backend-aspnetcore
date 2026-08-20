@@ -1,7 +1,6 @@
 using MediatR;
 using NexaWork.Application.Common.Interfaces;
 using NexaWork.Application.Common.Interfaces.Repositories;
-using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Features.Client.CustomerSocialLink.Commands.Create;
 
@@ -9,13 +8,11 @@ public class CreateCustomerSocialLinkHandler : IRequestHandler<CreateCustomerSoc
 {
     private readonly ICustomerSocialLinkRepository _customerSocialLinkRepository;
     private readonly ICustomerRepository _customerRepository;
-    // private readonly ICurrentUserService _currentUserService;
     private readonly INexaWorkDbContext _unitOfWork;
 
     public CreateCustomerSocialLinkHandler(
         ICustomerSocialLinkRepository customerSocialLinkRepository,
         ICustomerRepository customerRepository,
-        // ICurrentUserService currentUserService,
         INexaWorkDbContext unitOfWork
     )
     {
@@ -27,9 +24,9 @@ public class CreateCustomerSocialLinkHandler : IRequestHandler<CreateCustomerSoc
 
     public async Task<Guid> Handle(CreateCustomerSocialLinkCommand request, CancellationToken cancellationToken)
     {
-        // var userIdentityId = _currentUserService.UserId;
+        // var userIdentityId = request.UserId;
 
-        var customer = await _customerRepository.GetByIdentityIdAsync(request.IdentityUserId, cancellationToken);
+        var customer = await _customerRepository.GetByIdentityIdAsync(request.UserId, cancellationToken);
         if (customer == null)
             throw new UnauthorizedAccessException("Customer not found");
 

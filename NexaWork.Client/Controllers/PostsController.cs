@@ -157,8 +157,7 @@ namespace NexaWork.Client.Controllers
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
 
             var command = new DeletePostCommand(id);
             await _mediator.Send(command);

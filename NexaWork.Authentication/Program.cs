@@ -110,6 +110,7 @@ builder.Services.AddOpenIddict()
         // Define your OAuth2 endpoints
         options.SetAuthorizationEndpointUris("connect/authorize")
                .SetTokenEndpointUris("connect/token")
+               .SetUserInfoEndpointUris("connect/userinfo")
                .SetIntrospectionEndpointUris("connect/introspect");
 
         // Enable the Authorization Code Flow with PKCE (Crucial for React/React Native)
@@ -209,6 +210,7 @@ using (var scope = app.Services.CreateScope())
         await OpenIddictDataSeeder.SeedClientAsync(services);
         await OpenIddictDataSeeder.SeedSwaggerAPIClientAsync(services);
         await OpenIddictDataSeeder.SeedClientAPIIntrospectionAsync(services);
+        await OpenIddictDataSeeder.SeedReactNextJsAsync(services);
     }
     catch (Exception ex)
     {
