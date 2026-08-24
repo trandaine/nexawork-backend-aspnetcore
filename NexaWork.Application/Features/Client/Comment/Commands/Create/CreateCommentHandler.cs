@@ -25,6 +25,14 @@ public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, Guid>
         _customerRepository = customerRepository;
     }
 
+    /// <summary>
+    /// Handles the creation of a new comment on a post.
+    /// </summary>
+    /// <param name="request">The command containing comment details and user identity.</param>
+    /// <param name="cancellationToken">Cancellation token for the asynchronous operation.</param>
+    /// <returns>The unique identifier of the newly created comment.</returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when the customer profile for the user does not exist.</exception>
+    /// <exception cref="Exception">Thrown when the target post is not found.</exception>
     public async Task<Guid> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
         var userIdentityId = request.UserId;
