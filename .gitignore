@@ -5,6 +5,7 @@ obj/
 out/
 .git/
 nexawork-backend-aspnetcore.git/
+nexawork-frontend
 # Visual Studio
 .vs/
 *.user
