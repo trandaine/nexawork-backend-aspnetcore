@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexaWork.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace NexaWork.Infrastructure.Persistence.Migrations.MessageDb
+namespace NexaWork.Infrastructure.Data.Migrations.MessageDb
 {
     [DbContext(typeof(MessageDbContext))]
-    partial class MessageDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260824144719_InitialMessageDb")]
+    partial class InitialMessageDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

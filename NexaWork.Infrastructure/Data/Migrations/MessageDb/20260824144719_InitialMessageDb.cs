@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NexaWork.Infrastructure.Persistence.Migrations.MessageDb
+namespace NexaWork.Infrastructure.Data.Migrations.MessageDb
 {
     /// <inheritdoc />
     public partial class InitialMessageDb : Migration
