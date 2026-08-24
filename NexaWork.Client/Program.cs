@@ -19,13 +19,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var messageConnectionString = builder.Configuration.GetConnectionString("MessageConnection") ?? connectionString;
+var messageConnectionString = builder.Configuration.GetConnectionString("MessageDbConnection");
 var openIdictSettings = builder.Configuration.GetSection("OpenIddict");
 var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
 // var urlSettings = builder.Configuration.GetSection("Url");
 var swaggerSettings = builder.Configuration.GetSection("Swagger");
 
-
+// 
 builder.Services.AddDbContext<NexaWorkDbContext>(options => { options.UseSqlServer(connectionString); });
 builder.Services.AddDbContext<MessageDbContext>(options => { options.UseSqlServer(messageConnectionString); });
 
