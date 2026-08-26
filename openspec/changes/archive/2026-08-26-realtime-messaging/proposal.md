@@ -1,7 +1,7 @@
 # Change Proposal: Real-Time 1-on-1 Messaging (`realtime-messaging`)
 
 - **Change ID**: `realtime-messaging`
-- **Status**: Draft / Proposed
+- **Status**: Archived / Implemented
 - **Author**: Backend Team
 - **Created Date**: 2026-08-20
 

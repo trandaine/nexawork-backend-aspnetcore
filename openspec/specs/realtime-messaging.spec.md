@@ -1,7 +1,7 @@
 # OpenSpec: Messaging & Real-Time Chat Feature (1-on-1)
 
 - **Feature Name**: `realtime-messaging`
-- **Status**: Proposed / In Review
+- **Status**: Archived / Implemented
 - **Owner**: Backend Team
 - **Target Release**: v1.1.0
 - **Last Updated**: 2026-08-20
