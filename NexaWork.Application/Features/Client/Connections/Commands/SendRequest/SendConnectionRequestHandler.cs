@@ -22,6 +22,15 @@ public class SendConnectionRequestHandler : IRequestHandler<SendConnectionReques
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Handles sending a connection request to a target customer by UserId.
+    /// </summary>
+    /// <param name="request">The connection request command containing target customer details and sender identity.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when the sender identity cannot be resolved to a customer.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when attempting to connect to oneself, when a connection already exists, or when the connection is blocked.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the target customer does not exist.</exception>
     public async Task Handle(SendConnectionRequestCommand request, CancellationToken cancellationToken)
     {
         var identityId = request.UserId;

@@ -22,6 +22,11 @@ public class MessagesController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Sends a message to a customer.
+    /// </summary>
+    /// <param name="command">The command containing message details.</param>
+    /// <returns>The created message details.</returns>
     [HttpPost]
     public async Task<ActionResult<MessageDto>> SendMessage([FromBody] SendMessageCommand command)
     {
@@ -29,6 +34,13 @@ public class MessagesController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Retrieves the conversation messages with a specific customer.
+    /// </summary>
+    /// <param name="otherCustomerId">The identifier of the other customer in the conversation.</param>
+    /// <param name="page">The page number for pagination.</param>
+    /// <param name="pageSize">The number of messages per page.</param>
+    /// <returns>A list of messages in the conversation.</returns>
     [HttpGet("{otherCustomerId}")]
     public async Task<ActionResult<List<MessageDto>>> GetConversation(
         [FromRoute] Guid otherCustomerId,
@@ -40,6 +52,11 @@ public class MessagesController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Marks a specific message as read.
+    /// </summary>
+    /// <param name="messageId">The unique identifier of the message to mark as read.</param>
+    /// <returns>An action result indicating the completion of the operation.</returns>
     [HttpPut("{messageId}/read")]
     public async Task<IActionResult> MarkMessageAsRead([FromRoute] Guid messageId)
     {
@@ -47,6 +64,11 @@ public class MessagesController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Marks all messages in a conversation with a specific customer as read.
+    /// </summary>
+    /// <param name="otherCustomerId">The identifier of the other customer in the conversation.</param>
+    /// <returns>An action result indicating the completion of the operation.</returns>
     [HttpPut("{otherCustomerId}/read-all")]
     public async Task<IActionResult> MarkConversationAsRead([FromRoute] Guid otherCustomerId)
     {
@@ -54,6 +76,12 @@ public class MessagesController : ControllerBase
         return NoContent();
     }
 
+
+    /// <summary>
+    /// Deletes a specific message.
+    /// </summary>
+    /// <param name="messageId">The identifier of the message to delete.</param>
+    /// <returns>An action result indicating the outcome of the operation.</returns>
     [HttpDelete("{messageId}")]
     public async Task<IActionResult> DeleteMessage([FromRoute] Guid messageId)
     {
