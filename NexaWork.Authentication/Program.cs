@@ -200,8 +200,23 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<NexaWorkIdentityDbContext>();
-    // Tự động apply migration và tạo DB nếu chưa có
-    // context.Database.Migrate();
+    
+    // Baseline existing initial schema and apply pending migrations
+    await context.Database.ExecuteSqlRawAsync(@"
+        IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+        BEGIN
+            CREATE TABLE [__EFMigrationsHistory] (
+                [MigrationId] nvarchar(150) NOT NULL,
+                [ProductVersion] nvarchar(32) NOT NULL,
+                CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+            );
+        END;
+        IF NOT EXISTS (SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = '20260530061452_InitialCreate')
+        BEGIN
+            INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+            VALUES ('20260530061452_InitialCreate', '10.0.7');
+        END;");
+    await context.Database.MigrateAsync();
 
     try
     {
