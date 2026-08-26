@@ -4,8 +4,10 @@ using NexaWork.Application.Common.Interfaces.Services;
 
 namespace NexaWork.Application.Common.Behaviors;
 
+// public class UserEnrichmentBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+
 public class UserEnrichmentBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : notnull
 {
     private readonly ICurrentUserService _currentUserService;
 

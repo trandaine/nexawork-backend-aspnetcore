@@ -14,18 +14,12 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg =>
         {
-            // Register the MediatR services commands
-            // cfg.RegisterServicesFromAssembly(typeof(CreateOrganizationCommand).Assembly);
-            // cfg.RegisterServicesFromAssembly(typeof(UpdateOrganizationCommand).Assembly);
-
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(UserEnrichmentBehavior<,>));
         });
 
-        // services.AddValidatorsFromAssembly(typeof(CreateOrganizationCommand).Assembly);
-        // services.AddValidatorsFromAssembly(typeof(UpdateOrganizationCommand).Assembly);
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UserEnrichmentBehavior<,>));
 
 
 
