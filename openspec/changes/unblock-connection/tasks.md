@@ -22,10 +22,10 @@
 - [x] **Task 2.4**: Remove the "create new blocked connection record for strangers" fallback branch.
 
 ### Milestone 3: Implement Unblock Feature
-- [ ] **Task 3.1**: Create `UnblockConnectionCommand.cs` in `NexaWork.Application/Features/Client/Connections/Commands/UnblockConnection/`.
-- [ ] **Task 3.2**: Create `UnblockConnectionHandler.cs` with validation: must be blocked, caller must be the blocker (`CustomerId`), revert status to `StatusBeforeBlock` (or default `Accepted`), clear `StatusBeforeBlock`.
-- [ ] **Task 3.3**: Create `UnblockConnectionValidator.cs` with FluentValidation rules for `TargetCustomerId`.
-- [ ] **Task 3.4**: Add `PUT /api/Connections/{targetCustomerId}/unblock` endpoint to `ConnectionsController.cs`.
+- [x] **Task 3.1**: Create `UnblockConnectionCommand.cs` in `NexaWork.Application/Features/Client/Connections/Commands/UnblockConnection/`.
+- [x] **Task 3.2**: Create `UnblockConnectionHandler.cs` with validation: must be blocked, caller must be the blocker (`CustomerId`), revert status to `StatusBeforeBlock` (or default `Accepted`), clear `StatusBeforeBlock`.
+- [x] **Task 3.3**: Create `UnblockConnectionValidator.cs` with FluentValidation rules for `TargetCustomerId`.
+- [x] **Task 3.4**: Add `PUT /api/Connections/{targetCustomerId}/unblock` endpoint to `ConnectionsController.cs`.
 
 ### Milestone 4: Verification & Testing
 - [ ] **Task 4.1**: Build solution and verify 0 compilation errors/warnings (`dotnet build`).

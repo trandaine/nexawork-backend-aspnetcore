@@ -7,6 +7,7 @@ using NexaWork.Application.Features.Client.Connections.Commands.BlockConnection;
 using NexaWork.Application.Features.Client.Connections.Commands.RejectRequest;
 using NexaWork.Application.Features.Client.Connections.Commands.RemoveConnection;
 using NexaWork.Application.Features.Client.Connections.Commands.SendRequest;
+using NexaWork.Application.Features.Client.Connections.Commands.UnblockConnection;
 using NexaWork.Application.Features.Client.Connections.Commands.UndoRequest;
 using NexaWork.Application.Features.Client.Connections.Queries.GetConnections;
 using NexaWork.Application.Features.Client.Connections.Queries.GetPendingConnections;
@@ -71,6 +72,18 @@ namespace NexaWork.Client.Controllers
         public async Task<ActionResult> BlockConnection(Guid targetCustomerId)
         {
             await _mediator.Send(new BlockConnectionCommand(targetCustomerId));
+            return NoContent();
+        }
+        
+        /// <summary>
+        /// Unblock a previously blocked connection with the target customer
+        /// </summary>
+        /// <param name="targetCustomerId"></param>
+        /// <returns></returns>
+        [HttpPut("{targetCustomerId:guid}/unblock")]
+        public async Task<ActionResult> UnblockConnection(Guid targetCustomerId)
+        {
+            await _mediator.Send(new UnblockConnectionCommand(targetCustomerId));
             return NoContent();
         }
         
