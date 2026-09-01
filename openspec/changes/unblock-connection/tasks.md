@@ -16,10 +16,10 @@
 - [x] **Task 1.4**: Apply migration to database (`dotnet ef database update -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext`).
 
 ### Milestone 2: Fix Block Connection Handler
-- [ ] **Task 2.1**: Update `BlockConnectionRequestHandler.cs` to restrict blocking to `ConnectionStatus.Accepted` connections only.
-- [ ] **Task 2.2**: In `BlockConnectionRequestHandler.cs`, save current status into `StatusBeforeBlock`.
-- [ ] **Task 2.3**: In `BlockConnectionRequestHandler.cs`, ensure `connection.CustomerId` is set to the blocker's customer ID and `ConnectedCustomerId` to the target.
-- [ ] **Task 2.4**: Remove the "create new blocked connection record for strangers" fallback branch.
+- [x] **Task 2.1**: Update `BlockConnectionRequestHandler.cs` to restrict blocking to `ConnectionStatus.Accepted` connections only.
+- [x] **Task 2.2**: In `BlockConnectionRequestHandler.cs`, save current status into `StatusBeforeBlock`.
+- [x] **Task 2.3**: In `BlockConnectionRequestHandler.cs`, ensure `connection.CustomerId` is set to the blocker's customer ID and `ConnectedCustomerId` to the target.
+- [x] **Task 2.4**: Remove the "create new blocked connection record for strangers" fallback branch.
 
 ### Milestone 3: Implement Unblock Feature
 - [ ] **Task 3.1**: Create `UnblockConnectionCommand.cs` in `NexaWork.Application/Features/Client/Connections/Commands/UnblockConnection/`.

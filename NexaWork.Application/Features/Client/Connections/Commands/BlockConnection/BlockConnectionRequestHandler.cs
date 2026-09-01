@@ -37,27 +37,21 @@ public class BlockConnectionRequestHandler : IRequestHandler<BlockConnectionComm
             throw new KeyNotFoundException("Target user not found");
 
         var connection = await _connectionRepository.GetConnectionAsync(currentUser.CustomerId, request.TargetCustomerId, cancellationToken);
-        
-        if (connection != null)
-        {
-            // Update the existing connection to Blocked
-            connection.Status = ConnectionStatus.Blocked;
-            _connectionRepository.Update(connection);
-        }
-        else
-        {
-            // Create a new blocked connection record
-            var newConnection = new Connection
-            {
-                ConnectionId = Guid.NewGuid(),
-                CustomerId = currentUser.CustomerId,
-                ConnectedCustomerId = request.TargetCustomerId,
-                Status = ConnectionStatus.Blocked,
-                CreatedAt = DateTime.UtcNow
-            };
-            await _connectionRepository.AddAsync(newConnection, cancellationToken);
-        }
+        if (connection == null)
+            throw new InvalidOperationException("Cannot block a user who is not an accepted connection.");
 
+        if (connection.Status != ConnectionStatus.Accepted)
+            throw new InvalidOperationException($"Can only block users with an active Accepted connection. Current status: {connection.Status}");
+
+        // Preserve previous status to restore on unblock
+        connection.StatusBeforeBlock = connection.Status;
+
+        // Ensure the blocker is the owner of the block record
+        connection.CustomerId = currentUser.CustomerId;
+        connection.ConnectedCustomerId = request.TargetCustomerId;
+        connection.Status = ConnectionStatus.Blocked;
+
+        _connectionRepository.Update(connection);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
