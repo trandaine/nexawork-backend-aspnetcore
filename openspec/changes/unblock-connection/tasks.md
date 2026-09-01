@@ -10,10 +10,10 @@
 ## Task Matrix
 
 ### Milestone 1: Domain & Infrastructure Foundation
-- [ ] **Task 1.1**: Add `StatusBeforeBlock` (`ConnectionStatus?`) property to `NexaWork.Domain/Entities/Connection.cs`.
-- [ ] **Task 1.2**: Update `ConnectionConfiguration.cs` in `NexaWork.Infrastructure/Persistence/Configurations/` to configure `StatusBeforeBlock` as optional.
-- [ ] **Task 1.3**: Add EF Core migration `AddStatusBeforeBlock` for `NexaWorkDbContext` (`dotnet ef migrations add AddStatusBeforeBlock -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext`).
-- [ ] **Task 1.4**: Apply migration to database (`dotnet ef database update -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext`).
+- [x] **Task 1.1**: Add `StatusBeforeBlock` (`ConnectionStatus?`) property to `NexaWork.Domain/Entities/Connection.cs`.
+- [x] **Task 1.2**: Update `ConnectionConfiguration.cs` in `NexaWork.Infrastructure/Persistence/Configurations/` to configure `StatusBeforeBlock` as optional.
+- [x] **Task 1.3**: Add EF Core migration `AddStatusBeforeBlock` for `NexaWorkDbContext` (`dotnet ef migrations add AddStatusBeforeBlock -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext`).
+- [x] **Task 1.4**: Apply migration to database (`dotnet ef database update -s NexaWork.Client -p NexaWork.Infrastructure -c NexaWorkDbContext`).
 
 ### Milestone 2: Fix Block Connection Handler
 - [ ] **Task 2.1**: Update `BlockConnectionRequestHandler.cs` to restrict blocking to `ConnectionStatus.Accepted` connections only.

@@ -11,6 +11,9 @@ public class ConnectionConfiguration : IEntityTypeConfiguration<Connection>
     {
         builder.HasKey(c => c.ConnectionId);
 
+        builder.Property(c => c.StatusBeforeBlock)
+               .IsRequired(false);
+
         // Crucial: Restrict cascade deletes to avoid multiple cascade paths in SQL Server
         builder.HasOne(c => c.Customer)
                .WithMany(u => u.SentConnections)

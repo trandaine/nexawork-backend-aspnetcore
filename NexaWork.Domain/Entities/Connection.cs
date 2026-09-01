@@ -12,6 +12,8 @@ public class Connection
     [Description("ID của Customer được kết nối")]
     public Guid ConnectedCustomerId { get; set; }
     public ConnectionStatus Status { get; set; }
+    [Description("Trạng thái kết nối trước khi bị chặn để phục hồi khi unblock")]
+    public ConnectionStatus? StatusBeforeBlock { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
