@@ -1,7 +1,7 @@
 # OpenSpec: Unblock Connection Feature (`unblock-connection`)
 
 - **Feature Name**: `unblock-connection`
-- **Status**: Proposed / In Review
+- **Status**: Implemented
 - **Owner**: Backend Team
 - **Target Release**: v1.2.0
 - **Last Updated**: 2026-08-26

@@ -6,7 +6,7 @@ This directory contains specifications and active change sets formatted per Open
 
 | Change ID | Title | Status | Files |
 |-----------|-------|--------|-------|
-| `unblock-connection` | Unblock Connection Feature & Block Restriction | Proposed | [Proposal](./changes/unblock-connection/proposal.md), [Design](./changes/unblock-connection/design.md), [Tasks](./changes/unblock-connection/tasks.md), [Specs](./changes/unblock-connection/specs.md) |
+| `unblock-connection` | Unblock Connection Feature & Block Restriction | Implemented | [Proposal](./changes/unblock-connection/proposal.md), [Design](./changes/unblock-connection/design.md), [Tasks](./changes/unblock-connection/tasks.md), [Specs](./changes/unblock-connection/specs.md) |
 
 ## Archived Changes (`/changes/archive`)
 

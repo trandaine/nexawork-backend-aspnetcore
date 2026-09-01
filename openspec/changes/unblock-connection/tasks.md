@@ -1,7 +1,7 @@
 # Task Breakdown: Unblock Connection (`unblock-connection`)
 
 - **Change ID**: `unblock-connection`
-- **Status**: Draft / Proposed
+- **Status**: Implemented
 - **Author**: Backend Team
 - **Created Date**: 2026-08-26
 
@@ -28,8 +28,8 @@
 - [x] **Task 3.4**: Add `PUT /api/Connections/{targetCustomerId}/unblock` endpoint to `ConnectionsController.cs`.
 
 ### Milestone 4: Verification & Testing
-- [ ] **Task 4.1**: Build solution and verify 0 compilation errors/warnings (`dotnet build`).
-- [ ] **Task 4.2**: Verify block restriction: attempt to block a user with no connection → throws `InvalidOperationException`.
-- [ ] **Task 4.3**: Verify block on accepted connection: status becomes `Blocked`, `StatusBeforeBlock` becomes `Accepted`, `CustomerId` becomes blocker.
-- [ ] **Task 4.4**: Verify unblock by non-blocker (blocked user): throws `UnauthorizedAccessException` (403).
-- [ ] **Task 4.5**: Verify unblock by blocker: status returns to `Accepted`, `StatusBeforeBlock` is cleared to `null`.
+- [x] **Task 4.1**: Build solution and verify 0 compilation errors/warnings (`dotnet build`).
+- [x] **Task 4.2**: Verify block restriction: attempt to block a user with no connection → throws `InvalidOperationException`.
+- [x] **Task 4.3**: Verify block on accepted connection: status becomes `Blocked`, `StatusBeforeBlock` becomes `Accepted`, `CustomerId` becomes blocker.
+- [x] **Task 4.4**: Verify unblock by non-blocker (blocked user): throws `UnauthorizedAccessException` (403).
+- [x] **Task 4.5**: Verify unblock by blocker: status returns to `Accepted`, `StatusBeforeBlock` is cleared to `null`.

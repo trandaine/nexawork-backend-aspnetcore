@@ -1,7 +1,7 @@
 # Technical Design: Unblock Connection (`unblock-connection`)
 
 - **Change ID**: `unblock-connection`
-- **Status**: Draft / Proposed
+- **Status**: Implemented
 - **Author**: Backend Team
 - **Created Date**: 2026-08-26
 
